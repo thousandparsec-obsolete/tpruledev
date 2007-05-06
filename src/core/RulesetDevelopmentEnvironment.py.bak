@@ -1,0 +1,14 @@
+"""
+RulesetDevelopmentEnvironment.py
+Main class of the RulesetDevelopmentEnvironment
+"""
+
+import wx
+
+class Environment(wx.App):
+    def getObjectTypes(self):
+        return
+    
+    def getObjectsOfType(self):
+        return
+    

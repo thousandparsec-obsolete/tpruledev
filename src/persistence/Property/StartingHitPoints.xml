@@ -1,0 +1,10 @@
+<property>
+	<name>StartingHitPoints</name>
+	<property_id>9</property_id>
+	<category_id>1</category_id>
+	<rank>0</rank>
+	<display_text>Initial Hit Points</display_text>
+	<description>How much damage the ship can take before being destroyed</description>
+	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+</property>

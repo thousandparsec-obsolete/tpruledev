@@ -1,0 +1,10 @@
+<property>
+	<name>MissileFirepower</name>
+	<property_id>7</property_id>
+	<category_id>1</category_id>
+	<rank>1</rank>
+	<display_text>Missile Firepower</display_text>
+	<description>How much damage a missile can do</description>
+	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " hit points")) ) )]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+</property>

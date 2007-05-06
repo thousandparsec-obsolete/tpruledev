@@ -1,0 +1,131 @@
+"""
+Property.py
+Representation of Properties.
+"""
+
+import os
+import os.path
+import wx
+import xml.dom.minidom
+from xml.dom.minidom import Node
+
+class Object:
+    def __init__(self, catid = -1, prop_id = -1, rank = -1,
+                 name = '', desc = '', disp_text = '',
+                 tpcl_disp = '', tpcl_req = '', file=''):
+        if (file != ''):
+            self.loadFromFile(file)
+        else:
+            self.category_id = catid
+            self.property_id = prop_id
+            self.rank = rank
+            self.name = name
+            self.description = desc
+            self.display_text = disp_text
+            self.tpcl_display = tpcl_disp
+            self.tpcl_requires = tpcl_req
+            
+    
+    def loadFromFile(self, file):
+        doc = xml.dom.minidom.parse(file)
+        #there should only be one property node...but even so
+        for node in doc.getElementsByTagName("Property"):
+            self.name = node.getAttribute("name")
+            self.rank = node.getAttribute("rank")
+            self.property_id = node.getAttribute("property_id")
+            self.category_id = node.getAttribute("category_id")
+            self.description = node.getAttribute("description")
+            self.display_text = node.getAttribute("display_text")
+            self.tpcl_display = node.getAttribute("tpcl_display")
+            self.tpcl_requires = node.getAttribute("tpcl_requires")
+    
+    def storeToDir(self, dir):
+        os.makedirs(dir) #this is only for while we're testin
+        fname = dir + "/" + self.name + ".xml"
+        out = os.open(fname)
+        out.write("<Property\n")
+        out.write("   name=\"" + self.name + "\"")
+        out.write("   rank=\"" + self.rank + "\"")
+        out.write("   property_id=\"" + self.property_id + "\"")
+        out.write("   category_id=\"" + self.category_id + "\"")
+        out.write("   description=\"" + self.description + "\"")
+        out.write("   display_text=\"" + self.display_text + "\"")
+        out.write("   tpcl_display=\"" + self.tpcl_display + "\"")
+        out.write("   tpcl_requires=\"" + self.tpcl_requires + "\"")
+        out.write("/>")
+    
+    def generateEditPanel(self, parent):
+        #make the panel
+        panel = wx.Panel(parent, wx.ID_ANY, style=wx.EXPAND)
+        flex_sizer = wx.FlexGridSizer(9, 2, 5, 5)
+        flex_sizer.SetFlexibleDirection(wx.BOTH)
+        
+        name_label = wx.StaticText(panel, wx.ID_ANY, "Name:")
+        self.addLabelToFlex(flex_sizer, name_label)
+        name_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.name), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, name_field)
+
+        rank_label = wx.StaticText(panel, wx.ID_ANY, "Rank:")
+        self.addLabelToFlex(flex_sizer, rank_label)
+        rank_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.rank), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, rank_field)
+
+        property_id_label = wx.StaticText(panel, wx.ID_ANY, "Property ID:")
+        self.addLabelToFlex(flex_sizer, property_id_label)
+        property_id_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.property_id), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, property_id_field)
+
+        category_id_label = wx.StaticText(panel, wx.ID_ANY, "Category ID:")
+        self.addLabelToFlex(flex_sizer, category_id_label)
+        category_id_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.category_id), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, category_id_field)
+
+        desc_label = wx.StaticText(panel, wx.ID_ANY, "Description:")
+        self.addLabelToFlex(flex_sizer, desc_label)
+        desc_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.description), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, desc_field)
+
+        disp_label = wx.StaticText(panel, wx.ID_ANY, "Display Text:")
+        self.addLabelToFlex(flex_sizer, disp_label)
+        disp_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.display_text), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, disp_field)
+
+        tpcl_disp_label = wx.StaticText(panel, wx.ID_ANY, "TPCL Display Function:")
+        self.addLabelToFlex(flex_sizer, tpcl_disp_label)
+        tpcl_disp_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.tpcl_display), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, tpcl_disp_field)
+
+        tpcl_req_label = wx.StaticText(panel, wx.ID_ANY, "TPCL Requires Function:")
+        self.addLabelToFlex(flex_sizer, tpcl_req_label)
+        tpcl_req_field = wx.TextCtrl(panel, wx.ID_ANY, str(self.tpcl_requires), style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, tpcl_req_field)
+        
+        but1 = wx.Button(panel, wx.ID_ANY, "Test Button 1")
+        self.addLabelToFlex(flex_sizer, but1)
+        but2 = wx.Button(panel, wx.ID_ANY, "Test Button 2", style=wx.EXPAND)
+        self.addFieldToFlex(flex_sizer, but2)
+        
+        flex_sizer.AddGrowableCol(1)
+        flex_sizer.AddGrowableRow(6)
+        flex_sizer.AddGrowableRow(7)
+        flex_sizer.AddGrowableRow(8)
+        border = wx.BoxSizer()
+        border.Add(flex_sizer, 1, wx.ALL, 5)
+        panel.SetSizer(border)
+    
+        return panel
+    
+    def addLabelToFlex(self, flex, label):
+        flex.Add(label, 2, wx.ALIGN_RIGHT | wx.ALIGN_TOP | wx.EXPAND, 5)
+        
+    def addFieldToFlex(self, flex, field):
+        flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
+        
+    def OnEditPanelSave(self):
+        self.storeToDir("persistence/Property")
+
+def getName():
+    return 'Property'
+
+def generateCode(outdir, props=None):
+    print "Called Property's generateCode function"

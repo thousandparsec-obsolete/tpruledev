@@ -1,0 +1,10 @@
+<property>
+	<name>AmmoSize</name>
+	<property_id>4</property_id>
+	<category_id>1</category_id>
+	<rank>0</rank>
+	<display_text>Explosive Density</display_text>
+	<description>The relative size of a unit of the explosive used in the weapons of the ship</description>
+	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+</property>
