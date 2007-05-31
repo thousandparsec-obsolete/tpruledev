@@ -1,12 +1,17 @@
 """
 ObjectManagement.py
-Manager of game objects. Specifically, this is the model
-of our object data and also the controller (meh).
+Storage and tracking of game objects. Specifically,
+these classes are the model and the controller of
+our object data.
+
+The view is a custom tree control.
 """
 
-import os
+import os, wx
 
-class ObjectManager:
+class ObjectDatabase:
+    """Object database stores and tracks game objects"""
+    
     def __init__(self, save_location, tree=None):
         self.save_location = save_location
         self.tree = tree
@@ -14,11 +19,11 @@ class ObjectManager:
         self.object_modules = {}
         return
 
-    """
-    fills the treectrl in the main window with
-    the objects loaded from persistence
-    """
     def populateTree(self, tree=None):
+        """
+        fills the treectrl in the main window with
+        the objects loaded from persistence
+        """
         if (tree):
             self.tree = tree
 
@@ -72,3 +77,51 @@ class ObjectManager:
             #no such object - so...uh...through an exception, hey?
             print "No such object to be removed."
 
+
+class ObjectManager:
+    """Serves as the controller for the game objects."""
+    def __init__(self, save_location, tree=None):
+        self.save_location = save_location
+        self.tree = tree
+        self.objects = {}
+        return
+    
+    def setSaveLocation(self, save_location):
+        self.save_location = save_location
+        
+    def setTreeRoot(self, tree):
+        self.tree = None
+
+    def add(self, type, obj):
+        if not self.objects.has_key(type):
+            self.objects[type] = []
+        self.objects[type].append(obj)
+
+    def remove(self, type, obj):
+        try:
+            self.objects[type].remove(obj)
+        except:
+            #no such object
+            return
+
+
+class GameObjectTreeCtrl(wx.TreeCtrl):
+    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
+                 style=wx.TR_DEFAULT_STYLE, validator=wx.DefaultValidator, name=wx.TreeCtrlNameStr):
+        wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
+        self.compare_function = lambda x, y: 0
+
+    def SortChildrenByFunction(self, item, func):
+        self.compare_function = func
+        self.SortChildren(item)
+        self.compare_function = lambda x, y: 0
+
+    def OnCompareItems(self, item1, item2):
+        """
+        This particular OnCompareItems function passes the PyData objects of
+        the nodes to be compared to the function provided as a comparison technique.
+        """
+        if self.compare_function:
+            return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
+        else:
+            return 0

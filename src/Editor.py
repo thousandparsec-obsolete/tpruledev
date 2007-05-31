@@ -6,17 +6,17 @@ Editor.py
 
 import wx, sys, os
 
-from core.ObjectManagement import ObjectManager
+from core.ObjectManagement import ObjectManager, ObjectDatabase, GameObjectTreeCtrl
 
 SPLITTER_ID = 101
 TREE_ID = 110
 
-class SplitterTest(wx.Frame):
+class Editor(wx.Frame):
     
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
-        self.om = ObjectManager(os.getcwd() + "/persistence")
+        self.om = ObjectDatabase(os.getcwd() + "/persistence")
         self.om.loadObjectsFromStorage()
 
         self.initGUI()
@@ -34,7 +34,7 @@ class SplitterTest(wx.Frame):
         self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
         self.cp_right.SetBackgroundColour("black")
         
-        self.tree = SortableTreeCtrl(self.splitter, wx.ID_ANY)
+        self.tree = GameObjectTreeCtrl(self.splitter, wx.ID_ANY)
         self.root = self.tree.AddRoot("Game Objects")
         self.tree.SetPyData(self.root, MyNode("Root"))
         self.tree.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDClick)
@@ -80,28 +80,9 @@ class MyNode:
         panel.SetBackgroundColour('white')
         label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.value)
         return panel
-
-class SortableTreeCtrl(wx.TreeCtrl):
-    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
-                 style=wx.TR_DEFAULT_STYLE, validator=wx.DefaultValidator, name=wx.TreeCtrlNameStr):
-        wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
-        self.compare_function = lambda x, y: 0
-
-    def SortChildrenByFunction(self, item, func):
-        self.compare_function = func
-        self.SortChildren(item)
-        self.compare_function = lambda x, y: 0
-
-    """
-    This particular OnCompareItems function passes the PyData objects of
-    the nodes to be compared to the function provided as a comparison technique.
-    """
-    def OnCompareItems(self, item1, item2):
-        if self.compare_function:
-            return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
-        else:
-            return 0
+        
     
 app = wx.PySimpleApp()
-frame = SplitterTest(None, -1, 'Splitter Test', size=(640,480))
+frame = Editor(None, -1, 'Splitter Test', size=(640,480))
 app.MainLoop()
+#I could do something substantial...or I could just add an irrelevant line 
