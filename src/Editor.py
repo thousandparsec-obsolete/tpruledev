@@ -5,8 +5,9 @@ Editor.py
 """
 
 import wx, sys, os
+from ConfigParser import ConfigParser
 
-from core.ObjectManagement import ObjectManager, ObjectDatabase, GameObjectTreeCtrl
+from core.ObjectManagement import ObjectDatabase, GameObjectTreeCtrl
 
 SPLITTER_ID = 101
 TREE_ID = 110
@@ -16,7 +17,13 @@ class Editor(wx.Frame):
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
-        self.om = ObjectDatabase(os.getcwd() + "/persistence")
+        
+        #import configuration settings, will build on this as is necessary
+        self.config = ConfigParser()
+        self.config.readfp(open('tpconf'))
+        self.config.read(self.config.get('DEFAULT', 'current_project'))
+        
+        self.om = ObjectDatabase(self.config)
         self.om.loadObjectsFromStorage()
 
         self.initGUI()

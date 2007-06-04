@@ -8,16 +8,27 @@ The view is a custom tree control.
 """
 
 import os, wx
+from ConfigParser import ConfigParser
 
 class ObjectDatabase:
     """Object database stores and tracks game objects"""
     
-    def __init__(self, save_location, tree=None):
-        self.save_location = save_location
+    def __init__(self, config, tree=None):
+        self.config = config
         self.tree = tree
         self.objects = {}
         self.object_modules = {}
+        self.save_location = config.get('Current Project', 'project_directory') + "persistence/"
         return
+        
+    def setSaveLocation(self, save_location):
+        """
+        probably don't need this anymore
+        """
+        self.save_location = save_location
+        
+    def setTreeRoot(self, tree):
+        self.tree = tree
 
     def populateTree(self, tree=None):
         """
@@ -41,11 +52,9 @@ class ObjectDatabase:
 
     def initObjectTypes(self):
         #print "Trying to initialize object types"
-        cfg_filename = "objects.cfg"
         #TODO following line prone to breaking likely...fix it
-        OBJECT_FILE = open(os.getcwd() + "/game_objects/" + cfg_filename, "r")
         object_modules = {}
-        for name in OBJECT_FILE:
+        for name in self.config.get('Object Types', 'types').split(', '):
             name = name.strip()
             object_modules[name] = __import__("game_objects." + name, globals(), locals(), [''])
         return object_modules
@@ -56,7 +65,7 @@ class ObjectDatabase:
         for name, module in self.object_modules.iteritems():
             print "Loading objects of type: " + name
             self.objects[name] = []
-            persistence_dir = os.getcwd() + "/persistence/" + name
+            persistence_dir = self.save_location + name
             files = os.listdir(persistence_dir)
             for f in files:
                 #print "Loading File: ", f
@@ -76,33 +85,6 @@ class ObjectDatabase:
         except:
             #no such object - so...uh...through an exception, hey?
             print "No such object to be removed."
-
-
-class ObjectManager:
-    """Serves as the controller for the game objects."""
-    def __init__(self, save_location, tree=None):
-        self.save_location = save_location
-        self.tree = tree
-        self.objects = {}
-        return
-    
-    def setSaveLocation(self, save_location):
-        self.save_location = save_location
-        
-    def setTreeRoot(self, tree):
-        self.tree = None
-
-    def add(self, type, obj):
-        if not self.objects.has_key(type):
-            self.objects[type] = []
-        self.objects[type].append(obj)
-
-    def remove(self, type, obj):
-        try:
-            self.objects[type].remove(obj)
-        except:
-            #no such object
-            return
 
 
 class GameObjectTreeCtrl(wx.TreeCtrl):

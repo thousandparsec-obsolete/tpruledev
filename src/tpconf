@@ -1,0 +1,8 @@
+#tpruledev configuration file
+
+[DEFAULT]
+tprde_dir: ./
+current_project: ../MTSec/tprde.cfg
+
+[Object Types]
+types = Property, Component
