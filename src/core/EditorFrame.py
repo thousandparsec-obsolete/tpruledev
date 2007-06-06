@@ -1,5 +1,5 @@
 """
-Editor.py
+EditorFrame.py
  Skeleton for the RDE. Will eventually evolve into the actual
  editor, but for the time being will serve as a testbed.
 """
@@ -12,7 +12,7 @@ from core.ObjectManagement import ObjectDatabase, GameObjectTreeCtrl
 SPLITTER_ID = 101
 TREE_ID = 110
 
-class Editor(wx.Frame):
+class Frame(wx.Frame):
     
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
@@ -22,11 +22,12 @@ class Editor(wx.Frame):
         self.config = ConfigParser()
         self.config.readfp(open('tpconf'))
         self.config.read(self.config.get('DEFAULT', 'current_project'))
+        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
         
-        self.om = ObjectDatabase(self.config)
-        self.om.loadObjectsFromStorage()
-
         self.initGUI()
+        
+        self.om = ObjectDatabase(self.config, self.tree)
+        self.om.loadObjectsFromStorage()
 
         self.om.populateTree(self.tree)
         self.tree.Expand(self.root)
@@ -68,6 +69,7 @@ class Editor(wx.Frame):
         self.item = event.GetItem()
         if self.item:
             print "OnSelChanged: %s" % self.tree.GetItemText(self.item)
+            self.tree.SetItemBackgroundColour(self.item, 'RED')
             panel = self.tree.GetPyData(self.item).generateEditPanel(self.splitter)
             self.splitter.ReplaceWindow(self.cp_right, panel)
             self.cp_right.Destroy()
@@ -87,9 +89,4 @@ class MyNode:
         panel.SetBackgroundColour('white')
         label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.value)
         return panel
-        
-    
-app = wx.PySimpleApp()
-frame = Editor(None, -1, 'Splitter Test', size=(640,480))
-app.MainLoop()
-#I could do something substantial...or I could just add an irrelevant line 
+

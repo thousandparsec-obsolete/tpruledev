@@ -24,7 +24,7 @@ def compareFunction(comp1, comp2):
         return 0
     return 1
 
-class Object:
+class Object(object):
     def __init__(self, comp_id = -1, rank = -1,
                  name = '', desc = '', cat_id = -1,
                  tpcl_req = '', file=''):
