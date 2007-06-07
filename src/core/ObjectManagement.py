@@ -32,8 +32,10 @@ class ObjectDatabase(object):
     def __init__(self, config, tree=None):
         self.config = config
         self.tree = tree
+        #hash of object names
         self.objects = {}
-        self.object_modules = {}
+        #hash of object modules
+        self.object_modules = self.initObjectTypes()
         self.save_location = config.get('Current Project', 'project_directory') + "persistence/"
         initObjectTypes()
         return
@@ -46,7 +48,7 @@ class ObjectDatabase(object):
         if we wanted to generalize the control.
         """
         self.tree = tree
-
+        
     def initObjectTypes(self):
         #print "Trying to initialize object types"
         object_modules = {}
@@ -54,6 +56,27 @@ class ObjectDatabase(object):
             name = name.strip()
             object_modules[name] = __import__("game_objects." + name, globals(), locals(), [''])
         return object_modules
+        
+    def loadObjectNames(self):
+        """
+        Loads the names of the objects from persistent storage
+        so that we can pupulate out tree of objects.
+        """
+        #print "Trying to dynamically load objects from storage"
+        for name, module in self.object_modules.iteritems():
+            print "Loading object names for object type: " + name
+            object_dir = self.save_location + name
+            self.objects[name] = [file.partition('.')[0] for file in os.listdir(object_dir)]
+            #print "Object list:"
+            #for o in self.objects[name]:
+            #    print o
+        self.tree.InitializeTree()
+    
+    def loadObjectFromStorage(self, object_name):
+        """
+        Loads a specific object from storage.
+        """ 
+        pass   
 
     def loadObjectsFromStorage(self):
         #print "Trying to dynamically load objects from storage"
@@ -82,6 +105,18 @@ class ObjectDatabase(object):
         except:
             #no such object - so...uh...through an exception, hey?
             print "No such object to be removed."
+            
+class GOPointer(object):
+    """
+    This class holds information about various game
+    objects. Things such as their persistence filename
+    for quick access, their change-state, their highlighted
+    state, etc.
+    
+    This might should be in the Game Object definitions
+    themselves...
+    """
+    pass
 
 class GameObjectTree(wx.TreeCtrl):
     def __init__(self, parent, object_types=None, persistence_dir=None, id=-1,
