@@ -4,14 +4,30 @@ Storage and tracking of game objects. Specifically,
 these classes are the model and the controller of
 our object data.
 
-The view is a custom tree control.
+The view is a custom tree control also herein implemented.
+The tree is created and added to a window and its
+ObjectDatabase is made note of. The object database
+is what the rest of the program interacts with.
+
+There is a concious decision to have a relatively tight coupling
+between the control/model and the view, but it would be easy
+also to make it more loosely coupled.
+
+Yes, I'm heavily influenced by the way Java
+does it in Swing. If necessary the decoupling
+will be more complete so as to provide different
+views.
 """
 
 import os, wx
 from ConfigParser import ConfigParser
 
 class ObjectDatabase(object):
-    """Object database stores and tracks game objects"""
+    """
+    The object database stores and tracks game objects. It
+    also updates the views that are displaying the game
+    objects.
+    """
     
     def __init__(self, config, tree=None):
         self.config = config
@@ -19,16 +35,17 @@ class ObjectDatabase(object):
         self.objects = {}
         self.object_modules = {}
         self.save_location = config.get('Current Project', 'project_directory') + "persistence/"
+        initObjectTypes()
         return
-        
-    def setSaveLocation(self, save_location):
+
+    def setTree(self, tree):
         """
-        probably don't need this anymore
+        Sets the tree which is the view...
+        this is what we'd want to make into a
+        an add function for multiple listening views
+        if we wanted to generalize the control.
         """
-        self.save_location = save_location
-        
-    def setTreeRoot(self, tree):
-        self.tree = tree            
+        self.tree = tree
 
     def initObjectTypes(self):
         #print "Trying to initialize object types"
@@ -66,41 +83,13 @@ class ObjectDatabase(object):
             #no such object - so...uh...through an exception, hey?
             print "No such object to be removed."
 
-#define the events pertaining to the game object database
-BASE_EVENT          = 0
-HIGHLIGHT_EVENT     = 1
-ADD_EVENT           = 2
-REMOVE_EVENT        = 3
-    
-class GameObjectEvent(object):
-    type = BASE_EVENT
-    
-    def __init__(self, type):
-        self.type = type
-        
-class ObjectHighlightEvent(GameObjectEvent):
-    def __init__(self, objects):
-        GameObjectEvent.__init(HIGHLIGHT_EVENT)
-        self.objects = objects
-        
-class ObjectAddEvent(GameObjectEvent):
-    def __init__(self, objects):
-        GameObjectEvent.__init(ADD_EVENT)
-        self.objects = objects
-
-class ObjectRemoveEvent(GameObjectEvent):
-    def __init__(self, objects):
-        GameObjectEvent.__init(REMOVE_EVENT)
-        self.objects = objects
-
-
 class GameObjectTree(wx.TreeCtrl):
     def __init__(self, parent, object_types=None, persistence_dir=None, id=-1,
                     pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.TR_DEFAULT_STYLE,
                     validator=wx.DefaultValidator, name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
         
-        self.odb = ObjectDatabase()
+        self.odb = ObjectDatabase(self)
         
         #if passed a list of object types and a persistence
         # directory then we can initialize our tree without
@@ -127,49 +116,34 @@ class GameObjectTree(wx.TreeCtrl):
             #fail and throw exception
             return
         else:
-            pass            
-
-
-class GameObjectTreeCtrl(wx.TreeCtrl):
-    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
-                 style=wx.TR_DEFAULT_STYLE, validator=wx.DefaultValidator, name=wx.TreeCtrlNameStr):
-        wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
-        self.compare_function = lambda x, y: 0
-        
-    def populateTree(self):
-        """
-        fills the treectrl in the main window with
-        the objects loaded from persistence
-        """
-       #TODO add a check here for a non-None tree
-
-        root = self.GetRootItem()
-        for name, module in self.object_modules.iteritems():
-            main_node = self.AppendItem(root, name)
-            self.SetPyData(main_node, module)
-
-            for obj in self.objects[name]:
-                object_node = self.AppendItem(main_node, obj.name)
-                self.SetPyData(object_node, obj)
-        
+            pass
+            
     def HighlightObjects(self, objects):
         """
         highlights the given objects in the tree
         objects is a hash with keys that are the object types
         and values of object names to highlight
         """
-        return
+        pass
         
     def ClearHighlight(self):
         """
         clears all highlighting from objects in the tree
         """
-        return
-
+        pass
+    
+    #the following methods allow the tree to have its objects
+    # sorted using external functions so that objects of a certain
+    # type can supply a certain sorting function and be
+    # sorted in that way
     def SortChildrenByFunction(self, item, func):
+        """
+        Sorts the children of item using the function func.
+        """
         self.compare_function = func
         self.SortChildren(item)
         #default operation leaves ordering intact
+        # so we make sure to set ourselves back to the default
         self.compare_function = lambda x, y: 0
 
     def OnCompareItems(self, item1, item2):
@@ -180,4 +154,4 @@ class GameObjectTreeCtrl(wx.TreeCtrl):
         if self.compare_function:
             return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
         else:
-            return 0
+            return 0       
