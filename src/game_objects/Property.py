@@ -8,6 +8,8 @@ import os.path
 import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
+from game_objects import ObjectUtilities
+import RDE
 
 def generateEditPanel(parent):
     print "Generating panel for Property module."
@@ -25,14 +27,24 @@ def compareFunction(prop1, prop2):
         return 0
     return 1
 
-class Object(ObjectState):
-    type = 'Property'
+class Object(ObjectUtilities.GameObject):
+    prop_id = ObjectUtilities.sentinelProperty('prop_id')
+    rank = ObjectUtilities.sentinelProperty('rank')
+    desc = ObjectUtilities.sentinelProperty('desc')
+    disp_text = ObjectUtilities.sentinelProperty('disp_text')
+    tpcl_disp = ObjectUtilities.sentinelProperty('tpcl_disp')
+    tpcl_req = ObjectUtilities.sentinelProperty('tpcl_req')
 
     def __init__(self, catid = -1, prop_id = -1, rank = -1,
                  name = '', desc = '', disp_text = '',
-                 tpcl_disp = '', tpcl_req = '', file=''):
-        if (file != ''):
-            self.loadFromFile(file)
+                 tpcl_disp = '', tpcl_req = '', load_immediate=False):
+
+        self.node = node
+        self.filename = RDE.Globals.config.get('current_project', 'persistence_directory') + \
+                                               'Property/' + name
+                 
+        if (load_immediate):
+            self.loadFromFile()
         else:
             self.category_id = catid
             self.property_id = prop_id
@@ -42,12 +54,14 @@ class Object(ObjectState):
             self.display_text = disp_text
             self.tpcl_display = tpcl_disp
             self.tpcl_requires = tpcl_req
+            
+        self.node.clearModified()
 
     def __str__(self):
         return "Property Game Object - " + self.name
     
     def loadFromFile(self, file):
-        doc = xml.dom.minidom.parse(file)
+        doc = xml.dom.minidom.parse(self.filename)
         #there should only be one property node...but even so
         root = doc.getElementsByTagName("property")[0]
         self.name = root.getElementsByTagName("name")[0].childNodes[0].data

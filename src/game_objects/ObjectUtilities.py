@@ -7,14 +7,26 @@ def makeSentinelGetter(var_name):
         return self.__getattribute__('__' + var_name)
     return getter
     
-def makeSentinelSetter(var_name, node):
+def makeSentinelSetter(var_name):
     def setter(self, value):
-        node.modified = True
+        self.node.markModified()
         self.__setattr__('__' + var_name, value)
     return setter
     
-def sentinelProperty(var_name, node):
-    return property(makeSentinelGetter(var_name), makeSentinelSetter(var_name, node))
+def sentinelProperty(var_name):
+    return property(makeSentinelGetter(var_name), makeSentinelSetter(var_name))
+    
+class GameObject(object):
+    """
+    The base game object class. Defines a few variables
+    that are necessary for every game object such as the
+    ObjectNode which contains this GameObject and the
+    name property.
+    """
+    name = sentinelProperty('name')
+    
+    def __init__(self, node):
+        self.node = node
 
 class ObjectNode(object):
     """
@@ -71,8 +83,9 @@ class ObjectNode(object):
         Gets the game object object associated with this
         node.
         """
-        if not object:
-            self.object = self.object_module.Object(
+        if not self.object:
+            #self.object = self.object_module.Object(
+            pass
             
         return self.object
         
@@ -81,5 +94,5 @@ class ObjectNode(object):
         Clears a loaded game object if no modifications have been
         made
         """
-        if not modified:
+        if not self.modified:
             del self.object

@@ -9,13 +9,11 @@ from ConfigParser import ConfigParser
 
 sys.path.append('.')
 
-class Globals(object):
+class GlobalConfig(object):
     config = None
 
 class RDE(wx.App):
     def OnInit(self):
-        Globals.config = ConfigParser()
-        Globals.config.readfp(open('tpconf'))
         self.frame = core.EditorFrame.Frame(None, wx.ID_ANY, 'Splitter Test', size=(640,480))
         self.frame.Show()
         self.SetTopWindow(self.frame)

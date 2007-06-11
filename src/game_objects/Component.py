@@ -7,7 +7,8 @@ import os, os.path
 import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
-import ObjectUtilities
+from game_objects import ObjectUtilities
+import RDE
 
 def generateEditPanel(parent):
     print "Generating panel for Component module."
@@ -25,37 +26,39 @@ def compareFunction(comp1, comp2):
         return 0
     return 1
 
-class Object(object):
+class Object(ObjectUtilities.GameObject):
     comp_id = ObjectUtilities.sentinelProperty('comp_id')
     rank = ObjectUtilities.sentinelProperty('rank')
-    name = ObjectUtilities.sentinelProperty('name')
     desc = ObjectUtilities.sentinelProperty('desc')
     cat_id = ObjectUtilities.sentinelProperty('cat_id')
     tpcl_req = ObjectUtilities.sentinelProperty('tpcl_req')
 
-    def __init__(self, node, comp_id = -1, rank = -1,
-                 name = '', desc = '', cat_id = -1,
-                 tpcl_req = '', file=''):
+    def __init__(self, node, name, comp_id = -1, rank = -1,
+                 desc = '', cat_id = -1,
+                 tpcl_req = '', load_immediate = False):
                  
         self.node = node
+        self.filename = RDE.Globals.config.get('current_project', 'persistence_directory') + \
+                                               'Component/' + name
         
-        self.properties = {}
-        if (file != ''):
-            self.loadFromFile(file)
+        if load_immediate:
+            self.loadFromFile()
         else:
+            self.properties = {}
             self.component_id = comp_id
             self.category_id = cat_id
             self.rank = rank
             self.name = name
             self.description = desc
             self.tpcl_requirements = tpcl_req
-        self.modified = False
+            
+        self.node.clearModified()
 
     def __str__(self):
         return "Component Game Object - " + self.name
             
-    def loadFromFile(self, file):
-        doc = xml.dom.minidom.parse(file)
+    def loadFromFile(self):
+        doc = xml.dom.minidom.parse(self.filename)
         #there should only be one property node...but even so
         root = doc.getElementsByTagName("component")[0]
         self.name = root.getElementsByTagName("name")[0].childNodes[0].data

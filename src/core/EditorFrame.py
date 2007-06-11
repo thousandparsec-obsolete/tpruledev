@@ -19,17 +19,18 @@ class Frame(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, pos, size)
         
         #import configuration settings, will build on this as is necessary
-        self.config = RDE.Globals.config
+        RDE.GlobalConfig.config = ConfigParser()
+        self.config = RDE.GlobalConfig.config
+        self.config.readfp(open('tpconf'))
         self.config.read(self.config.get('DEFAULT', 'current_project'))
         self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
         
         self.initGUI()
         
-        self.om = ObjectDatabase(self.config, self.tree)
-        self.om.loadObjectsFromStorage()
+        self.object_database = self.tree.getObjectDatabase()
+        self.object_database.loadObjectNames()
 
-        self.om.populateTree(self.tree)
-        self.tree.Expand(self.root)
+        #self.tree.Expand(self.root)
         
         self.Show(True)
 
@@ -41,9 +42,9 @@ class Frame(wx.Frame):
         self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
         self.cp_right.SetBackgroundColour("black")
         
-        self.tree = GameObjectTreeCtrl(self.splitter, wx.ID_ANY)
-        self.root = self.tree.AddRoot("Game Objects")
-        self.tree.SetPyData(self.root, MyNode("Root"))
+        self.tree = GameObjectTree(self.splitter, wx.ID_ANY)
+        #self.root = self.tree.AddRoot("Game Objects")
+        #self.tree.SetPyData(self.root, MyNode("Root"))
         self.tree.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDClick)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.onTreeSelect)
         
@@ -68,7 +69,7 @@ class Frame(wx.Frame):
         self.item = event.GetItem()
         if self.item:
             print "OnSelChanged: %s" % self.tree.GetItemText(self.item)
-            self.tree.SetItemBackgroundColour(self.item, 'RED')
+            #self.tree.SetItemBackgroundColour(self.item, 'RED')
             panel = self.tree.GetPyData(self.item).generateEditPanel(self.splitter)
             self.splitter.ReplaceWindow(self.cp_right, panel)
             self.cp_right.Destroy()
@@ -78,14 +79,5 @@ class Frame(wx.Frame):
         event.Skip()
 
         
-class MyNode:
-    def __init__(self, value):
-        self.value = value
-    
-    def generateEditPanel(self, parent):
-        print "Generating panel for [%s]" % self.value
-        panel = wx.Panel(parent, wx.ID_ANY)
-        panel.SetBackgroundColour('white')
-        label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.value)
-        return panel
+
 

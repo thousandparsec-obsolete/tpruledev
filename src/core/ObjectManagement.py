@@ -21,6 +21,7 @@ views.
 
 import os, wx
 from ConfigParser import ConfigParser
+import RDE
 
 class ObjectDatabase(object):
     """
@@ -29,15 +30,14 @@ class ObjectDatabase(object):
     objects.
     """
     
-    def __init__(self, config, tree=None):
-        self.config = config
+    def __init__(self, tree):
+        self.config = RDE.GlobalConfig.config
         self.tree = tree
         #hash of object names
         self.objects = {}
         #hash of object modules
         self.object_modules = self.initObjectTypes()
-        self.save_location = config.get('Current Project', 'project_directory') + "persistence/"
-        initObjectTypes()
+        self.save_location = self.config.get('Current Project', 'persistence_directory')
         return
 
     def setTree(self, tree):
@@ -66,33 +66,13 @@ class ObjectDatabase(object):
         for name, module in self.object_modules.iteritems():
             print "Loading object names for object type: " + name
             object_dir = self.save_location + name
+            #grab the object names from the filenames and use them to populate
+            # the lists of objects
             self.objects[name] = [file.partition('.')[0] for file in os.listdir(object_dir)]
             #print "Object list:"
             #for o in self.objects[name]:
             #    print o
         self.tree.InitializeTree()
-    
-    def loadObjectFromStorage(self, object_name):
-        """
-        Loads a specific object from storage.
-        """ 
-        pass   
-
-    def loadObjectsFromStorage(self):
-        #print "Trying to dynamically load objects from storage"
-        self.object_modules = self.initObjectTypes()
-        for name, module in self.object_modules.iteritems():
-            print "Loading objects of type: " + name
-            self.objects[name] = []
-            persistence_dir = self.save_location + name
-            files = os.listdir(persistence_dir)
-            for f in files:
-                #print "Loading File: ", f
-                self.objects[name].append(module.Object(file=persistence_dir + "/" + f))
-            #print "Object list:"
-            #for o in self.objects[name]:
-            #    print o
-        self.tree.populateTree()
 
     def add(self, obj_type, obj):
         if not self.objects.has_key(obj_type):
@@ -105,41 +85,25 @@ class ObjectDatabase(object):
         except:
             #no such object - so...uh...through an exception, hey?
             print "No such object to be removed."
-            
-class GOPointer(object):
-    """
-    This class holds information about various game
-    objects. Things such as their persistence filename
-    for quick access, their change-state, their highlighted
-    state, etc.
     
-    This might should be in the Game Object definitions
-    themselves...
-    """
-    pass
+    def getObjectTypes(self):
+        return self.object_modules.keys()
+        
+    def getObjectsOfType(self, type):
+        if not self.objects.has_key(type):
+            raise ValueError('No such object type')
+        return self.objects[type]
 
 class GameObjectTree(wx.TreeCtrl):
-    def __init__(self, parent, object_types=None, persistence_dir=None, id=-1,
-                    pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.TR_DEFAULT_STYLE,
-                    validator=wx.DefaultValidator, name=wx.TreeCtrlNameStr):
+    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
+                    style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
+                    name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
-        
         self.odb = ObjectDatabase(self)
-        
-        #if passed a list of object types and a persistence
-        # directory then we can initialize our tree without
-        # further ado
-        if object_types and persistence_dir:
-            self.object_types = object_types            
-            self.persistence_dir = persistence_dir
-            self.InitializeTree()
-            
-    def SetObjectTypes(self, types):
-        self.object_types = types
-        
-    def SetPersistenceDirectory(self, pdir):
-        self.persistence_dir = pdir
-        
+
+    def getObjectDatabase(self):
+        return self.odb
+                 
     def AddObject(self, type, name):
         pass
         
@@ -147,11 +111,15 @@ class GameObjectTree(wx.TreeCtrl):
         pass
         
     def InitializeTree(self):
-        if not self.object_types or not self.persistence_dir:
-            #fail and throw exception
-            return
-        else:
-            pass
+        self.root_id = self.AddRoot('root')
+        self.type_ids = {}
+        self.object_ids = {}
+        for object_type in self.odb.getObjectTypes():
+            self.type_ids[object_type] = self.AppendItem(self.root_id, object_type)
+            self.SetPyData(self.type_ids[object_type], DefaultNode(object_type))
+            for object_name in self.odb.getObjectsOfType(object_type):
+                self.object_ids[object_name] = self.AppendItem(self.type_ids[object_type], object_name)
+                self.SetPyData(self.object_ids[object_name], DefaultNode(object_name))
             
     def HighlightObjects(self, objects):
         """
@@ -189,4 +157,15 @@ class GameObjectTree(wx.TreeCtrl):
         if self.compare_function:
             return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
         else:
-            return 0       
+            return 0
+            
+class DefaultNode:
+    def __init__(self, value):
+        self.value = value
+    
+    def generateEditPanel(self, parent):
+        print "Generating panel for [%s]" % self.value
+        panel = wx.Panel(parent, wx.ID_ANY)
+        panel.SetBackgroundColour('white')
+        label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.value)
+        return panel    
