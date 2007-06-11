@@ -7,6 +7,7 @@ import os, os.path
 import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
+import ObjectUtilities
 
 def generateEditPanel(parent):
     print "Generating panel for Component module."
@@ -25,9 +26,19 @@ def compareFunction(comp1, comp2):
     return 1
 
 class Object(object):
-    def __init__(self, comp_id = -1, rank = -1,
+    comp_id = ObjectUtilities.sentinelProperty('comp_id')
+    rank = ObjectUtilities.sentinelProperty('rank')
+    name = ObjectUtilities.sentinelProperty('name')
+    desc = ObjectUtilities.sentinelProperty('desc')
+    cat_id = ObjectUtilities.sentinelProperty('cat_id')
+    tpcl_req = ObjectUtilities.sentinelProperty('tpcl_req')
+
+    def __init__(self, node, comp_id = -1, rank = -1,
                  name = '', desc = '', cat_id = -1,
                  tpcl_req = '', file=''):
+                 
+        self.node = node
+        
         self.properties = {}
         if (file != ''):
             self.loadFromFile(file)
@@ -38,6 +49,7 @@ class Object(object):
             self.name = name
             self.description = desc
             self.tpcl_requirements = tpcl_req
+        self.modified = False
 
     def __str__(self):
         return "Component Game Object - " + self.name

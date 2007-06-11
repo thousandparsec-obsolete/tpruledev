@@ -25,7 +25,9 @@ def compareFunction(prop1, prop2):
         return 0
     return 1
 
-class Object(object):
+class Object(ObjectState):
+    type = 'Property'
+
     def __init__(self, catid = -1, prop_id = -1, rank = -1,
                  name = '', desc = '', disp_text = '',
                  tpcl_disp = '', tpcl_req = '', file=''):

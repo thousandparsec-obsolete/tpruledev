@@ -4,23 +4,22 @@ EditorFrame.py
  editor, but for the time being will serve as a testbed.
 """
 
-import wx, sys, os
+import wx, os
 from ConfigParser import ConfigParser
 
-from core.ObjectManagement import ObjectDatabase, GameObjectTreeCtrl
+from core.ObjectManagement import ObjectDatabase, GameObjectTree
+import RDE
 
 SPLITTER_ID = 101
 TREE_ID = 110
 
-class Frame(wx.Frame):
-    
+class Frame(wx.Frame):    
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
         
         #import configuration settings, will build on this as is necessary
-        self.config = ConfigParser()
-        self.config.readfp(open('tpconf'))
+        self.config = RDE.Globals.config
         self.config.read(self.config.get('DEFAULT', 'current_project'))
         self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
         
