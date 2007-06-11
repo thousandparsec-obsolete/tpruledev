@@ -5,6 +5,7 @@ Thousand Parsec Ruleset Developement Environment launcher script.
 import wx
 import sys
 import core.EditorFrame
+import ConfigParser
 from ConfigParser import ConfigParser
 
 sys.path.append('.')

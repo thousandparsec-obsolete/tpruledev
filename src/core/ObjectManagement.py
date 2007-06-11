@@ -20,8 +20,10 @@ views.
 """
 
 import os, wx
+import ConfigParser
 from ConfigParser import ConfigParser
 import RDE
+import game_objects.ObjectUtilities
 
 class ObjectDatabase(object):
     """
@@ -89,6 +91,11 @@ class ObjectDatabase(object):
     def getObjectTypes(self):
         return self.object_modules.keys()
         
+    def getObjectModule(self, type):
+        if not self.object_modules.has_key(type):
+            raise ValueError('No such object type')
+        return self.object_modules[type]
+        
     def getObjectsOfType(self, type):
         if not self.objects.has_key(type):
             raise ValueError('No such object type')
@@ -119,7 +126,9 @@ class GameObjectTree(wx.TreeCtrl):
             self.SetPyData(self.type_ids[object_type], DefaultNode(object_type))
             for object_name in self.odb.getObjectsOfType(object_type):
                 self.object_ids[object_name] = self.AppendItem(self.type_ids[object_type], object_name)
-                self.SetPyData(self.object_ids[object_name], DefaultNode(object_name))
+                self.SetPyData(self.object_ids[object_name],
+                               game_objects.ObjectUtilities.ObjectNode(
+                                        self.odb.getObjectModule(object_type), object_name))
             
     def HighlightObjects(self, objects):
         """
@@ -158,14 +167,24 @@ class GameObjectTree(wx.TreeCtrl):
             return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
         else:
             return 0
-            
-class DefaultNode:
-    def __init__(self, value):
-        self.value = value
+
     
+class DatabaseNode(object):
     def generateEditPanel(self, parent):
-        print "Generating panel for [%s]" % self.value
+        print "Generating DefaultNode panel"
         panel = wx.Panel(parent, wx.ID_ANY)
         panel.SetBackgroundColour('white')
-        label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.value)
+        label = wx.StaticText(panel, wx.ID_ANY, "Default Node Panel")
+        return panel    
+   
+            
+class DefaultNode(DatabaseNode):
+    def __init__(self, name):
+        self.name = name
+    
+    def generateEditPanel(self, parent):
+        print "Generating panel for [%s]" % self.name
+        panel = wx.Panel(parent, wx.ID_ANY)
+        panel.SetBackgroundColour('white')
+        label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.name)
         return panel    

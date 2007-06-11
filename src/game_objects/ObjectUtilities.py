@@ -1,6 +1,11 @@
 """
 Game Object Utility classes and utility functions.
 """
+import os
+print os.getcwd()
+
+import core.ObjectManagement
+from core.ObjectManagement import DatabaseNode
 
 def makeSentinelGetter(var_name):
     def getter(self):
@@ -28,7 +33,7 @@ class GameObject(object):
     def __init__(self, node):
         self.node = node
 
-class ObjectNode(object):
+class ObjectNode(DatabaseNode):
     """
     Class for keeping track of the state of a
     game object. Tracks such things as whether
@@ -84,8 +89,7 @@ class ObjectNode(object):
         node.
         """
         if not self.object:
-            #self.object = self.object_module.Object(
-            pass
+            self.object = self.object_module.Object(self, name, load_immediate=True)
             
         return self.object
         
@@ -96,3 +100,6 @@ class ObjectNode(object):
         """
         if not self.modified:
             del self.object
+            
+    def generateEditPanel(self, parent):
+            return getObject().generateEditPanel(parent)

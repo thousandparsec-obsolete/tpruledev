@@ -4,9 +4,10 @@ EditorFrame.py
  editor, but for the time being will serve as a testbed.
 """
 
-import wx, os
+import wx, os, ConfigParser
 from ConfigParser import ConfigParser
 
+import core.ObjectManagement
 from core.ObjectManagement import ObjectDatabase, GameObjectTree
 import RDE
 
@@ -52,7 +53,7 @@ class Frame(wx.Frame):
         self.splitter.SplitVertically(self.tree,
                                       self.cp_right,
                                       150)
-
+                                      
     def OnLeftDClick(self, event):
         print "Handling double click in Tree!"
         pt = event.GetPosition()
@@ -77,7 +78,4 @@ class Frame(wx.Frame):
             self.Refresh()
             self.Update()
         event.Skip()
-
-        
-
 

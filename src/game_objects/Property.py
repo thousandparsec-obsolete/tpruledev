@@ -8,8 +8,7 @@ import os.path
 import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
-from game_objects import ObjectUtilities
-import RDE
+import ObjectUtilities, RDE
 
 def generateEditPanel(parent):
     print "Generating panel for Property module."
