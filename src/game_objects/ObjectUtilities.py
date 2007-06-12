@@ -4,8 +4,8 @@ Game Object Utility classes and utility functions.
 import os
 print os.getcwd()
 
-import core.ObjectManagement
-from core.ObjectManagement import DatabaseNode
+import game_objects
+import core.Nodes
 
 def makeSentinelGetter(var_name):
     def getter(self):
@@ -33,7 +33,7 @@ class GameObject(object):
     def __init__(self, node):
         self.node = node
 
-class ObjectNode(DatabaseNode):
+class ObjectNode(core.Nodes.DatabaseNode):
     """
     Class for keeping track of the state of a
     game object. Tracks such things as whether
@@ -52,7 +52,10 @@ class ObjectNode(DatabaseNode):
     
     def __init__(self, object_module, name):
         self.name = name
-        self.object_module = object_module    
+        self.object_module = object_module
+        
+    def __str__(self):
+        return self.name  
         
     def markModified(self):
         modified = True
@@ -89,7 +92,7 @@ class ObjectNode(DatabaseNode):
         node.
         """
         if not self.object:
-            self.object = self.object_module.Object(self, name, load_immediate=True)
+            self.object = self.object_module.Object(self, self.name, load_immediate=True)
             
         return self.object
         
@@ -102,4 +105,4 @@ class ObjectNode(DatabaseNode):
             del self.object
             
     def generateEditPanel(self, parent):
-            return getObject().generateEditPanel(parent)
+            return self.getObject().generateEditPanel(parent)

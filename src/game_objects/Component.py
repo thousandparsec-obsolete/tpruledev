@@ -36,8 +36,8 @@ class Object(ObjectUtilities.GameObject):
                  tpcl_req = '', load_immediate = False):
                  
         self.node = node
-        self.filename = RDE.Globals.config.get('current_project', 'persistence_directory') + \
-                                               'Component/' + name
+        self.filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
+                                               'Component/' + name + '.xml'
         
         if load_immediate:
             self.loadFromFile()
@@ -65,6 +65,7 @@ class Object(ObjectUtilities.GameObject):
         self.description = root.getElementsByTagName("description")[0].childNodes[0].data
         self.tpcl_requirements = root.getElementsByTagName("tpcl_requirements")[0].childNodes[0].data
         #now the properties associated with this component
+        self.properties = {}
         for prop in root.getElementsByTagName("property"):
             self.properties[prop.getElementsByTagName("property_id")[0].childNodes[0].data] = prop.getElementsByTagName("tpcl_cost")[0].childNodes[0].data
     

@@ -7,9 +7,8 @@ EditorFrame.py
 import wx, os, ConfigParser
 from ConfigParser import ConfigParser
 
-import core.ObjectManagement
-from core.ObjectManagement import ObjectDatabase, GameObjectTree
 import RDE
+import core.ObjectManagement
 
 SPLITTER_ID = 101
 TREE_ID = 110
@@ -29,7 +28,8 @@ class Frame(wx.Frame):
         self.initGUI()
         
         self.object_database = self.tree.getObjectDatabase()
-        self.object_database.loadObjectNames()
+        self.object_database.loadObjectNodes()
+        self.curr_node_id = None
 
         #self.tree.Expand(self.root)
         
@@ -43,7 +43,7 @@ class Frame(wx.Frame):
         self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
         self.cp_right.SetBackgroundColour("black")
         
-        self.tree = GameObjectTree(self.splitter, wx.ID_ANY)
+        self.tree = core.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
         #self.root = self.tree.AddRoot("Game Objects")
         #self.tree.SetPyData(self.root, MyNode("Root"))
         self.tree.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDClick)
@@ -67,15 +67,29 @@ class Frame(wx.Frame):
                 self.tree.SortChildrenByFunction(parent, obj.compareFunction)
     
     def onTreeSelect(self, event):
-        self.item = event.GetItem()
-        if self.item:
-            print "OnSelChanged: %s" % self.tree.GetItemText(self.item)
-            #self.tree.SetItemBackgroundColour(self.item, 'RED')
-            panel = self.tree.GetPyData(self.item).generateEditPanel(self.splitter)
+        last_node = None
+        if self.curr_node_id:
+            try:
+                last_node = self.tree.GetPyData(self.curr_node_id)
+            except:
+                print "Failed to get pydata for: " + self.tree.GetItemText(self.curr_node_id)
+            
+        self.curr_node_id = event.GetItem()
+        if self.curr_node_id:
+            print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
+            #self.tree.SetItemBackgroundColour(self.curr_node_id, 'RED')
+            panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.splitter)
             self.splitter.ReplaceWindow(self.cp_right, panel)
             self.cp_right.Destroy()
             self.cp_right = panel
             self.Refresh()
             self.Update()
+        
+        if last_node:
+            try:
+                last_node.clearObject()
+            except:
+                pass
+            
         event.Skip()
 

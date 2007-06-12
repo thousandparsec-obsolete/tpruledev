@@ -22,7 +22,7 @@ views.
 import os, wx
 import ConfigParser
 from ConfigParser import ConfigParser
-import RDE
+import RDE, Nodes
 import game_objects.ObjectUtilities
 
 class ObjectDatabase(object):
@@ -59,7 +59,7 @@ class ObjectDatabase(object):
             object_modules[name] = __import__("game_objects." + name, globals(), locals(), [''])
         return object_modules
         
-    def loadObjectNames(self):
+    def loadObjectNodes(self):
         """
         Loads the names of the objects from persistent storage
         so that we can pupulate out tree of objects.
@@ -70,7 +70,7 @@ class ObjectDatabase(object):
             object_dir = self.save_location + name
             #grab the object names from the filenames and use them to populate
             # the lists of objects
-            self.objects[name] = [file.partition('.')[0] for file in os.listdir(object_dir)]
+            self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(module, file.partition('.')[0]) for file in os.listdir(object_dir)]
             #print "Object list:"
             #for o in self.objects[name]:
             #    print o
@@ -100,6 +100,7 @@ class ObjectDatabase(object):
         if not self.objects.has_key(type):
             raise ValueError('No such object type')
         return self.objects[type]
+            
 
 class GameObjectTree(wx.TreeCtrl):
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
@@ -123,12 +124,11 @@ class GameObjectTree(wx.TreeCtrl):
         self.object_ids = {}
         for object_type in self.odb.getObjectTypes():
             self.type_ids[object_type] = self.AppendItem(self.root_id, object_type)
-            self.SetPyData(self.type_ids[object_type], DefaultNode(object_type))
-            for object_name in self.odb.getObjectsOfType(object_type):
+            self.SetPyData(self.type_ids[object_type], Nodes.DefaultNode(object_type))
+            for node in self.odb.getObjectsOfType(object_type):
+                object_name = node.name
                 self.object_ids[object_name] = self.AppendItem(self.type_ids[object_type], object_name)
-                self.SetPyData(self.object_ids[object_name],
-                               game_objects.ObjectUtilities.ObjectNode(
-                                        self.odb.getObjectModule(object_type), object_name))
+                self.SetPyData(self.object_ids[object_name], node)
             
     def HighlightObjects(self, objects):
         """
@@ -166,25 +166,4 @@ class GameObjectTree(wx.TreeCtrl):
         if self.compare_function:
             return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
         else:
-            return 0
-
-    
-class DatabaseNode(object):
-    def generateEditPanel(self, parent):
-        print "Generating DefaultNode panel"
-        panel = wx.Panel(parent, wx.ID_ANY)
-        panel.SetBackgroundColour('white')
-        label = wx.StaticText(panel, wx.ID_ANY, "Default Node Panel")
-        return panel    
-   
-            
-class DefaultNode(DatabaseNode):
-    def __init__(self, name):
-        self.name = name
-    
-    def generateEditPanel(self, parent):
-        print "Generating panel for [%s]" % self.name
-        panel = wx.Panel(parent, wx.ID_ANY)
-        panel.SetBackgroundColour('white')
-        label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.name)
-        return panel    
+            return 0 

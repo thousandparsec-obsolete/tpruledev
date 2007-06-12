@@ -34,13 +34,13 @@ class Object(ObjectUtilities.GameObject):
     tpcl_disp = ObjectUtilities.sentinelProperty('tpcl_disp')
     tpcl_req = ObjectUtilities.sentinelProperty('tpcl_req')
 
-    def __init__(self, catid = -1, prop_id = -1, rank = -1,
-                 name = '', desc = '', disp_text = '',
-                 tpcl_disp = '', tpcl_req = '', load_immediate=False):
+    def __init__(self, node, name, catid = -1, prop_id = -1, rank = -1,
+                 desc = '', disp_text = '', tpcl_disp = '', tpcl_req = '',
+                 load_immediate=False):
 
         self.node = node
-        self.filename = RDE.Globals.config.get('current_project', 'persistence_directory') + \
-                                               'Property/' + name
+        self.filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
+                                               'Property/' + name + '.xml'
                  
         if (load_immediate):
             self.loadFromFile()
@@ -59,7 +59,7 @@ class Object(ObjectUtilities.GameObject):
     def __str__(self):
         return "Property Game Object - " + self.name
     
-    def loadFromFile(self, file):
+    def loadFromFile(self):
         doc = xml.dom.minidom.parse(self.filename)
         #there should only be one property node...but even so
         root = doc.getElementsByTagName("property")[0]
