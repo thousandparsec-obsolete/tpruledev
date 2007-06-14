@@ -32,9 +32,8 @@ class ObjectDatabase(object):
     objects.
     """
     
-    def __init__(self, tree):
+    def __init__(self):
         self.config = RDE.GlobalConfig.config
-        self.tree = tree
         #hash of object names
         self.objects = {}
         #hash of object modules
@@ -50,6 +49,10 @@ class ObjectDatabase(object):
         if we wanted to generalize the control.
         """
         self.tree = tree
+
+    def getTree(self, parent, id=wx.ID_ANY):
+	self.tree = GameObjectTree(self, parent, id)
+	return self.tree
         
     def initObjectTypes(self):
         #print "Trying to initialize object types"
@@ -103,11 +106,11 @@ class ObjectDatabase(object):
             
 
 class GameObjectTree(wx.TreeCtrl):
-    def __init__(self, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
+    def __init__(self, object_database, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
                     style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
                     name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
-        self.odb = ObjectDatabase(self)
+        self.odb = object_database 
 
     def getObjectDatabase(self):
         return self.odb
