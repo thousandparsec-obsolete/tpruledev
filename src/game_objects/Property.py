@@ -9,6 +9,7 @@ import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
+import PropertyPanel
 
 def generateEditPanel(parent):
     print "Generating panel for Property module."
@@ -94,6 +95,9 @@ class Object(ObjectUtilities.GameObject):
     
     def generateEditPanel(self, parent):
         #make the panel
+        return PropertyPanel.Panel(self, None, parent)
+        
+        print "SHOULDN'T BE HERE!"
         panel = wx.Panel(parent, wx.ID_ANY, style=wx.EXPAND)
         flex_sizer = wx.FlexGridSizer(8, 2, 5, 5)
         flex_sizer.SetFlexibleDirection(wx.BOTH)

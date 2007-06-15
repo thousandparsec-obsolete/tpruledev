@@ -1,7 +1,5 @@
 Todo:
-Make split between model and view for game objects
 Create interface for model and view for objects
-Dynamic loading of game objects - only load when needed, otherwise just store them by name
 
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
