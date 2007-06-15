@@ -1,6 +1,6 @@
 """
 wx.Panel and associated methods for editing
-a self object
+a Property object
 """
 
 import wx
@@ -10,7 +10,7 @@ class Panel(wx.Panel):
     A wx.Panel for displaying and editing Properties
     """
     
-    def __init__(self, property, odb, parent, id=wx.ID_ANY, style=wx.EXPAND):
+    def __init__(self, property, parent, id=wx.ID_ANY, style=wx.EXPAND):
         wx.Panel.__init__(self, parent, id=id, style=style)
         flex_sizer = wx.FlexGridSizer(8, 2, 5, 5)
         flex_sizer.SetFlexibleDirection(wx.BOTH)

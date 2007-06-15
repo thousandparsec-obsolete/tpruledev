@@ -66,7 +66,7 @@ class ObjectDatabase(object):
             object_dir = self.save_location + name
             #grab the object names from the filenames and use them to populate
             # the lists of objects
-            self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(module, file.partition('.')[0]) for file in os.listdir(object_dir)]
+            self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(self, filename.partition('.')[0], module) for filename in os.listdir(object_dir)]
             #print "Object list:"
             #for o in self.objects[name]:
             #    print o

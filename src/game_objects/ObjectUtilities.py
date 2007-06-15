@@ -48,11 +48,13 @@ class ObjectNode(core.Nodes.DatabaseNode):
     highlight_color=""
     listeners=[]
     object_module=None
+    object_database=None
     object=None
     
-    def __init__(self, object_module, name):
+    def __init__(self, odb, name, module):
         self.name = name
-        self.object_module = object_module
+        self.object_module = module
+        self.object_database = odb
         
     def __str__(self):
         return self.name  

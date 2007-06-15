@@ -6,7 +6,7 @@ Representation of Components.
 import os, wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
-import ObjectUtilities, RDE
+import ObjectUtilities, RDE, ComponentPanel
 
 def generateEditPanel(parent):
     print "Generating panel for Component module."
@@ -74,55 +74,7 @@ class Object(ObjectUtilities.GameObject):
     
     def generateEditPanel(self, parent):
         #make the panel
-        panel = wx.Panel(parent, wx.ID_ANY, style=wx.EXPAND)
-        flex_sizer = wx.FlexGridSizer(6, 2, 5, 5)
-        flex_sizer.SetFlexibleDirection(wx.BOTH)
-        
-        name_label = self.createLabel(panel, "Name:")
-        self.addLabelToFlex(flex_sizer, name_label)
-        name_field = self.createField(panel, str(self.name))
-        self.addFieldToFlex(flex_sizer, name_field)
-
-        comp_id_label = self.createLabel(panel, "Component ID:")
-        self.addLabelToFlex(flex_sizer, comp_id_label)
-        comp_id_field = self.createField(panel, str(self.component_id))
-        self.addFieldToFlex(flex_sizer, comp_id_field)
-
-        category_id_label = self.createLabel(panel, "Category ID:")
-        self.addLabelToFlex(flex_sizer, category_id_label)
-        category_id_field = self.createField(panel, str(self.category_id))
-        self.addFieldToFlex(flex_sizer, category_id_field)
-
-        desc_label = self.createLabel(panel, "Description:")
-        self.addLabelToFlex(flex_sizer, desc_label)
-        desc_field = self.createField(panel, str(self.description))
-        self.addFieldToFlex(flex_sizer, desc_field)
-
-        tpcl_req_label = self.createLabel(panel, "TPCL Requirements Function:")
-        self.addLabelToFlex(flex_sizer, tpcl_req_label)
-        tpcl_req_field = self.createField(panel, str(self.tpcl_requirements))
-        self.addFieldToFlex(flex_sizer, tpcl_req_field)
-
-        props_label = self.createLabel(panel, "Associated Properties:")
-        self.addLabelToFlex(flex_sizer, props_label)
-        #TODO make this into a ListCtrl
-        prop_list = wx.ListBox(panel, wx.ID_ANY)
-        for prop_id, tpcl_cost in self.properties.iteritems():
-            prop_list.Insert(str(prop_id) + " - " + str(tpcl_cost), 0)
-        self.addFieldToFlex(flex_sizer, prop_list)
-       
-        flex_sizer.AddGrowableCol(1) #field column
-        flex_sizer.AddGrowableRow(4) #tpcl_requirements function
-        flex_sizer.AddGrowableRow(5) #property list
-
-        
-        border1 = wx.BoxSizer(wx.HORIZONTAL)
-        border1.Add(flex_sizer, 1, wx.ALL | wx.EXPAND, 5)
-        border2 = wx.BoxSizer(wx.VERTICAL)
-        border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
-        panel.SetSizer(border2)
-    
-        return panel
+        return ComponentPanel.Panel(self, parent)
 
     def createLabel(self, panel, text):
         return wx.StaticText(panel, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
