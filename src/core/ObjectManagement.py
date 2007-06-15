@@ -84,6 +84,20 @@ class ObjectDatabase(object):
         except:
             #no such object - so...uh...through an exception, hey?
             print "No such object to be removed."
+            
+    def highlight(self, obj_names):
+        #todo: this can be so much more elegant
+        if isinstance(obj_names, list):
+            self.sendODBEvent(ODBHighlight(obj_names))
+        else:
+            self.sendODBEvent(ODBHighlight([obj_names]))
+        
+    def unhighlight(self, obj_names):
+        #todo: this can be so much more elegant
+        if isinstance(obj_names, list):
+            self.sendODBEvent(ODBUnHighlight(obj_names))
+        else:
+            self.sendODBEvent(ODBUnHighlight([obj_names]))
     
     def getObjectTypes(self):
         return self.object_modules.keys()
@@ -201,10 +215,20 @@ class GameObjectTree(wx.TreeCtrl):
         pass
     
     def HandleHighlight(self, event):
-        pass
+        #todo: error handling
+        print "Handling highlight"
+        for obj_name in event.names:
+            print "Highlighting object: ", obj_name
+            id = self.object_ids[obj_name]
+            self.SetItemBackgroundColour(id, 'RED')
     
     def HandleUnHighlight(self, event):
-        pass
+        #todo: error handling
+        print "Handling unhighlight"
+        for obj_name in event.names:
+            print "Unhighlighting object: ", obj_name
+            id = self.object_ids[obj_name]
+            self.SetItemBackgroundColour(id, 'WHITE')
     
     def HandleClear(self, event):
         pass

@@ -103,6 +103,7 @@ class ObjectNode(core.Nodes.DatabaseNode):
         Clears a loaded game object if no modifications have been
         made
         """
+        print "Clearing ", self.name
         if not self.modified:
             del self.object
             

@@ -66,30 +66,23 @@ class Frame(wx.Frame):
             if hasattr(obj, "compareFunction"):
                 self.tree.SortChildrenByFunction(parent, obj.compareFunction)
     
-    def onTreeSelect(self, event):
-        last_node = None
-        if self.curr_node_id:
-            try:
-                last_node = self.tree.GetPyData(self.curr_node_id)
-            except:
-                print "Failed to get pydata for: " + self.tree.GetItemText(self.curr_node_id)
-            
+    def onTreeSelect(self, event):        
         self.curr_node_id = event.GetItem()
         if self.curr_node_id:
             print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
-            #self.tree.SetItemBackgroundColour(self.curr_node_id, 'RED')
+            try:
+                self.cp_right.cleanup()
+            except AttributeError:
+                #no biggie, just doesn't have a cleanup method
+                print "Panel didn't have a cleanup method"
+                pass
+                
             panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.splitter)
             self.splitter.ReplaceWindow(self.cp_right, panel)
             self.cp_right.Destroy()
             self.cp_right = panel
             self.Refresh()
             self.Update()
-        
-        if last_node:
-            try:
-                last_node.clearObject()
-            except:
-                pass
             
         event.Skip()
 

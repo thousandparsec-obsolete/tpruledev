@@ -12,6 +12,7 @@ class Panel(wx.Panel):
     
     def __init__(self, component, parent, id=wx.ID_ANY, style=wx.EXPAND):
         wx.Panel.__init__(self, parent, id, style=style)
+        self.component = component
         flex_sizer = wx.FlexGridSizer(6, 2, 5, 5)
         flex_sizer.SetFlexibleDirection(wx.BOTH)
         
@@ -44,8 +45,11 @@ class Panel(wx.Panel):
         self.addLabelToFlex(flex_sizer, props_label)
         #TODO make this into a ListCtrl
         prop_list = wx.ListBox(self, wx.ID_ANY)
-        for prop_id, tpcl_cost in component.properties.iteritems():
-            prop_list.Insert(str(prop_id) + " - " + str(tpcl_cost), 0)
+        prop_names = []
+        for pname, tpcl_cost in component.properties.iteritems():
+            prop_names.append(pname)
+            prop_list.Insert(str(pname) + " - " + str(tpcl_cost), 0)
+        component.node.object_database.highlight(prop_names)
         self.addFieldToFlex(flex_sizer, prop_list)
        
         flex_sizer.AddGrowableCol(1) #field column
@@ -69,3 +73,11 @@ class Panel(wx.Panel):
         
     def addFieldToFlex(self, flex, field):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
+        
+    def cleanup(self):
+        print "Cleaning up Component Panel"
+        prop_names = []
+        for pname, tpcl_cost in self.component.properties.iteritems():
+            prop_names.append(pname)
+        self.component.node.object_database.unhighlight(prop_names)
+        self.component.node.clearObject()

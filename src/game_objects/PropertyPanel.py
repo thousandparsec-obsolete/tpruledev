@@ -12,6 +12,7 @@ class Panel(wx.Panel):
     
     def __init__(self, property, parent, id=wx.ID_ANY, style=wx.EXPAND):
         wx.Panel.__init__(self, parent, id=id, style=style)
+        self.property = property
         flex_sizer = wx.FlexGridSizer(8, 2, 5, 5)
         flex_sizer.SetFlexibleDirection(wx.BOTH)
         
@@ -76,3 +77,6 @@ class Panel(wx.Panel):
         
     def addFieldToFlex(self, flex, field):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
+        
+    def cleanup(self):
+        self.property.node.clearObject()
