@@ -1,45 +1,44 @@
 <component>
-	<name>AntimatterExplosives</name>
-	<component_id>8</component_id>
-	<category_id>1</category_id>
-	<description>null</description>
-	<tpcl_requirements><![CDATA[(lambda (design)  (if (= (designType.num-ammo design) 1)  (cons #t "")  (cons #f "This is a complete component, nothing else can be included")))]]></tpcl_requirements>
-
-	<!--propertylist:-->
-	<property>
-		<property_id>2</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 64)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>4</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 0.8)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>13</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>9</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>11</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>1</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>14</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>3</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 16)]]></tpcl_cost>
-	</property>
-	<property>
-		<property_id>10</property_id>
-		<tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
-	</property>
+    <name>AntimatterExplosives</name>
+    <component_id>8</component_id>
+    <category_id>1</category_id>
+    <description>null</description>
+    <tpcl_requirements><![CDATA[(lambda (design)  (if (= (designType.num-ammo design) 1)  (cons #t "")  (cons #f "This is a complete component, nothing else can be included")))]]></tpcl_requirements>
+    <!--propertylist:-->
+    <property>
+        <name>Armor</name>
+        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>BuildTime</name>
+        <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>Colonise</name>
+        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>num-ammo</name>
+        <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>Speed</name>
+        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>AmmoExplosiveness</name>
+        <tpcl_cost><![CDATA[(lambda (design) 16)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>AmmoCost</name>
+        <tpcl_cost><![CDATA[(lambda (design) 64)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>AmmoSize</name>
+        <tpcl_cost><![CDATA[(lambda (design) 0.8)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>StartingHitPoints</name>
+        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
+    </property>
 </component>

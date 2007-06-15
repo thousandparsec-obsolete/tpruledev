@@ -67,7 +67,7 @@ class Object(ObjectUtilities.GameObject):
         #now the properties associated with this component
         self.properties = {}
         for prop in root.getElementsByTagName("property"):
-            self.properties[prop.getElementsByTagName("property_id")[0].childNodes[0].data] = prop.getElementsByTagName("tpcl_cost")[0].childNodes[0].data
+            self.properties[prop.getElementsByTagName("name")[0].childNodes[0].data] = prop.getElementsByTagName("tpcl_cost")[0].childNodes[0].data
     
     def storeToFile(self, file):
         return

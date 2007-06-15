@@ -1,0 +1,41 @@
+<component>
+	<name>BattleScoutHull</name>
+	<component_id>2</component_id>
+	<category_id>1</category_id>
+	<description>null</description>
+	<tpcl_requirements><![CDATA[(lambda (design)  (if (= (designType.num-hulls design) 1)  (if (< (designType.num-baytypes design) 2)  (cons #t "")  (cons #f "A ship can only have one type of missile bay"))  (cons #f "A ship can only use one hull!")))]]></tpcl_requirements>
+
+	<!--propertylist:-->
+	<property>
+		<property_id>13</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>11</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) 5)]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>16</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>1</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) (* 75 1000000))]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>14</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>10</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>5</property_id>
+		<tpcl_cost><![CDATA[(lambda (design)  (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design)));]]></tpcl_cost>
+	</property>
+	<property>
+		<property_id>12</property_id>
+		<tpcl_cost><![CDATA[(lambda (design) 100)]]></tpcl_cost>
+	</property>
+</component>
