@@ -25,14 +25,14 @@ class Frame(wx.Frame):
         self.config.read(self.config.get('DEFAULT', 'current_project'))
         self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
         
-	#initialize odbase and gui components
-	self.object_database = core.ObjectManagement.ObjectDatabase()
+        #initialize odbase and gui components
+        self.object_database = core.ObjectManagement.ObjectDatabase()
         self.initGUI()
+        self.object_database.addODBListener(self.tree)
 
-	#load the object nodes to fill the tree
+        #load the object nodes to fill the tree
         self.object_database.loadObjectNodes()
         self.curr_node_id = None
-
         self.Show(True)
 
     def initGUI(self):
@@ -43,8 +43,9 @@ class Frame(wx.Frame):
         self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
         self.cp_right.SetBackgroundColour("black")
         
-        #self.tree = core.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
-	self.tree = self.object_database.getTree(self.splitter)
+        self.tree = core.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
+        self.tree.SetObjectDatabase(self.object_database)
+	    #self.tree = self.object_database.getTree(self.splitter)
         self.tree.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDClick)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.onTreeSelect)
         

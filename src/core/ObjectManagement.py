@@ -39,20 +39,13 @@ class ObjectDatabase(object):
         #hash of object modules
         self.object_modules = self.initObjectTypes()
         self.save_location = self.config.get('Current Project', 'persistence_directory')
+        self.odb_listeners = []
         return
 
-    def setTree(self, tree):
-        """
-        Sets the tree which is the view...
-        this is what we'd want to make into a
-        an add function for multiple listening views
-        if we wanted to generalize the control.
-        """
-        self.tree = tree
-
     def getTree(self, parent, id=wx.ID_ANY):
-	self.tree = GameObjectTree(self, parent, id)
-	return self.tree
+        tree = GameObjectTree(self, parent, id)
+        self.addODBListener(tree)
+        return tree
         
     def initObjectTypes(self):
         #print "Trying to initialize object types"
@@ -77,7 +70,8 @@ class ObjectDatabase(object):
             #print "Object list:"
             #for o in self.objects[name]:
             #    print o
-        self.tree.InitializeTree()
+        #alert listeners to happy initialization
+        self.sendODBEvent(ODBInitialize())
 
     def add(self, obj_type, obj):
         if not self.objects.has_key(obj_type):
@@ -103,22 +97,116 @@ class ObjectDatabase(object):
         if not self.objects.has_key(type):
             raise ValueError('No such object type')
         return self.objects[type]
-            
+        
+    #listener interface
+    def addODBListener(self, listener):
+        if not listener in self.odb_listeners:
+            self.odb_listeners.append(listener)
+    
+    def removeODBListener(self, listener):
+        if listener in self.odb_listeners:
+            self.odb_listeners.remove(listener)
+    
+    def sendODBEvent(self, event):
+        for l in self.odb_listeners:
+            l.handleODBEvent(event)
 
+
+#Object Database even objects
+class ODBEvent(object):
+    """
+    Base Object Database Event object.
+    All of the event types are included here.
+    """
+    #I WANT ENUMS!
+    INIT = 1
+    ADD = 2
+    REMOVE = 3
+    MODIFY = 4
+    HIGHLIGHT = 5
+    UNHIGHLIGHT = 6
+    CLEAR_MARKERS = 7
+
+class ODBInitialize(ODBEvent):
+    type = ODBEvent.INIT
+
+class ODBAdd(ODBEvent):
+    type = ODBEvent.ADD
+    
+    def __init__(self, names):
+        self.names = names
+
+class ODBRemove(ODBEvent):
+    type = ODBEvent.REMOVE
+    
+    def __init__(self, names):
+        self.names = names
+    
+class ODBModify(ODBEvent):
+    type = ODBEvent.MODIFY
+    
+    def __init__(self, names):
+        self.names = names
+
+class ODBHighlight(ODBEvent):
+    type = ODBEvent.HIGHLIGHT
+    
+    def __init__(self, names):
+        self.names = names
+    
+class ODBUnHighlight(ODBEvent):
+    type = ODBEvent.UNHIGHLIGHT
+    
+    def __init__(self, names):
+        self.names = names
+    
+class ODBClearMarkers(ODBEvent):
+    type = ODBEvent.CLEAR_MARKERS
+    
+    
 class GameObjectTree(wx.TreeCtrl):
-    def __init__(self, object_database, parent, id=-1, pos=wx.DefaultPosition, size=wx.DefaultSize,
+    """
+    The default display for game objects. Based on
+    a wx.TreeCtrl
+    """
+    
+    def __init__(self, parent, id=-1, object_database = None, pos=wx.DefaultPosition, size=wx.DefaultSize,
                     style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
                     name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
         self.odb = object_database 
-
-    def getObjectDatabase(self):
-        return self.odb
-                 
+        
+    def SetObjectDatabase(self, odb):
+        self.odb = odb
+             
     def AddObject(self, type, name):
         pass
         
     def RemoveObject(self, type, name):
+        pass
+        
+    def handleODBEvent(self, event):
+        self.eventDict[event.type](self, event)
+        
+    def HandleInit(self, event):
+        self.InitializeTree()
+    
+    def HandleAdd(self, event):
+        pass
+    
+    def HandleRemove(self, event):
+        pass
+    
+    def HandleModify(self, event):
+        pass
+    
+    def HandleHighlight(self, event):
+        pass
+    
+    def HandleUnHighlight(self, event):
+        pass
+    
+    def HandleClear(self, event):
         pass
         
     def InitializeTree(self):
@@ -169,4 +257,12 @@ class GameObjectTree(wx.TreeCtrl):
         if self.compare_function:
             return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
         else:
-            return 0 
+            return 0
+            
+    eventDict = {ODBEvent.INIT: HandleInit,
+                 ODBEvent.ADD: HandleAdd,
+                 ODBEvent.REMOVE: HandleRemove,
+                 ODBEvent.MODIFY: HandleModify,
+                 ODBEvent.HIGHLIGHT: HandleHighlight,
+                 ODBEvent.UNHIGHLIGHT: HandleUnHighlight,
+                 ODBEvent.CLEAR_MARKERS: HandleClear}
