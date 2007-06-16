@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Wraps the RDE in PyCrust for interactive development and testing
 """

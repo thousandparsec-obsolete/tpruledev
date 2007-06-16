@@ -1,5 +1,8 @@
 Todo:
 Create interface for model and view for objects
+Save config options on app close
+Allow for creation of new projects
+Allow for creation of new objects
 
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's

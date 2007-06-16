@@ -1,0 +1,20 @@
+A Ruleset Development Environment for Thousand Parsec game modes
+==================================================================
+
+Requirements:
+	Python 2.4
+	wxPython 2.6.0
+
+Running the app:
+	In Windows: Browse to the .../tpruledev/src/ directory and double click on the file RDE.py
+		or: cd to the .../tpruledev/src/ directory and use the command `pythonw RDE.py`
+
+	In Linux: cd to the .../tpruledev/src/ directory and use the command `pythonw RDE.py`
+		or: cd to teh .../tpruledev/src/ directory and executre RDE.py directly (./RDE.py when the file is executable)
+
+Noteworthy files:
+	tpruledev/src/RDE.py - The application runner, when executed on its own will start the RDE
+	tpruledev/src/WrapRDE.py - A script to wrap the RDE in PyCrust for quickly testing features and exploring the structure
+	tpruledev/notes.txt - Todo list and notes on the design and progress of the app
+	tpruledev/MTSec/... - The example project which is composed of Components and Properties from the MTSec gametype.
+	

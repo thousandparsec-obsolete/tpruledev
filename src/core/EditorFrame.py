@@ -66,19 +66,27 @@ class Frame(wx.Frame):
             if hasattr(obj, "compareFunction"):
                 self.tree.SortChildrenByFunction(parent, obj.compareFunction)
     
-    def onTreeSelect(self, event):        
+    def onTreeSelect(self, event):
         self.curr_node_id = event.GetItem()
         if self.curr_node_id:
             print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
+            
+            #cleanup the last panel, which will release resources
+            # grabbed by objects if applicable
+            #this will also clear any highlighting done by the
+            # panel and stuff like that
             try:
                 self.cp_right.cleanup()
             except AttributeError:
                 #no biggie, just doesn't have a cleanup method
-                print "Panel didn't have a cleanup method"
                 pass
                 
+            #generate the new panel and do highlighting and stuff like that
+            # (all handled by the generateEditPanel method)
             panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.splitter)
             self.splitter.ReplaceWindow(self.cp_right, panel)
+            
+            #destroy the old panel and refresh everything
             self.cp_right.Destroy()
             self.cp_right = panel
             self.Refresh()

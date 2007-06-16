@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Thousand Parsec Ruleset Developement Environment launcher script.
 """
