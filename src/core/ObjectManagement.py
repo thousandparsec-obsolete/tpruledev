@@ -25,6 +25,14 @@ from ConfigParser import ConfigParser
 import RDE, Nodes
 import game_objects.ObjectUtilities
 
+if hasattr(str, 'partition'):
+	def partition(str, sep):
+		return str.partition(sep)
+else:
+	def partition(str, sep):
+		a, b = str.split(sep, 1)
+		return (a, sep, b)
+
 class ObjectDatabase(object):
     """
     The object database stores and tracks game objects. It
@@ -66,7 +74,7 @@ class ObjectDatabase(object):
             object_dir = self.save_location + name
             #grab the object names from the filenames and use them to populate
             # the lists of objects
-            self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(self, filename.partition('.')[0], module) for filename in os.listdir(object_dir)]
+            self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(self, partition(filename, '.')[0], module) for filename in os.listdir(object_dir)]
             #print "Object list:"
             #for o in self.objects[name]:
             #    print o
