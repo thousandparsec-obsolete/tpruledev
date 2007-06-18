@@ -53,6 +53,31 @@ class Frame(wx.Frame):
         self.splitter.SplitVertically(self.tree,
                                       self.cp_right,
                                       150)
+        #give ourselves a status bar because we'll be needing it in the near future
+        self.CreateStatusBar()
+        self.SetMenuBar(self.initMenuBar())
+                                      
+    def initMenuBar(self):
+        menubar = wx.MenuBar()
+        
+        #create and append the File menu
+        file_menu = wx.Menu()
+        new_proj_item = file_menu.Append(-1, 'New Project', 'Create a new TP Project')
+        open_proj_item = file_menu.Append(-1, 'Open Project', 'Open an existing TP Project')
+        save_proj_item = file_menu.Append(-1, 'Save Project', 'Save the current TP Project')
+        file_menu.AppendSeparator()
+        quit_item = file_menu.Append(-1, 'Quit', 'Quit the Ruleset Development Evironment')
+        self.Bind(wx.EVT_MENU, self.OnQuit, quit_item)
+        menubar.Append(file_menu, 'File')
+        
+        #create and append the Edit menu
+        edit_menu = wx.Menu()
+        new_object_item = edit_menu.Append(-1, 'New Object', 'Add an object to the project')
+        del_object_item = edit_menu.Append(-1, 'Delete Object', 'Deletes the current object')
+        ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Deletes the current object')
+        menubar.Append(edit_menu, 'Edit')
+        
+        return menubar       
                                       
     def OnLeftDClick(self, event):
         print "Handling double click in Tree!"
@@ -93,4 +118,6 @@ class Frame(wx.Frame):
             self.Update()
             
         event.Skip()
-
+        
+    def OnQuit(self, event):
+        self.Close()

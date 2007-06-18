@@ -3,7 +3,26 @@ Create interface for model and view for objects
 Save config options on app close
 Allow for creation of new projects
 Allow for creation of new objects
+When saving a project and quitting save the last viewed object
+Make a panel to default to on start that describes the RDE
+Make panels for both the Properties and Components
 
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
 Need to have some mapping between the state of the objects inside of the object database and the state of the tree - ordering, highlighting, all such things as that...
+
+Menubar:
+File
+   ->New Project
+   ->Open Project
+   ->Save Project
+   ->Save Project As...
+   ->Quit
+
+Edit
+   -+New Object
+	->Property
+	->Component
+	->...
+   ->Delete Object
+   ->Rename Object

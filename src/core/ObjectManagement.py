@@ -220,7 +220,7 @@ class GameObjectTree(wx.TreeCtrl):
         for obj_name in event.names:
             print "Highlighting object: ", obj_name
             id = self.object_ids[obj_name]
-            self.SetItemBackgroundColour(id, 'RED')
+            self.SetItemBackgroundColour(id, 'GREEN')
     
     def HandleUnHighlight(self, event):
         #todo: error handling
