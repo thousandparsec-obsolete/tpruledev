@@ -41,6 +41,8 @@ class ObjectDatabase(object):
     objects.
     """
     
+    HIGHEMP_ID = 0
+    
     def __init__(self):
         self.config = RDE.GlobalConfig.config
         #hash of object names
@@ -130,19 +132,33 @@ class ObjectDatabase(object):
                 return True
         return False
             
-    def highlight(self, obj_names):
+    def Highlight(self, obj_names, color="RED"):
         #todo: this can be so much more elegant
+        this_id = self.HIGHEMP_ID
+        self.HIGHEMP_ID += 1
         if isinstance(obj_names, list):
-            self.sendODBEvent(ODBHighlight(obj_names))
+            self.sendODBEvent(ODBHighlight(this_id, obj_names, color))
         else:
-            self.sendODBEvent(ODBHighlight([obj_names]))
+            self.sendODBEvent(ODBHighlight(this_id, [obj_names], color))
+        return this_id
         
-    def unhighlight(self, obj_names):
+    def UnHighlight(self, id):
+        #todo: error checking
+        self.sendODBEvent(ODBUnHighlight(id))
+            
+    def Emphasize(self, obj_names, color="BLUE"):
         #todo: this can be so much more elegant
+        this_id = self.HIGHEMP_ID
+        self.HIGHEMP_ID += 1
         if isinstance(obj_names, list):
-            self.sendODBEvent(ODBUnHighlight(obj_names))
+            self.sendODBEvent(ODBEmphasize(this_id, obj_names, color))
         else:
-            self.sendODBEvent(ODBUnHighlight([obj_names]))
+            self.sendODBEvent(ODBEmphasize(this_id, [obj_names], color))
+        return this_id
+        
+    def UnEmphasize(self, id):
+        #todo: error checking
+        self.sendODBEvent(ODBUnEmphasize(id))
     
     def getObjectTypes(self):
         return self.object_modules.keys()
@@ -185,6 +201,8 @@ class ODBEvent(object):
     HIGHLIGHT = 5
     UNHIGHLIGHT = 6
     CLEAR_MARKERS = 7
+    EMPHASIZE = 8
+    UNEMPHASIZE = 9
 
 class ODBInitialize(ODBEvent):
     type = ODBEvent.INIT
@@ -212,17 +230,33 @@ class ODBModify(ODBEvent):
 class ODBHighlight(ODBEvent):
     type = ODBEvent.HIGHLIGHT
     
-    def __init__(self, names):
+    def __init__(self, id, names, color):
+        self.id = id
         self.names = names
+        self.color = color
     
 class ODBUnHighlight(ODBEvent):
     type = ODBEvent.UNHIGHLIGHT
     
-    def __init__(self, names):
-        self.names = names
+    def __init__(self, id):
+        self.id = id
     
 class ODBClearMarkers(ODBEvent):
     type = ODBEvent.CLEAR_MARKERS
+    
+class ODBEmphasize(ODBEvent):
+    type = ODBEvent.EMPHASIZE
+    
+    def __init__(self, id, names, color):
+        self.id = id
+        self.names = names
+        self.color = color
+    
+class ODBUnEmphasize(ODBEvent):
+    type = ODBEvent.UNEMPHASIZE
+    
+    def __init__(self, id):
+        self.id = id
     
     
 class GameObjectTree(wx.TreeCtrl):
@@ -230,6 +264,9 @@ class GameObjectTree(wx.TreeCtrl):
     The default display for game objects. Based on
     a wx.TreeCtrl
     """
+    
+    highlights = {}
+    emphases = {}
     
     def __init__(self, parent, id=-1, object_database = None, pos=wx.DefaultPosition, size=wx.DefaultSize,
                     style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
@@ -265,6 +302,8 @@ class GameObjectTree(wx.TreeCtrl):
             obj_id = self.GetItemParent(preceding_id)
             new_id = self.InsertItem(type_id, preceding_id, event.node.name)
 
+        #make sure we give the new object some PyData and add it to the
+        # treeid hash for objects
         self.object_ids[event.node.name] = new_id
         self.SetPyData(new_id, event.node)
     
@@ -276,23 +315,61 @@ class GameObjectTree(wx.TreeCtrl):
         pass
     
     def HandleHighlight(self, event):
+        """\
+        highlights the given objects in the tree
+        objects is a hash with keys that are the object types
+        and values of object names to highlight
+        """
         #todo: error handling
         print "Handling highlight"
+        self.highlights[event.id] = event.names
         for obj_name in event.names:
             print "Highlighting object: ", obj_name
             id = self.object_ids[obj_name]
-            self.SetItemBackgroundColour(id, 'GREEN')
+            self.SetItemBackgroundColour(id, event.color)
     
     def HandleUnHighlight(self, event):
         #todo: error handling
         print "Handling unhighlight"
-        for obj_name in event.names:
+        #need error handling here, or in the ODB. or both
+        for obj_name in self.highlights.pop(event.id):
             print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, 'WHITE')
     
     def HandleClear(self, event):
-        pass
+        """\
+        clears all highlighting from objects in the tree
+        """
+        for id in self.highlights:
+            self.HandleUnHighlight(ODBUnHighlight(id))
+        for id in self.emphases:
+            self.HandleUnEmphasize(ODBUnEmphasize(id))
+        
+    def HandleEmphasize(self, event):
+        """\
+        highlights the given objects in the tree
+        objects is a hash with keys that are the object types
+        and values of object names to highlight
+        """
+        #todo: error handling
+        print "Handling highlight"
+        self.emphases[event.id] = event.names
+        for obj_name in event.names:
+            print "Highlighting object: ", obj_name
+            id = self.object_ids[obj_name]
+            self.SetItemTextColour(id, 'BLUE')
+            self.SetItemBold(id, True)
+    
+    def HandleUnEmphasize(self, event):
+        #todo: error handling
+        print "Handling unhighlight"
+        #need error checking here too
+        for obj_name in self.emphases.pop(event.id):
+            print "Unhighlighting object: ", obj_name
+            id = self.object_ids[obj_name]
+            self.SetItemTextColour(id, 'BLACK')
+            self.SetItemBold(id, False)
         
     def InitializeTree(self):
         self.root_id = self.AddRoot('root')
@@ -305,20 +382,7 @@ class GameObjectTree(wx.TreeCtrl):
                 object_name = node.name
                 self.object_ids[object_name] = self.AppendItem(self.type_ids[object_type], object_name)
                 self.SetPyData(self.object_ids[object_name], node)
-            
-    def HighlightObjects(self, objects):
-        """
-        highlights the given objects in the tree
-        objects is a hash with keys that are the object types
-        and values of object names to highlight
-        """
-        pass
-        
-    def ClearHighlight(self):
-        """
-        clears all highlighting from objects in the tree
-        """
-        pass
+
     
     #the following methods allow the tree to have its objects
     # sorted using external functions so that objects of a certain
@@ -350,4 +414,6 @@ class GameObjectTree(wx.TreeCtrl):
                  ODBEvent.MODIFY: HandleModify,
                  ODBEvent.HIGHLIGHT: HandleHighlight,
                  ODBEvent.UNHIGHLIGHT: HandleUnHighlight,
-                 ODBEvent.CLEAR_MARKERS: HandleClear}
+                 ODBEvent.CLEAR_MARKERS: HandleClear,
+                 ODBEvent.EMPHASIZE: HandleEmphasize,
+                 ODBEvent.UNEMPHASIZE: HandleUnEmphasize}

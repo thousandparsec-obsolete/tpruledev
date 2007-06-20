@@ -49,7 +49,7 @@ class Panel(wx.Panel):
         for pname, tpcl_cost in component.properties.iteritems():
             prop_names.append(pname)
             prop_list.Insert(str(pname) + " - " + str(tpcl_cost), 0)
-        component.node.object_database.highlight(prop_names)
+        self.high_id = component.node.object_database.Emphasize(prop_names, "BLUE")
         self.addFieldToFlex(flex_sizer, prop_list)
        
         flex_sizer.AddGrowableCol(1) #field column
@@ -77,7 +77,5 @@ class Panel(wx.Panel):
     def cleanup(self):
         print "Cleaning up Component Panel"
         prop_names = []
-        for pname, tpcl_cost in self.component.properties.iteritems():
-            prop_names.append(pname)
-        self.component.node.object_database.unhighlight(prop_names)
+        self.component.node.object_database.UnEmphasize(self.high_id)
         self.component.node.clearObject()

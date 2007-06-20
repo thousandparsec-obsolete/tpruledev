@@ -1,11 +1,16 @@
 Todo:
-Create interface for model and view for objects
-Save config options on app close
+Check validity of objects on loading and highlight those that are incomplete
+Modify the Components to "emphasize" the properties they affect instead of highlighting them
+Allow Components to add and remove Property associations
 Allow for creation of new projects
-Allow for creation of new objects
+----------------------------------------
+Make it possible to add and delete objects through context menus in the object tree
 When saving a project and quitting save the last viewed object
 Make a panel to default to on start that describes the RDE
 Make panels for both the Properties and Components
+Look into providing a way for objects to keep track of who they're associated with, or perhaps just some way to calculate that
+Save config options on app close
+Get the object manipulation methods to accept lists as well as atoms
 
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
@@ -13,6 +18,9 @@ Need to have some mapping between the state of the objects inside of the object 
 
 On wx and Strings:
 wxPython seems to use unicode strings. Hrm. That is a bit of a pain since it messes up sorting. I'll need to make it consistent, I think. Either I need to start using Unicode strings or I need to alwas convert when pulling data from a wx widget.
+
+On Highlighting and Emphasis:
+Save lists of emphasis and highlighting groups? Pass out an ID when a highlight/emphasis is requested and then use that to roll back the changes? Hm.
 
 Menubar:
 File

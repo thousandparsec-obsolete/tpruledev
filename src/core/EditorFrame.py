@@ -112,6 +112,13 @@ class Frame(wx.Frame):
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
         menubar.Append(edit_menu, 'Edit')
         
+        #disable unused menu items
+        new_proj_item.Enable(False)
+        open_proj_item.Enable(False)
+        save_proj_item.Enable(False)
+        
+        ren_object_item.Enable(False)
+        
         return menubar
         
     def OnNewProject(self, event):
