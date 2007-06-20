@@ -98,13 +98,21 @@ def initializeSaveFile(name):
     ofile = open(filename, 'w')
     ofile.write('<component>\n')
     ofile.write('    <name>' + name + '</name>\n')
-    ofile.write('    <component_id></component_id>\n')
-    ofile.write('    <category_id></category_id>\n')
-    ofile.write('    <description></description>\n')
-    ofile.write('    <tpcl_requirements></tpcl_requirements>\n')
+    ofile.write('    <component_id>0</component_id>\n')
+    ofile.write('    <category_id>0</category_id>\n')
+    ofile.write('    <description>0</description>\n')
+    ofile.write('    <tpcl_requirements>(lambda 0)</tpcl_requirements>\n')
     ofile.write('</component>\n')
     ofile.flush()
     ofile.close()
+
+def deleteSaveFile(name):
+    """\
+    Deletes the save file for a Component that has been deleted.
+    """
+    filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
+                                               'Component/' + name + '.xml'
+    os.remove(filename)
 
 def getName():
     return 'Component'

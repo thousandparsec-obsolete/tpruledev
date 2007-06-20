@@ -84,7 +84,12 @@ class ObjectNode(core.Nodes.DatabaseNode):
     
     def __cmp__(self, other):
         if isinstance(other, (ObjectNode, str)):
-            return self.name.__cmp__(other.__str__())
+            if (self.name.__lt__(other.__str__())):
+                return -1
+            elif (self.name.__gt__(other.__str__())):
+                return 1
+            else:
+                return 0
         else:
             return NotImplemented
     
@@ -111,9 +116,6 @@ class ObjectNode(core.Nodes.DatabaseNode):
         self.name = name
         self.object_module = module
         self.object_database = odb
-        
-    def __str__(self):
-        return self.name  
         
     def markModified(self):
         modified = True

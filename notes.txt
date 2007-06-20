@@ -11,6 +11,9 @@ ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
 Need to have some mapping between the state of the objects inside of the object database and the state of the tree - ordering, highlighting, all such things as that...
 
+On wx and Strings:
+wxPython seems to use unicode strings. Hrm. That is a bit of a pain since it messes up sorting. I'll need to make it consistent, I think. Either I need to start using Unicode strings or I need to alwas convert when pulling data from a wx widget.
+
 Menubar:
 File
    ->New Project

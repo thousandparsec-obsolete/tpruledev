@@ -9,6 +9,8 @@ from ConfigParser import ConfigParser
 
 import RDE
 import core.ObjectManagement
+import game_objects.ObjectUtilities
+from core.Exceptions import *
 
 SPLITTER_ID = 101
 
@@ -22,7 +24,16 @@ def GenCreateNewObjHandler(type, frame):
             #add the object to the database
             # it should take care of the rest
             # don't handle errors yet
-            frame.object_database.Add(type, obj_name)
+            try:
+                frame.object_database.Add(type, obj_name.encode('ascii'))
+            except DuplicateObjectError:
+                #there's already a game object with that name
+                wx.MessageBox("A game object already exists with that name!\nPlease use a different name.",
+                    caption="Duplicate Name", style=wx.OK)
+            except NoSuchTypeError:
+                #this should never happen, but...perhaps it could, eh?
+                wx.MessageBox("Contact the author - " + type +  " is not an object type!",
+                    caption="Invalid Type", style=wx.OK)
         event.Skip()
     return f
 
@@ -96,8 +107,9 @@ class Frame(wx.Frame):
             self.Bind(wx.EVT_MENU, GenCreateNewObjHandler(type, self), id)
             
         new_object_item = edit_menu.AppendMenu(-1, 'Create New Object', new_obj_menu, 'Add an object to the project')
-        del_object_item = edit_menu.Append(-1, 'Delete Object', 'Deletes the current object')
-        ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Deletes the current object')
+        del_object_item = edit_menu.Append(-1, 'Delete Object', 'Deletes the currently selected object')
+        self.Bind(wx.EVT_MENU, self.OnDeleteObject, del_object_item)
+        ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
         menubar.Append(edit_menu, 'Edit')
         
         return menubar
@@ -109,9 +121,30 @@ class Frame(wx.Frame):
         else:
             print 'You wanted to create a project called: ', proj_name
             
-    def OnCreateNewObject(self, event):
-        print "event object: ", event.GetEventObject()
-        pass
+    def OnDeleteObject(self, event):
+        try:
+            data = self.tree.GetPyData(self.tree.GetSelection())
+            if isinstance(data, game_objects.ObjectUtilities.ObjectNode):
+                #confirm the delete
+                confirm = wx.MessageBox("Are you sure you want to delete the " + data.object_module.getName() +
+                                " " + data.name + "?", caption="Confirm Delete",
+                                style=wx.OK | wx.CANCEL)
+                if confirm == wx.OK:
+                    #perform the delete
+                    self.object_database.Remove(data.object_module.getName(), data.name)
+                else:
+                    #user changed his mind
+                    pass
+            else:
+                #tell the user he needs to select an object
+                wx.MessageBox("Your selection was invalid! You must\nselect and object to delete.",
+                    caption="Invalid Selection", style=wx.OK)
+                    
+        except wx._core.PyAssertionError:
+            #there was no selection
+            wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
+                caption="Invalid Selection", style=wx.OK)
+            
         
     def CreateNewProject(self, proj_name):
         pass

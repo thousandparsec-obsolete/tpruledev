@@ -84,35 +84,51 @@ class ObjectDatabase(object):
         self.sendODBEvent(ODBInitialize())
 
     def Add(self, obj_type, name):
-        #check that the object type exists
-        if not self.objects.has_key(obj_type):
-            raise NoSuchObjectError(obj_type.__str__())
-        #check that we don't already have an existing object using this name
-        for otype in self.objects:
-            if name in self.objects[otype]:
-                raise DuplicateObjectError(name)
+        #check for duplicate object
+        # also raise error if no such object type
+        if self.ObjectExists(obj_type, name):
+            raise DuplicateObjectError(name)
                 
         #find out where we need to put it and stick it in there
         idx = bisect.bisect(self.objects[obj_type], name)
         print "Adding object " + name
-        print "Object list: ", self.objects[obj_type]
+        print "Object list: ", [o.__str__() for o in self.objects[obj_type]]
         print "Index of " + name + ": ", idx
         node = game_objects.ObjectUtilities.ObjectNode(self, name, self.object_modules[obj_type])
         self.objects[obj_type].insert(idx, node)
+        print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
         
         #create file
         self.object_modules[obj_type].initializeSaveFile(name)
         
         #let our listeners know we added a new object and let them
         # know the parent in terms of alphabetical order
-        self.sendODBEvent(ODBAdd(node, self.objects[obj_type][idx-1].name))
+        if idx == 0:
+            #if we're inserting at the start there is no preceding element
+            self.sendODBEvent(ODBAdd(node, obj_type, None))
+        else:
+            self.sendODBEvent(ODBAdd(node, obj_type, self.objects[obj_type][idx-1].name))
 
-    def remove(self, obj_type, obj):
-        try:
-            self.objects[obj_type].remove(obj)
-        except:
-            #no such object - so...uh...through an exception, hey?
-            print "No such object to be removed."
+    def Remove(self, obj_type, name):
+        if not self.ObjectExists(obj_type, name):
+            raise NoSuchObjectError(name)
+            
+        print "Removing an object"
+        print "Object List Before: ", [o.__str__() for o in self.objects[obj_type]]
+        self.objects[obj_type].remove(name)
+        self.object_modules[obj_type].deleteSaveFile(name)
+        print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
+        self.sendODBEvent(ODBRemove(name))
+           
+    def ObjectExists(self, obj_type, name):
+        #check that the object type exists
+        if not self.objects.has_key(obj_type):
+            raise NoSuchTypeError(obj_type.__str__())
+        #check that we don't already have an existing object using this name
+        for otype in self.objects:
+            if name in self.objects[otype]:
+                return True
+        return False
             
     def highlight(self, obj_names):
         #todo: this can be so much more elegant
@@ -176,15 +192,16 @@ class ODBInitialize(ODBEvent):
 class ODBAdd(ODBEvent):
     type = ODBEvent.ADD
     
-    def __init__(self, node, parent):
+    def __init__(self, node, type, preceding):
         self.node = node
-        self.parent = parent
+        self.obj_type = type
+        self.preceding = preceding
 
 class ODBRemove(ODBEvent):
     type = ODBEvent.REMOVE
     
-    def __init__(self, names):
-        self.names = names
+    def __init__(self, name):
+        self.name = name
     
 class ODBModify(ODBEvent):
     type = ODBEvent.MODIFY
@@ -235,14 +252,25 @@ class GameObjectTree(wx.TreeCtrl):
     def HandleAdd(self, event):
         print "Adding an element to the tree based on an Add event"
         print "Object Name: ", event.node.name
-        print "Parent Name: ", event.parent
-        preceding_id = self.object_ids[event.parent]
-        obj_id = self.GetItemParent(preceding_id)
-        new_id = self.InsertItem(obj_id, preceding_id, event.node.name)
+        print "Type: ", event.obj_type
+        print "Preceding Object: ", event.preceding
+        type_id = self.type_ids[event.obj_type]
+        new_id = None
+        
+        if event.preceding == None:
+            #node belongs at the beginning of the list of objects
+            new_id = self.PrependItem(type_id, event.node.name)
+        else:
+            preceding_id = self.object_ids[event.preceding]
+            obj_id = self.GetItemParent(preceding_id)
+            new_id = self.InsertItem(type_id, preceding_id, event.node.name)
+
+        self.object_ids[event.node.name] = new_id
         self.SetPyData(new_id, event.node)
     
     def HandleRemove(self, event):
-        pass
+        obj_id = self.object_ids[event.name]
+        self.Delete(obj_id)
     
     def HandleModify(self, event):
         pass
