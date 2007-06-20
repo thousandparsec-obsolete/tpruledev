@@ -11,9 +11,22 @@ import RDE
 import core.ObjectManagement
 
 SPLITTER_ID = 101
-TREE_ID = 110
 
-class Frame(wx.Frame):    
+def GenCreateNewObjHandler(type, frame):
+    def f(event):
+        obj_name = wx.GetTextFromUser('Enter the name of the new ' + type + ':', 'Input Object Name')
+        if obj_name == '':
+            #cancel
+            pass
+        else:
+            #add the object to the database
+            # it should take care of the rest
+            # don't handle errors yet
+            frame.object_database.Add(type, obj_name)
+        event.Skip()
+    return f
+
+class Frame(wx.Frame):
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
@@ -47,7 +60,7 @@ class Frame(wx.Frame):
         self.tree.SetObjectDatabase(self.object_database)
 	    #self.tree = self.object_database.getTree(self.splitter)
         self.tree.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDClick)
-        self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.onTreeSelect)
+        self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
         
         self.splitter.SetMinimumPaneSize(140)
         self.splitter.SplitVertically(self.tree,
@@ -63,6 +76,7 @@ class Frame(wx.Frame):
         #create and append the File menu
         file_menu = wx.Menu()
         new_proj_item = file_menu.Append(-1, 'New Project', 'Create a new TP Project')
+        self.Bind(wx.EVT_MENU, self.OnNewProject, new_proj_item)
         open_proj_item = file_menu.Append(-1, 'Open Project', 'Open an existing TP Project')
         save_proj_item = file_menu.Append(-1, 'Save Project', 'Save the current TP Project')
         file_menu.AppendSeparator()
@@ -72,12 +86,35 @@ class Frame(wx.Frame):
         
         #create and append the Edit menu
         edit_menu = wx.Menu()
-        new_object_item = edit_menu.Append(-1, 'New Object', 'Add an object to the project')
+        #create the items for creating new objects
+        new_obj_menu = wx.Menu()
+        self.obj_create_menu_items = {}
+        for type in self.config.get('Object Types', 'types').split(', '):
+            type = type.strip()
+            id = new_obj_menu.Append(-1, type)
+            self.obj_create_menu_items[type] = id
+            self.Bind(wx.EVT_MENU, GenCreateNewObjHandler(type, self), id)
+            
+        new_object_item = edit_menu.AppendMenu(-1, 'Create New Object', new_obj_menu, 'Add an object to the project')
         del_object_item = edit_menu.Append(-1, 'Delete Object', 'Deletes the current object')
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Deletes the current object')
         menubar.Append(edit_menu, 'Edit')
         
-        return menubar       
+        return menubar
+        
+    def OnNewProject(self, event):
+        proj_name = wx.GetTextFromUser('Enter the name of the ruleset:', 'Input Ruleset Name')
+        if proj_name == '':
+            print 'User cancelled new project...'
+        else:
+            print 'You wanted to create a project called: ', proj_name
+            
+    def OnCreateNewObject(self, event):
+        print "event object: ", event.GetEventObject()
+        pass
+        
+    def CreateNewProject(self, proj_name):
+        pass
                                       
     def OnLeftDClick(self, event):
         print "Handling double click in Tree!"
@@ -91,7 +128,7 @@ class Frame(wx.Frame):
             if hasattr(obj, "compareFunction"):
                 self.tree.SortChildrenByFunction(parent, obj.compareFunction)
     
-    def onTreeSelect(self, event):
+    def OnTreeSelect(self, event):
         self.curr_node_id = event.GetItem()
         if self.curr_node_id:
             print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)

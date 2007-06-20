@@ -20,10 +20,11 @@ views.
 """
 
 import os, wx
-import ConfigParser
+import ConfigParser, bisect
 from ConfigParser import ConfigParser
 import RDE, Nodes
 import game_objects.ObjectUtilities
+from core.Exceptions import *
 
 if hasattr(str, 'partition'):
 	def partition(str, sep):
@@ -75,16 +76,36 @@ class ObjectDatabase(object):
             #grab the object names from the filenames and use them to populate
             # the lists of objects
             self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(self, partition(filename, '.')[0], module) for filename in os.listdir(object_dir)]
+            self.objects[name].sort()
             #print "Object list:"
             #for o in self.objects[name]:
             #    print o
         #alert listeners to happy initialization
         self.sendODBEvent(ODBInitialize())
 
-    def add(self, obj_type, obj):
+    def Add(self, obj_type, name):
+        #check that the object type exists
         if not self.objects.has_key(obj_type):
-            self.objects[obj_type] = []
-        self.objects[obj_type].append(obj)
+            raise NoSuchObjectError(obj_type.__str__())
+        #check that we don't already have an existing object using this name
+        for otype in self.objects:
+            if name in self.objects[otype]:
+                raise DuplicateObjectError(name)
+                
+        #find out where we need to put it and stick it in there
+        idx = bisect.bisect(self.objects[obj_type], name)
+        print "Adding object " + name
+        print "Object list: ", self.objects[obj_type]
+        print "Index of " + name + ": ", idx
+        node = game_objects.ObjectUtilities.ObjectNode(self, name, self.object_modules[obj_type])
+        self.objects[obj_type].insert(idx, node)
+        
+        #create file
+        self.object_modules[obj_type].initializeSaveFile(name)
+        
+        #let our listeners know we added a new object and let them
+        # know the parent in terms of alphabetical order
+        self.sendODBEvent(ODBAdd(node, self.objects[obj_type][idx-1].name))
 
     def remove(self, obj_type, obj):
         try:
@@ -155,8 +176,9 @@ class ODBInitialize(ODBEvent):
 class ODBAdd(ODBEvent):
     type = ODBEvent.ADD
     
-    def __init__(self, names):
-        self.names = names
+    def __init__(self, node, parent):
+        self.node = node
+        self.parent = parent
 
 class ODBRemove(ODBEvent):
     type = ODBEvent.REMOVE
@@ -201,9 +223,6 @@ class GameObjectTree(wx.TreeCtrl):
     def SetObjectDatabase(self, odb):
         self.odb = odb
              
-    def AddObject(self, type, name):
-        pass
-        
     def RemoveObject(self, type, name):
         pass
         
@@ -214,7 +233,13 @@ class GameObjectTree(wx.TreeCtrl):
         self.InitializeTree()
     
     def HandleAdd(self, event):
-        pass
+        print "Adding an element to the tree based on an Add event"
+        print "Object Name: ", event.node.name
+        print "Parent Name: ", event.parent
+        preceding_id = self.object_ids[event.parent]
+        obj_id = self.GetItemParent(preceding_id)
+        new_id = self.InsertItem(obj_id, preceding_id, event.node.name)
+        self.SetPyData(new_id, event.node)
     
     def HandleRemove(self, event):
         pass

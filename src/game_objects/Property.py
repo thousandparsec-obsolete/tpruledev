@@ -112,6 +112,25 @@ class Object(ObjectUtilities.GameObject):
     def OnEditPanelSave(self):
         self.storeToDir("persistence/Property")
 
+def initializeSaveFile(name):
+    """\
+    Creates an empty save file for the Component with the given name
+    """
+    filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
+                                               'Property/' + name + '.xml'
+    ofile = open(filename, 'w')
+    ofile.write('<property>\n')
+    ofile.write('    <name>' + name + '</name>\n')
+    ofile.write('    <property_id></property_id>\n')
+    ofile.write('    <category_id></category_id>\n')
+    ofile.write('    <rank></rank>\n')
+    ofile.write('    <display_text></display_text>\n')
+    ofile.write('    <tpcl_display></tpcl_display>\n')
+    ofile.write('    <tpcl_requires></tpcl_requires>\n')
+    ofile.write('</property>\n')	
+    ofile.flush()
+    ofile.close()
+
 def getName():
     return 'Property'
 

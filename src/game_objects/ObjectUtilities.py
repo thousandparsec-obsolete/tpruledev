@@ -42,6 +42,62 @@ class ObjectNode(core.Nodes.DatabaseNode):
     of changes to the game object.
     """
     
+    ###########################################################
+    #Comparison functions, this way we can wrap our 
+    # objects in nodes and still use them fairly transparently
+    ############################################################
+    def __lt__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__lt__(other.__str__())
+        else:
+            return NotImplemented
+    
+    def __le__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__le__(other.__str__())
+        else:
+            return NotImplemented
+    
+    def __gt__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__gt__(other.__str__())
+        else:
+            return NotImplemented
+    
+    def __ge__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__ge__(other.__str__())
+        else:
+            return NotImplemented
+    
+    def __eq__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__eq__(other.__str__())
+        else:
+            return NotImplemented
+    
+    def __ne__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__ne__(other.__str__())
+        else:
+            return NotImplemented
+    
+    def __cmp__(self, other):
+        if isinstance(other, (ObjectNode, str)):
+            return self.name.__cmp__(other.__str__())
+        else:
+            return NotImplemented
+    
+    #so that we can hash these when necessary
+    def __hash__(self):
+        return self.name.__hash__()
+    
+    ####################
+    #String function for easy representation and comparison
+    ####################
+    def __str__(self):
+        return self.name
+    
     name=""
     modified=False
     highlighted=False

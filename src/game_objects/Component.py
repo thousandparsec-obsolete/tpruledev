@@ -88,8 +88,27 @@ class Object(ObjectUtilities.GameObject):
     def addFieldToFlex(self, flex, field):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
 
+
+def initializeSaveFile(name):
+    """\
+    Creates an empty save file for the Component with the given name
+    """
+    filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
+                                               'Component/' + name + '.xml'
+    ofile = open(filename, 'w')
+    ofile.write('<component>\n')
+    ofile.write('    <name>' + name + '</name>\n')
+    ofile.write('    <component_id></component_id>\n')
+    ofile.write('    <category_id></category_id>\n')
+    ofile.write('    <description></description>\n')
+    ofile.write('    <tpcl_requirements></tpcl_requirements>\n')
+    ofile.write('</component>\n')
+    ofile.flush()
+    ofile.close()
+
 def getName():
     return 'Component'
+
 
 def generateCode(outdir, props):
     print "Called Component's generateCode function"
