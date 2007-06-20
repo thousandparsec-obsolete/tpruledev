@@ -4,6 +4,7 @@ a Component object
 """
 
 import wx
+from core.Exceptions import NoSuchIDError
 
 class Panel(wx.Panel):
     """
@@ -77,5 +78,9 @@ class Panel(wx.Panel):
     def cleanup(self):
         print "Cleaning up Component Panel"
         prop_names = []
-        self.component.node.object_database.UnEmphasize(self.high_id)
+        try:
+            self.component.node.object_database.UnEmphasize(self.high_id)
+        except NoSuchIDError:
+            #someone already got rid of our emphasis...strange but OK
+            pass
         self.component.node.clearObject()

@@ -17,3 +17,8 @@ class NoSuchObjectError(Exception):
     """\
     Used to indicate that an object that was requested does not exist.
     """
+    
+class NoSuchIDError(Exception):
+    """\
+    Used to indicate that an ID used in a function call was invalid.
+    """

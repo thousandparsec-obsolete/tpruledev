@@ -42,6 +42,8 @@ class ObjectDatabase(object):
     """
     
     HIGHEMP_ID = 0
+    emphases = {}
+    highlights = {}
     
     def __init__(self):
         self.config = RDE.GlobalConfig.config
@@ -136,6 +138,7 @@ class ObjectDatabase(object):
         #todo: this can be so much more elegant
         this_id = self.HIGHEMP_ID
         self.HIGHEMP_ID += 1
+        self.highlights[this_id] = (obj_names, color)
         if isinstance(obj_names, list):
             self.sendODBEvent(ODBHighlight(this_id, obj_names, color))
         else:
@@ -143,13 +146,20 @@ class ObjectDatabase(object):
         return this_id
         
     def UnHighlight(self, id):
-        #todo: error checking
-        self.sendODBEvent(ODBUnHighlight(id))
+        if not id in self.emphases.keys():
+            raise NoSuchIDError(id)
+        else:    
+            self.sendODBEvent(ODBUnHighlight(id))
+            self.highlights.pop(id)
+        
+    def GetHighlightFor(self, id):
+        return self.highlights[id]
             
     def Emphasize(self, obj_names, color="BLUE"):
         #todo: this can be so much more elegant
         this_id = self.HIGHEMP_ID
         self.HIGHEMP_ID += 1
+        self.emphases[this_id] = (obj_names, color)
         if isinstance(obj_names, list):
             self.sendODBEvent(ODBEmphasize(this_id, obj_names, color))
         else:
@@ -157,8 +167,14 @@ class ObjectDatabase(object):
         return this_id
         
     def UnEmphasize(self, id):
-        #todo: error checking
-        self.sendODBEvent(ODBUnEmphasize(id))
+        if not id in self.emphases.keys():
+            raise NoSuchIDError(id)
+        else:    
+            self.sendODBEvent(ODBUnEmphasize(id))
+            self.emphases.pop(id)
+        
+    def GetEmphasisFor(self, id):
+        return self.emphases[id]
     
     def getObjectTypes(self):
         return self.object_modules.keys()
@@ -265,9 +281,6 @@ class GameObjectTree(wx.TreeCtrl):
     a wx.TreeCtrl
     """
     
-    highlights = {}
-    emphases = {}
-    
     def __init__(self, parent, id=-1, object_database = None, pos=wx.DefaultPosition, size=wx.DefaultSize,
                     style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
                     name=wx.TreeCtrlNameStr):
@@ -322,7 +335,6 @@ class GameObjectTree(wx.TreeCtrl):
         """
         #todo: error handling
         print "Handling highlight"
-        self.highlights[event.id] = event.names
         for obj_name in event.names:
             print "Highlighting object: ", obj_name
             id = self.object_ids[obj_name]
@@ -332,7 +344,7 @@ class GameObjectTree(wx.TreeCtrl):
         #todo: error handling
         print "Handling unhighlight"
         #need error handling here, or in the ODB. or both
-        for obj_name in self.highlights.pop(event.id):
+        for obj_name in self.odb.GetHighlightFor(event.id)[0]:
             print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, 'WHITE')
@@ -354,7 +366,6 @@ class GameObjectTree(wx.TreeCtrl):
         """
         #todo: error handling
         print "Handling highlight"
-        self.emphases[event.id] = event.names
         for obj_name in event.names:
             print "Highlighting object: ", obj_name
             id = self.object_ids[obj_name]
@@ -365,7 +376,7 @@ class GameObjectTree(wx.TreeCtrl):
         #todo: error handling
         print "Handling unhighlight"
         #need error checking here too
-        for obj_name in self.emphases.pop(event.id):
+        for obj_name in self.odb.GetEmphasisFor(event.id)[0]:
             print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLACK')
