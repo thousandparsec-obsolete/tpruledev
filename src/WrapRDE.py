@@ -4,9 +4,9 @@
 Wraps the RDE in PyCrust for interactive development and testing
 """
 
-import wx
+import wx, sys
 from wx.py import PyWrap
-from RDE import RDE
+import RDE
 
-rde = RDE(redirect=False)
+rde = RDE.App(redirect=False)
 PyWrap.wrap(rde)

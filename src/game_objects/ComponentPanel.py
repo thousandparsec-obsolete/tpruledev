@@ -5,6 +5,7 @@ a Component object
 
 import wx
 from core.Exceptions import NoSuchIDError
+import gui.TextCtrl
 
 class Panel(wx.Panel):
     """
@@ -39,8 +40,8 @@ class Panel(wx.Panel):
 
         tpcl_req_label = self.createLabel("TPCL Requirements Function:")
         self.addLabelToFlex(flex_sizer, tpcl_req_label)
-        tpcl_req_field = self.createField(str(component.tpcl_requirements))
-        self.addFieldToFlex(flex_sizer, tpcl_req_field)
+        tpcl_req_stc = gui.TextCtrl.SchemeSTC(self, -1, str(component.tpcl_requirements))
+        self.addFieldToFlex(flex_sizer, tpcl_req_stc)
 
         props_label = self.createLabel("Associated Properties:")
         self.addLabelToFlex(flex_sizer, props_label)

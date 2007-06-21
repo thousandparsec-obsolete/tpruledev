@@ -4,7 +4,7 @@ EditorFrame.py
  editor, but for the time being will serve as a testbed.
 """
 
-import wx, os, ConfigParser
+import wx, os, ConfigParser, sys
 from ConfigParser import ConfigParser
 
 import RDE
@@ -45,7 +45,7 @@ class Frame(wx.Frame):
         #import configuration settings, will build on this as is necessary
         RDE.GlobalConfig.config = ConfigParser()
         self.config = RDE.GlobalConfig.config
-        self.config.readfp(open('tpconf'))
+        self.config.readfp(open(sys.path[0] + '/tpconf'))
         self.config.read(self.config.get('DEFAULT', 'current_project'))
         self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
         

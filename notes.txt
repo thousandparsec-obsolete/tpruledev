@@ -1,8 +1,7 @@
 Todo:
-Check validity of objects on loading and highlight those that are incomplete
-Modify the Components to "emphasize" the properties they affect instead of highlighting them
 Allow Components to add and remove Property associations
 Allow for creation of new projects
+Check validity of objects on loading and highlight those that are incomplete
 ----------------------------------------
 Make it possible to add and delete objects through context menus in the object tree
 When saving a project and quitting save the last viewed object
