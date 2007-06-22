@@ -20,40 +20,50 @@ class Panel(wx.Panel):
         
         name_label = self.createLabel("Name:")
         self.addLabelToFlex(flex_sizer, name_label)
-        name_field = self.createField(str(component.name))
-        self.addFieldToFlex(flex_sizer, name_field)
+        self.name_field = self.createField(str(component.name))
+        self.addFieldToFlex(flex_sizer, self.name_field)
 
         comp_id_label = self.createLabel("Component ID:")
         self.addLabelToFlex(flex_sizer, comp_id_label)
-        comp_id_field = self.createField(str(component.component_id))
-        self.addFieldToFlex(flex_sizer, comp_id_field)
+        self.comp_id_field = self.createField(str(component.component_id))
+        self.addFieldToFlex(flex_sizer, self.comp_id_field)
 
         category_id_label = self.createLabel("Category ID:")
         self.addLabelToFlex(flex_sizer, category_id_label)
-        category_id_field = self.createField(str(component.category_id))
-        self.addFieldToFlex(flex_sizer, category_id_field)
+        self.category_id_field = self.createField(str(component.category_id))
+        self.addFieldToFlex(flex_sizer, self.category_id_field)
 
         desc_label = self.createLabel("Description:")
         self.addLabelToFlex(flex_sizer, desc_label)
-        desc_field = self.createField(str(component.description))
-        self.addFieldToFlex(flex_sizer, desc_field)
+        self.desc_field = self.createField(str(component.description))
+        self.addFieldToFlex(flex_sizer, self.desc_field)
 
         tpcl_req_label = self.createLabel("TPCL Requirements Function:")
         self.addLabelToFlex(flex_sizer, tpcl_req_label)
-        tpcl_req_stc = gui.TextCtrl.SchemeSTC(self, -1, str(component.tpcl_requirements))
-        self.addFieldToFlex(flex_sizer, tpcl_req_stc)
+        self.tpcl_req_stc = gui.TextCtrl.SchemeSTC(self, -1, str(component.tpcl_requirements))
+        self.addFieldToFlex(flex_sizer, self.tpcl_req_stc)
 
         props_label = self.createLabel("Associated Properties:")
         self.addLabelToFlex(flex_sizer, props_label)
-        #TODO make this into a ListCtrl
-        prop_list = wx.ListBox(self, wx.ID_ANY)
+        #TODO make this into a ListCtrl?
+        self.prop_list = wx.ListBox(self, wx.ID_ANY, style = wx.ALIGN_RIGHT)
+        prop_add_button = wx.Button(self, wx.ID_ANY, "Add Property")
+        prop_remove_button = wx.Button(self, wx.ID_ANY, "Remove Property")
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        button_sizer.Add(prop_add_button)
+        button_sizer.Add((5,5))
+        button_sizer.Add(prop_remove_button)
+        prop_sizer = wx.BoxSizer(wx.VERTICAL)
+        prop_sizer.Add(self.prop_list, 1, wx.EXPAND | wx.ALL)
+        prop_sizer.Add((5,5))
+        prop_sizer.Add(button_sizer, flag = wx.ALIGN_RIGHT)
         prop_names = []
         #todo: fix display here
         for pname, tpcl_cost in component.properties.iteritems():
             prop_names.append(pname)
-            prop_list.Insert(str(pname) + " - " + str(tpcl_cost), 0)
+            self.prop_list.Insert(str(pname), 0)
         self.high_id = component.node.object_database.Emphasize(prop_names, "BLUE")
-        self.addFieldToFlex(flex_sizer, prop_list)
+        self.addFieldToFlex(flex_sizer, prop_sizer)
        
         flex_sizer.AddGrowableCol(1) #field column
         flex_sizer.AddGrowableRow(4) #tpcl_requirements function
@@ -64,6 +74,15 @@ class Panel(wx.Panel):
         border2 = wx.BoxSizer(wx.VERTICAL)
         border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
         self.SetSizer(border2)
+        
+    def OnDClickProperty(self, event):
+        pass
+        
+    def OnAddProperty(self, event):
+        pass
+        
+    def OnRemoveProperty(self, event):
+        pass
         
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
@@ -79,7 +98,6 @@ class Panel(wx.Panel):
         
     def cleanup(self):
         print "Cleaning up Component Panel"
-        prop_names = []
         try:
             self.component.node.object_database.UnEmphasize(self.high_id)
         except NoSuchIDError:

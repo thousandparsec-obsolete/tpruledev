@@ -286,7 +286,7 @@ class GameObjectTree(wx.TreeCtrl):
     """
     
     def __init__(self, parent, id=-1, object_database = None, pos=wx.DefaultPosition, size=wx.DefaultSize,
-                    style=wx.TR_DEFAULT_STYLE, validator=wx.DefaultValidator,
+                    style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
                     name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
         self.odb = object_database
