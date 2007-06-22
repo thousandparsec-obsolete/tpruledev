@@ -76,7 +76,7 @@ class ObjectDatabase(object):
         #print "Trying to dynamically load objects from storage"
         for name, module in self.object_modules.iteritems():
             print "Loading object names for object type: " + name
-            object_dir = self.save_location + name
+            object_dir = os.path.join(self.save_location, name)
             #grab the object names from the filenames and use them to populate
             # the lists of objects
             self.objects[name] = [game_objects.ObjectUtilities.ObjectNode(self, partition(filename, '.')[0], module) for filename in os.listdir(object_dir)]
@@ -387,7 +387,6 @@ class GameObjectTree(wx.TreeCtrl):
         
     def HandleUnInit(self, event):
         pass
-        
         
     def InitializeTree(self):
         self.type_ids = {}

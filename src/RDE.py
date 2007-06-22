@@ -19,6 +19,9 @@ class App(wx.App):
         GlobalConfig.config = ConfigParser.ConfigParser()
         return True
         
+def generateEditPanel(parent):
+    return generateInfoPanel(parent)
+
 def generateInfoPanel(parent):
     print "Generating panel for RDE Module."
     panel = wx.Panel(parent, wx.ID_ANY)

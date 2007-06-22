@@ -42,15 +42,11 @@ def GenCreateNewObjHandler(type, frame):
     return f
 
 class Frame(wx.Frame):
+    project_active = False
+
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
-        #self.content_panel = wx.Panel(self, wx.ID_ANY)
-        #self.active_panel = None
-        #self.content_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        #stretcher = wx.BoxSizer(wx.VERTICAL)
-        #stretcher.Add(self.content_sizer, 1, wx.ALL | wx.EXPAND, 0)
-        #self.content_panel.SetSizer(stretcher)
             
         #import configuration settings, will build on this as is necessary
         RDE.GlobalConfig.config = ConfigParser()
@@ -58,28 +54,63 @@ class Frame(wx.Frame):
         self.config.readfp(open(os.path.join(sys.path[0], 'tpconf')))
         
         #check to see if there's a current project that we can load
-        #if self.config.has_option('DEFAULT', 'current_project'):
-        #    self.config.read(self.config.get('DEFAULT', 'current_project'))
-        #    self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))                
-        #else:
-        
-        self.config.read(self.config.get('DEFAULT', 'current_project'))
-        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))            
-        
-        #initialize odbase and gui components
-        self.object_database = core.ObjectManagement.ObjectDatabase()
         self.initGUI()
-
-        #load the object nodes to fill the tree
-        self.object_database.loadObjectNodes()
-        self.curr_node_id = None
+        if self.config.has_option('DEFAULT', 'current_project'):
+            self.initProjectGUI(self.config.get('DEFAULT', 'current_project'))
+        else:
+            self.initRDEInfo()
+        
         self.Show(True)
 
     def initGUI(self):
-        self.splitter = wx.SplitterWindow(self, SPLITTER_ID,
+        #initialize backbone of GUI
+        self.content_panel = wx.Panel(self, wx.ID_ANY)
+        self.active_panel = None
+        self.content_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        stretcher = wx.BoxSizer(wx.VERTICAL)
+        stretcher.Add(self.content_sizer, 1, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER, 0)
+        self.content_panel.SetSizer(stretcher)
+
+        #create handy interface elements
+        self.CreateStatusBar()
+        self.SetMenuBar(self.initMenuBar())
+
+        
+    def clearGUI(self):
+        if self.project_active:
+            self.cleanupCurrentProject()
+            
+        self.active_panel = None
+        for child in self.content_panel.GetChildren():
+            child.Hide()
+            self.content_sizer.Remove(child)
+            child.Destroy()
+            del child
+                
+    def initRDEInfo(self):
+        self.clearGUI()
+        self.project_active = False
+        self.SetTitle("Thousand Parsec Ruleset Development Environment")
+        self.active_panel = RDE.generateInfoPanel(self.content_panel)
+        self.content_sizer.Add(self.active_panel, 1, wx.ALL | wx.EXPAND, 0)
+        self.content_panel.Layout()
+        
+    def initProjectGUI(self, project_file):
+        self.clearGUI()
+        self.project_active = True
+        
+        #read in the project info
+        self.config.read(project_file)
+        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
+        
+        #initialize odbase and gui components
+        self.object_database = core.ObjectManagement.ObjectDatabase()       
+        
+        self.splitter = wx.SplitterWindow(self.content_panel, SPLITTER_ID,
                                           style=wx.SP_NO_XP_THEME |
                                           wx.SP_3DSASH | wx.BORDER |
                                           wx.SP_3D)
+        self.content_sizer.Add(self.splitter, 1, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER, 0)
         self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
         self.cp_right.SetBackgroundColour("black")
         
@@ -91,22 +122,17 @@ class Frame(wx.Frame):
         self.splitter.SplitVertically(self.tree,
                                       self.cp_right,
                                       200)
-
-        self.CreateStatusBar()
-        self.SetMenuBar(self.initMenuBar())
-    
-    def initProjectGUI(self):
-        pass
+                                      
+        self.object_database.loadObjectNodes()
+        self.curr_node_id = None
+        self.content_panel.Layout()
         
-        
-    def initNoProjectGUI(self):
-        if self.active_panel != None:
-            self.active_panel.Hide()
-            self.content_sizer.Remove(self.active_panel)
-            
-        self.active_panel = RDE.generateInfoPanel(self.content_panel)
-        self.content_size.Add(self.active_panel)
-        #self.content_panel.
+    def cleanupCurrentProject(self):
+        del self.object_database
+        for child in self.splitter.GetChildren():
+            child.Hide()
+            child.Destroy()
+            del child
                                       
     def initMenuBar(self):
         menubar = wx.MenuBar()
@@ -116,6 +142,7 @@ class Frame(wx.Frame):
         new_proj_item = file_menu.Append(-1, 'New Project', 'Create a new TP Project')
         self.Bind(wx.EVT_MENU, self.OnNewProject, new_proj_item)
         open_proj_item = file_menu.Append(-1, 'Open Project', 'Open an existing TP Project')
+        self.Bind(wx.EVT_MENU, self.OnOpenProject, open_proj_item)
         del_proj_item = file_menu.Append(-1, 'Delete Project', 'Delete the current TP Project')
         self.Bind(wx.EVT_MENU, self.OnDeleteProject, del_proj_item)
         save_proj_item = file_menu.Append(-1, 'Save Project', 'Save the current TP Project')
@@ -142,8 +169,6 @@ class Frame(wx.Frame):
         menubar.Append(edit_menu, 'Edit')
         
         #disable unused menu items
-        #new_proj_item.Enable(False)
-        open_proj_item.Enable(False)
         save_proj_item.Enable(False)
         
         ren_object_item.Enable(False)
@@ -164,12 +189,26 @@ class Frame(wx.Frame):
                 try:
                     #create project dir and config
                     core.ProjectManagement.createNewProject(dir_dialog.GetPath(), proj_name,
-                                                self.object_database.getObjectTypes())
+                                                self.config.get('Object Types', 'types').split(', '))
                 except DuplicateProjectError:
                     wx.MessageBox("A project with that name already exists in that location!",
                                   caption = "Duplicate Project Error", style=wx.OK)
             dir_dialog.Destroy()
             #switch to project
+            self.initProjectGUI(os.path.join(dir_dialog.GetPath(), proj_name, 'tprde.cfg'))
+            
+    def OnOpenProject(self, event):
+        #get project directory
+        dir_dialog = wx.DirDialog(None, "Select the project directory:",
+            style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
+        if dir_dialog.ShowModal() == wx.ID_OK:
+            if 'tprde.cfg' in os.listdir(dir_dialog.GetPath()):
+                self.initProjectGUI(os.path.join(dir_dialog.GetPath(), 'tprde.cfg'))
+            else:
+                x.MessageBox("You must select a valid TP-RDE Project Folder!",
+                                  caption = "Invalid Project Folder!", style=wx.OK)
+        else:
+            return
             
     def OnDeleteProject(self, event):
         #confirm project deletion
@@ -181,6 +220,10 @@ class Frame(wx.Frame):
                 style=wx.OK)
             
     def OnDeleteObject(self, event):
+        if not self.project_active:
+            wx.MessageBox("You must have an open porject to delete an object!",
+                    caption="Invalid State", style=wx.OK)
+            return
         try:
             data = self.tree.GetPyData(self.tree.GetSelection())
             if isinstance(data, game_objects.ObjectUtilities.ObjectNode):
@@ -203,14 +246,7 @@ class Frame(wx.Frame):
             #there was no selection
             wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
                 caption="Invalid Selection", style=wx.OK)
-            
-    def SetCurrentProject(self, project_cfg):
-        self.object_databse.Uninitialize()
-        self.config.read(project_cfg)
-        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
-        self.object_database.loadObjectNodes()
-        pass
-    
+     
     def OnTreeSelect(self, event):
         self.curr_node_id = event.GetItem()
         if self.curr_node_id:
