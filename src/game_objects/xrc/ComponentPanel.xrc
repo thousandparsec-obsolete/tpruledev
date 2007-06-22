@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="cp1252"?>
+<resource>
+  <object class="wxPanel" name="PANEL1">
+    <object class="wxFlexGridSizer">
+      <cols>2</cols>
+      <rows>6</rows>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Name:</label>
+        </object>
+        <flag>wxALIGN_RIGHT|wxALIGN_TOP</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxTextCtrl">
+          <style></style>
+        </object>
+        <flag>wxGROW</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Component ID:</label>
+        </object>
+        <flag>wxALIGN_RIGHT|wxALIGN_TOP</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxTextCtrl"/>
+        <flag>wxGROW</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Category ID:</label>
+        </object>
+        <flag>wxALIGN_RIGHT|wxALIGN_TOP</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxTextCtrl"/>
+        <flag>wxGROW</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Description:</label>
+        </object>
+        <flag>wxALIGN_RIGHT|wxALIGN_TOP</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxTextCtrl"/>
+        <flag>wxGROW</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>TPCL Requirements Function:</label>
+        </object>
+        <flag>wxALIGN_RIGHT|wxALIGN_TOP</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxTextCtrl">
+          <style>wxTE_MULTILINE</style>
+        </object>
+        <option>1</option>
+        <flag>wxALL|wxGROW</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStaticText">
+          <label>Associated Properties</label>
+        </object>
+        <flag>wxALIGN_RIGHT|wxALIGN_TOP</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <object class="wxListBox">
+              <content/>
+            </object>
+            <flag>wxALL|wxEXPAND</flag>
+          </object>
+          <object class="spacer">
+            <size>5,5</size>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <orient>wxHORIZONTAL</orient>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>Add Property</label>
+                </object>
+              </object>
+              <object class="spacer">
+                <size>5,5</size>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>Remove Property</label>
+                </object>
+              </object>
+            </object>
+            <flag>wxALIGN_RIGHT</flag>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxALL|wxGROW</flag>
+      </object>
+      <vgap>5</vgap>
+      <hgap>5</hgap>
+      <growablerows>4</growablerows>
+      <growablerows>5</growablerows>
+      <growablecols>1</growablecols>
+    </object>
+  </object>
+</resource>
