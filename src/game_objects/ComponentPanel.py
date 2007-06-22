@@ -46,9 +46,11 @@ class Panel(wx.Panel):
         props_label = self.createLabel("Associated Properties:")
         self.addLabelToFlex(flex_sizer, props_label)
         #TODO make this into a ListCtrl?
-        self.prop_list = wx.ListBox(self, wx.ID_ANY, style = wx.ALIGN_RIGHT)
+        #TODO sort this list alphabetically
+        self.prop_list = wx.ListBox(self, wx.ID_ANY, style=wx.LB_MULTIPLE | wx.LB_SORT)
         prop_add_button = wx.Button(self, wx.ID_ANY, "Add Property")
         prop_remove_button = wx.Button(self, wx.ID_ANY, "Remove Property")
+        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, prop_remove_button)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
         button_sizer.Add(prop_add_button)
         button_sizer.Add((5,5))
@@ -82,7 +84,14 @@ class Panel(wx.Panel):
         pass
         
     def OnRemoveProperty(self, event):
-        pass
+        #remove the selected properties
+        ridx = []
+        for idx in self.prop_list.GetSelections():
+            prop_name = self.prop_list.GetString(idx)
+            del self.component.properties[prop_name]
+            ridx.insert(0, idx)
+        for i in ridx:
+            self.prop_list.Delete(i)
         
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)

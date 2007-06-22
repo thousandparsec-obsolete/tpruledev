@@ -9,12 +9,14 @@ import core.Nodes
 
 def makeSentinelGetter(var_name):
     def getter(self):
+        print "In sentinel getter for " + var_name
         return self.__getattribute__('__' + var_name)
     return getter
     
 def makeSentinelSetter(var_name):
     def setter(self, value):
         try:
+            print "In sentinel setter for " + var_name
             self.__setattr__('__' + var_name, value)
             self.node.markModified()
         except AttributeError:

@@ -34,11 +34,12 @@ def compareFunction(comp1, comp2):
     return 1
 
 class Object(ObjectUtilities.GameObject):
-    comp_id = ObjectUtilities.sentinelProperty('comp_id')
+    component_id = ObjectUtilities.sentinelProperty('component_id')
     rank = ObjectUtilities.sentinelProperty('rank')
-    desc = ObjectUtilities.sentinelProperty('desc')
-    cat_id = ObjectUtilities.sentinelProperty('cat_id')
-    tpcl_req = ObjectUtilities.sentinelProperty('tpcl_req')
+    description = ObjectUtilities.sentinelProperty('description')
+    category_id = ObjectUtilities.sentinelProperty('category_id')
+    tpcl_requirements = ObjectUtilities.sentinelProperty('tpcl_requirements')
+    properties = ObjectUtilities.sentinelProperty('properties')
 
     def __init__(self, node, name, comp_id = -1, rank = -1,
                  desc = "Null", cat_id = -1,
