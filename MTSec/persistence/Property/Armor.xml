@@ -5,6 +5,9 @@
 	<rank>0</rank>
 	<display_text>Armor</display_text>
 	<description>The amount of armor on the ship</description>
-	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " HP")) ) )]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+	<tpcl_display><![CDATA[(lambda (design bits)
+   (let ((n (apply + bits)))
+      (cons n (string-append (number->string n) " HP")) ) )]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design)
+   (cons #t ""))]]></tpcl_requires>
 </property>

@@ -5,6 +5,9 @@
 	<rank>0</rank>
 	<display_text>Number of missile and torpedo warhead types</display_text>
 	<description>The number of missile and torpedo warhead types in the design</description>
-	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " explosive types"))))]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+	<tpcl_display><![CDATA[(lambda (design bits)
+   (let ((n (apply + bits)))
+      (cons n (string-append (number->string n) " explosive types"))))]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design)
+   (cons #t ""))]]></tpcl_requires>
 </property>

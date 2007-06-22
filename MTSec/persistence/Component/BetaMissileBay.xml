@@ -3,7 +3,12 @@
     <component_id>11</component_id>
     <category_id>1</category_id>
     <description>null</description>
-    <tpcl_requirements><![CDATA[(lambda (design)  (if (= (designType.num-ammo design) 1)  (if (< (designType.AmmoSize design) 7)  (cons #t "")  (cons #f "Explosive is too large for beta missiles"))  (cons #f "Missiles can only handle one type of explosive")))]]></tpcl_requirements>
+    <tpcl_requirements><![CDATA[(lambda (design)
+  (if (= (designType.num-ammo design) 1)
+    (if (< (designType.AmmoSize design) 7)
+    	(cons #t "")
+    	(cons #f "Explosive is too large for beta missiles"))
+    (cons #f "Missiles can only handle one type of explosive")))]]></tpcl_requirements>
     <!--propertylist:-->
     <property>
         <name>Armor</name>
@@ -27,11 +32,13 @@
     </property>
     <property>
         <name>MissileFirepower</name>
-        <tpcl_cost><![CDATA[(lambda (design)  (* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)));]]></tpcl_cost>
+        <tpcl_cost><![CDATA[(lambda (design)
+  (* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)));]]></tpcl_cost>
     </property>
     <property>
         <name>MissileCost</name>
-        <tpcl_cost><![CDATA[(lambda (design)  (* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoCost design)));]]></tpcl_cost>
+        <tpcl_cost><![CDATA[(lambda (design)
+  (* (floor (/ 6 (designType.AmmoSize design))) (designType.AmmoCost design)));]]></tpcl_cost>
     </property>
     <property>
         <name>StartingHitPoints</name>

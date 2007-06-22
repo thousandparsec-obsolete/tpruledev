@@ -3,7 +3,10 @@
     <component_id>6</component_id>
     <category_id>1</category_id>
     <description>null</description>
-    <tpcl_requirements><![CDATA[(lambda (design)  (if (= (designType.num-ammo design) 1)  (cons #t "")  (cons #f "This is a complete component, nothing else can be included")))]]></tpcl_requirements>
+    <tpcl_requirements><![CDATA[(lambda (design)
+   (if (= (designType.num-ammo design) 1)
+      (cons #t "")
+      (cons #f "This is a complete component, nothing else can be included")))]]></tpcl_requirements>
     <!--propertylist:-->
     <property>
         <name>Armor</name>

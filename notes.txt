@@ -4,10 +4,12 @@ Allow for creation of new projects
 Check validity of objects on loading and highlight those that are incomplete
 ----------------------------------------
 Make it possible to add and delete objects through context menus in the object tree
+Robust Syntax Highlighting
 When saving a project and quitting save the last viewed object
 Make a panel to default to on start that describes the RDE
 Make panels for both the Properties and Components
 Look into providing a way for objects to keep track of who they're associated with, or perhaps just some way to calculate that
+Recent projects menu item...
 Save config options on app close
 Get the object manipulation methods to accept lists as well as atoms
 
@@ -25,6 +27,10 @@ Menubar:
 File
    ->New Project
    ->Open Project
+   -+Recent Projects
+      ->Proj1
+      ->Proj2
+      ->...
    ->Save Project
    ->Save Project As...
    ->Quit

@@ -22,3 +22,9 @@ class NoSuchIDError(Exception):
     """\
     Used to indicate that an ID used in a function call was invalid.
     """
+    
+class DuplicateProjectError(Exception):
+    """\
+    Used to indicate that a project already exists in a location when trying
+    to create or move another one at that location.
+    """

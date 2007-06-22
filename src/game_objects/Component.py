@@ -12,7 +12,16 @@ def generateEditPanel(parent):
     print "Generating panel for Component module."
     panel = wx.Panel(parent, wx.ID_ANY)
     panel.SetBackgroundColour('white')
-    label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value Component module.")
+    label = wx.TextCtrl(panel, wx.ID_ANY, style=wx.TE_MULTILINE)
+    label.SetValue( "Component Objects\n"
+                    "------------------------\n"
+                    "Insert a nice little blurb about Components here...\n")
+    label.SetEditable(False)
+    border1 = wx.BoxSizer(wx.HORIZONTAL)
+    border1.Add(label, 1, wx.ALL | wx.EXPAND, 5)
+    border2 = wx.BoxSizer(wx.VERTICAL)
+    border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
+    panel.SetSizer(border2)
     return panel
 
 def compareFunction(comp1, comp2):
@@ -32,12 +41,12 @@ class Object(ObjectUtilities.GameObject):
     tpcl_req = ObjectUtilities.sentinelProperty('tpcl_req')
 
     def __init__(self, node, name, comp_id = -1, rank = -1,
-                 desc = '', cat_id = -1,
-                 tpcl_req = '', load_immediate = False):
+                 desc = "Null", cat_id = -1,
+                 tpcl_req = "Null", load_immediate = False):
                  
         self.node = node
-        self.filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
-                                               'Component/' + name + '.xml'
+        self.filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
+                                               'Component', name + '.xml')
         
         if load_immediate:
             self.loadFromFile()
@@ -49,8 +58,9 @@ class Object(ObjectUtilities.GameObject):
             self.name = name
             self.description = desc
             self.tpcl_requirements = tpcl_req
-            
-        self.node.clearModified()
+        
+        if node != None:
+            self.node.clearModified()
 
     def __str__(self):
         return "Component Game Object - " + self.name
@@ -88,30 +98,39 @@ class Object(ObjectUtilities.GameObject):
     def addFieldToFlex(self, flex, field):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
 
+def saveObject(name, comp=None):
+    """\
+    Saves a Property to its persistence file. If no Property object is given
+    it will initialize a file with empty attributes
+    """
+    if comp == None:
+        comp = Object(None, name)
+    
+    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
+                                               'Component', name + '.xml')
+    ofile = open(filename, 'w')
+    ofile.write('<component>\n')
+    ofile.write('    <name>' + comp.name + '</name>\n')
+    ofile.write('    <component_id>' + str(comp.component_id) + '</component_id>\n')
+    ofile.write('    <category_id>' + str(comp.category_id) + '</category_id>\n')
+    ofile.write('    <description>' + comp.description + '</description>\n')
+    ofile.write('    <tpcl_requirements><![CDATA[' + comp.tpcl_requirements + ']]></tpcl_requirements>\n')
+    ofile.write('</component>\n')
+    ofile.flush()
+    ofile.close()
 
 def initializeSaveFile(name):
     """\
     Creates an empty save file for the Component with the given name
     """
-    filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
-                                               'Component/' + name + '.xml'
-    ofile = open(filename, 'w')
-    ofile.write('<component>\n')
-    ofile.write('    <name>' + name + '</name>\n')
-    ofile.write('    <component_id>0</component_id>\n')
-    ofile.write('    <category_id>0</category_id>\n')
-    ofile.write('    <description>0</description>\n')
-    ofile.write('    <tpcl_requirements>(lambda 0)</tpcl_requirements>\n')
-    ofile.write('</component>\n')
-    ofile.flush()
-    ofile.close()
+    saveObject(name)
 
 def deleteSaveFile(name):
     """\
     Deletes the save file for a Component that has been deleted.
     """
-    filename = RDE.GlobalConfig.config.get('Current Project', 'persistence_directory') + \
-                                               'Component/' + name + '.xml'
+    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
+                                               'Component', name + '.xml')
     os.remove(filename)
 
 def getName():

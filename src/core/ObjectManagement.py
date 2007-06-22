@@ -219,6 +219,7 @@ class ODBEvent(object):
     CLEAR_MARKERS = 7
     EMPHASIZE = 8
     UNEMPHASIZE = 9
+    UNINIT = 10
 
 class ODBInitialize(ODBEvent):
     type = ODBEvent.INIT
@@ -273,6 +274,9 @@ class ODBUnEmphasize(ODBEvent):
     
     def __init__(self, id):
         self.id = id
+        
+class ODBClearMarkers(ODBEvent):
+    type = ODBEvent.UNINIT
     
     
 class GameObjectTree(wx.TreeCtrl):
@@ -282,13 +286,16 @@ class GameObjectTree(wx.TreeCtrl):
     """
     
     def __init__(self, parent, id=-1, object_database = None, pos=wx.DefaultPosition, size=wx.DefaultSize,
-                    style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
+                    style=wx.TR_DEFAULT_STYLE, validator=wx.DefaultValidator,
                     name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
-        self.odb = object_database 
+        self.odb = object_database
+        self.root_id = self.AddRoot('RDE')
+        self.SetPyData(self.root_id, RDE)
         
     def SetObjectDatabase(self, odb):
         self.odb = odb
+        odb.addODBListener(self)
              
     def RemoveObject(self, type, name):
         pass
@@ -341,9 +348,7 @@ class GameObjectTree(wx.TreeCtrl):
             self.SetItemBackgroundColour(id, event.color)
     
     def HandleUnHighlight(self, event):
-        #todo: error handling
         print "Handling unhighlight"
-        #need error handling here, or in the ODB. or both
         for obj_name in self.odb.GetHighlightFor(event.id)[0]:
             print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
@@ -373,26 +378,28 @@ class GameObjectTree(wx.TreeCtrl):
             self.SetItemBold(id, True)
     
     def HandleUnEmphasize(self, event):
-        #todo: error handling
         print "Handling unhighlight"
-        #need error checking here too
         for obj_name in self.odb.GetEmphasisFor(event.id)[0]:
             print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLACK')
             self.SetItemBold(id, False)
         
+    def HandleUnInit(self, event):
+        pass
+        
+        
     def InitializeTree(self):
-        self.root_id = self.AddRoot('root')
         self.type_ids = {}
         self.object_ids = {}
         for object_type in self.odb.getObjectTypes():
             self.type_ids[object_type] = self.AppendItem(self.root_id, object_type)
-            self.SetPyData(self.type_ids[object_type], Nodes.DefaultNode(object_type))
+            self.SetPyData(self.type_ids[object_type], self.odb.getObjectModule(object_type))
             for node in self.odb.getObjectsOfType(object_type):
                 object_name = node.name
                 self.object_ids[object_name] = self.AppendItem(self.type_ids[object_type], object_name)
                 self.SetPyData(self.object_ids[object_name], node)
+        self.SelectItem(self.type_ids.items()[0][1])
 
     
     #the following methods allow the tree to have its objects
@@ -427,4 +434,5 @@ class GameObjectTree(wx.TreeCtrl):
                  ODBEvent.UNHIGHLIGHT: HandleUnHighlight,
                  ODBEvent.CLEAR_MARKERS: HandleClear,
                  ODBEvent.EMPHASIZE: HandleEmphasize,
-                 ODBEvent.UNEMPHASIZE: HandleUnEmphasize}
+                 ODBEvent.UNEMPHASIZE: HandleUnEmphasize,
+                 ODBEvent.UNINIT: HandleUnInit}

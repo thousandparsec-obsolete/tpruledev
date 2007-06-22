@@ -8,13 +8,17 @@ import wx, os, ConfigParser, sys
 from ConfigParser import ConfigParser
 
 import RDE
-import core.ObjectManagement
+import core.ObjectManagement, core.ProjectManagement
 import game_objects.ObjectUtilities
 from core.Exceptions import *
 
 SPLITTER_ID = 101
 
 def GenCreateNewObjHandler(type, frame):
+    """\
+    Generates a function to handle the creation of a specific object type. This is
+    in lieu of creating a custom event to carry the type information.
+    """
     def f(event):
         obj_name = wx.GetTextFromUser('Enter the name of the new ' + type + ':', 'Input Object Name')
         if obj_name == '':
@@ -41,18 +45,30 @@ class Frame(wx.Frame):
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
-        
+        #self.content_panel = wx.Panel(self, wx.ID_ANY)
+        #self.active_panel = None
+        #self.content_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #stretcher = wx.BoxSizer(wx.VERTICAL)
+        #stretcher.Add(self.content_sizer, 1, wx.ALL | wx.EXPAND, 0)
+        #self.content_panel.SetSizer(stretcher)
+            
         #import configuration settings, will build on this as is necessary
         RDE.GlobalConfig.config = ConfigParser()
         self.config = RDE.GlobalConfig.config
-        self.config.readfp(open(sys.path[0] + '/tpconf'))
+        self.config.readfp(open(os.path.join(sys.path[0], 'tpconf')))
+        
+        #check to see if there's a current project that we can load
+        #if self.config.has_option('DEFAULT', 'current_project'):
+        #    self.config.read(self.config.get('DEFAULT', 'current_project'))
+        #    self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))                
+        #else:
+        
         self.config.read(self.config.get('DEFAULT', 'current_project'))
-        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
+        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))            
         
         #initialize odbase and gui components
         self.object_database = core.ObjectManagement.ObjectDatabase()
         self.initGUI()
-        self.object_database.addODBListener(self.tree)
 
         #load the object nodes to fill the tree
         self.object_database.loadObjectNodes()
@@ -69,17 +85,28 @@ class Frame(wx.Frame):
         
         self.tree = core.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
-	    #self.tree = self.object_database.getTree(self.splitter)
-        self.tree.Bind(wx.EVT_LEFT_DCLICK, self.OnLeftDClick)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
         
         self.splitter.SetMinimumPaneSize(140)
         self.splitter.SplitVertically(self.tree,
                                       self.cp_right,
-                                      150)
-        #give ourselves a status bar because we'll be needing it in the near future
+                                      200)
+
         self.CreateStatusBar()
         self.SetMenuBar(self.initMenuBar())
+    
+    def initProjectGUI(self):
+        pass
+        
+        
+    def initNoProjectGUI(self):
+        if self.active_panel != None:
+            self.active_panel.Hide()
+            self.content_sizer.Remove(self.active_panel)
+            
+        self.active_panel = RDE.generateInfoPanel(self.content_panel)
+        self.content_size.Add(self.active_panel)
+        #self.content_panel.
                                       
     def initMenuBar(self):
         menubar = wx.MenuBar()
@@ -89,6 +116,8 @@ class Frame(wx.Frame):
         new_proj_item = file_menu.Append(-1, 'New Project', 'Create a new TP Project')
         self.Bind(wx.EVT_MENU, self.OnNewProject, new_proj_item)
         open_proj_item = file_menu.Append(-1, 'Open Project', 'Open an existing TP Project')
+        del_proj_item = file_menu.Append(-1, 'Delete Project', 'Delete the current TP Project')
+        self.Bind(wx.EVT_MENU, self.OnDeleteProject, del_proj_item)
         save_proj_item = file_menu.Append(-1, 'Save Project', 'Save the current TP Project')
         file_menu.AppendSeparator()
         quit_item = file_menu.Append(-1, 'Quit', 'Quit the Ruleset Development Evironment')
@@ -113,7 +142,7 @@ class Frame(wx.Frame):
         menubar.Append(edit_menu, 'Edit')
         
         #disable unused menu items
-        new_proj_item.Enable(False)
+        #new_proj_item.Enable(False)
         open_proj_item.Enable(False)
         save_proj_item.Enable(False)
         
@@ -122,11 +151,34 @@ class Frame(wx.Frame):
         return menubar
         
     def OnNewProject(self, event):
+        #get project name
         proj_name = wx.GetTextFromUser('Enter the name of the ruleset:', 'Input Ruleset Name')
         if proj_name == '':
-            print 'User cancelled new project...'
+            wx.MessageBox("No name was entered! No probject will be created!", caption="Project Creation Cancelled",
+                style=wx.OK)
         else:
-            print 'You wanted to create a project called: ', proj_name
+            #get project directory
+            dir_dialog = wx.DirDialog(None, "Choose the directory in which\nto create the project folder:",
+                style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
+            if dir_dialog.ShowModal() == wx.ID_OK:
+                try:
+                    #create project dir and config
+                    core.ProjectManagement.createNewProject(dir_dialog.GetPath(), proj_name,
+                                                self.object_database.getObjectTypes())
+                except DuplicateProjectError:
+                    wx.MessageBox("A project with that name already exists in that location!",
+                                  caption = "Duplicate Project Error", style=wx.OK)
+            dir_dialog.Destroy()
+            #switch to project
+            
+    def OnDeleteProject(self, event):
+        #confirm project deletion
+        confirm = wx.MessageBox("Are you sure that you want to delete the current project?", caption="Confirm Project Deletion",
+                    style=wx.OK | wx.CANCEL)
+        if confirm == wx.OK:
+            #todo: actually delete the project
+            wx.MessageBox("Deletion confirmed...uhm...not actually doing anything yet...", caption="Deletion confirmed",
+                style=wx.OK)
             
     def OnDeleteObject(self, event):
         try:
@@ -152,21 +204,12 @@ class Frame(wx.Frame):
             wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
                 caption="Invalid Selection", style=wx.OK)
             
-        
-    def CreateNewProject(self, proj_name):
+    def SetCurrentProject(self, project_cfg):
+        self.object_databse.Uninitialize()
+        self.config.read(project_cfg)
+        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
+        self.object_database.loadObjectNodes()
         pass
-                                      
-    def OnLeftDClick(self, event):
-        print "Handling double click in Tree!"
-        pt = event.GetPosition()
-        item, flags = self.tree.HitTest(pt)
-        if item:
-            parent = self.tree.GetItemParent(item)
-            print "\tparent: ", parent
-            obj = self.tree.GetPyData(parent)
-            print "\tobj: ", obj
-            if hasattr(obj, "compareFunction"):
-                self.tree.SortChildrenByFunction(parent, obj.compareFunction)
     
     def OnTreeSelect(self, event):
         self.curr_node_id = event.GetItem()

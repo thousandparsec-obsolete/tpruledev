@@ -5,6 +5,9 @@
 	<rank>1</rank>
 	<display_text>MissileCost</display_text>
 	<description>The relative cost of a missile</description>
-	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (number->string n))))]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+	<tpcl_display><![CDATA[(lambda (design bits)
+   (let ((n (apply + bits)))
+      (cons n (number->string n))))]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design)
+   (cons #t ""))]]></tpcl_requires>
 </property>

@@ -4,6 +4,7 @@ a Property object
 """
 
 import wx
+import gui.TextCtrl
 
 class Panel(wx.Panel):
     """
@@ -48,12 +49,12 @@ class Panel(wx.Panel):
 
         tpcl_disp_label = self.createLabel("TPCL Display Function:")
         self.addLabelToFlex(flex_sizer, tpcl_disp_label)
-        tpcl_disp_field = self.createField(str(property.tpcl_display))
+        tpcl_disp_field = self.createTextArea(str(property.tpcl_display))
         self.addFieldToFlex(flex_sizer, tpcl_disp_field)
 
         tpcl_req_label = self.createLabel("TPCL Requires Function:")
         self.addLabelToFlex(flex_sizer, tpcl_req_label)
-        tpcl_req_field = self.createField(str(property.tpcl_requires))
+        tpcl_req_field = self.createTextArea(str(property.tpcl_requires))
         self.addFieldToFlex(flex_sizer, tpcl_req_field)
        
         flex_sizer.AddGrowableCol(1)
@@ -74,6 +75,9 @@ class Panel(wx.Panel):
 
     def createField(self, text):
         return wx.TextCtrl(self, wx.ID_ANY, text)
+        
+    def createTextArea(self, text):
+        return gui.TextCtrl.SchemeSTC(self, wx.ID_ANY, text)
         
     def addFieldToFlex(self, flex, field):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)

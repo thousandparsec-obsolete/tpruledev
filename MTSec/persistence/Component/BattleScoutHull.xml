@@ -3,7 +3,12 @@
     <component_id>2</component_id>
     <category_id>1</category_id>
     <description>null</description>
-    <tpcl_requirements><![CDATA[(lambda (design)  (if (= (designType.num-hulls design) 1)  (if (< (designType.num-baytypes design) 2)  (cons #t "")  (cons #f "A ship can only have one type of missile bay"))  (cons #f "A ship can only use one hull!")))]]></tpcl_requirements>
+    <tpcl_requirements><![CDATA[(lambda (design)
+  (if (= (designType.num-hulls design) 1)
+     (if (< (designType.num-baytypes design) 2)
+        (cons #t "")
+        (cons #f "A ship can only have one type of missile bay"))
+     (cons #f "A ship can only use one hull!")))]]></tpcl_requirements>
     <!--propertylist:-->
     <property>
         <name>Armor</name>
@@ -35,6 +40,7 @@
     </property>
     <property>
         <name>Firepower</name>
-        <tpcl_cost><![CDATA[(lambda (design)  (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design)));]]></tpcl_cost>
+        <tpcl_cost><![CDATA[(lambda (design)
+   (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design)));]]></tpcl_cost>
     </property>
 </component>

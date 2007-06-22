@@ -21,5 +21,5 @@ class DefaultNode(DatabaseNode):
         print "Generating panel for [%s]" % self.name
         panel = wx.Panel(parent, wx.ID_ANY)
         panel.SetBackgroundColour('white')
-        label = wx.StaticText(panel, wx.ID_ANY, "Test panel for value %s" % self.name)
+        label = wx.StaticText(panel, wx.ID_ANY, "Default panel for value %s" % self.name)
         return panel   

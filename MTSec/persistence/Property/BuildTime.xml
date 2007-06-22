@@ -5,6 +5,9 @@
 	<rank>0</rank>
 	<display_text>Build Time</display_text>
 	<description>The number of turns to build this</description>
-	<tpcl_display><![CDATA[(lambda (design bits) (let ((n (apply + bits))) (cons n (string-append (number->string n) " turns")) ) )]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design) (cons #t ""))]]></tpcl_requires>
+	<tpcl_display><![CDATA[(lambda (design bits)
+   (let ((n (apply + bits)))
+      (cons n (string-append (number->string n) " turns")) ) )]]></tpcl_display>
+	<tpcl_requires><![CDATA[(lambda (design)
+   (cons #t ""))]]></tpcl_requires>
 </property>

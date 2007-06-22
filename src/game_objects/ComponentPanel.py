@@ -48,6 +48,7 @@ class Panel(wx.Panel):
         #TODO make this into a ListCtrl
         prop_list = wx.ListBox(self, wx.ID_ANY)
         prop_names = []
+        #todo: fix display here
         for pname, tpcl_cost in component.properties.iteritems():
             prop_names.append(pname)
             prop_list.Insert(str(pname) + " - " + str(tpcl_cost), 0)

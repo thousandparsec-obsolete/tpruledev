@@ -14,8 +14,12 @@ def makeSentinelGetter(var_name):
     
 def makeSentinelSetter(var_name):
     def setter(self, value):
-        self.node.markModified()
-        self.__setattr__('__' + var_name, value)
+        try:
+            self.__setattr__('__' + var_name, value)
+            self.node.markModified()
+        except AttributeError:
+            #no node in this object...hm, not so important here
+            pass
     return setter
     
 def sentinelProperty(var_name):
