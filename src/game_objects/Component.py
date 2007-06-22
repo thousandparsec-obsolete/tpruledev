@@ -61,7 +61,7 @@ class Object(ObjectUtilities.GameObject):
             self.tpcl_requirements = tpcl_req
         
         if node != None:
-            self.node.clearModified()
+            self.node.modified = False
 
     def __str__(self):
         return "Component Game Object - " + self.name

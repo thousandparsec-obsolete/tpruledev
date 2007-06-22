@@ -68,7 +68,7 @@ class Object(ObjectUtilities.GameObject):
             self.tpcl_requires = tpcl_req
         
         if self.node != None:
-            self.node.clearModified()
+            self.node.modified = False
 
     def __str__(self):
         return "Property Game Object - " + self.name

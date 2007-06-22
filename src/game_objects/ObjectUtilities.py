@@ -18,8 +18,9 @@ def makeSentinelSetter(var_name):
         try:
             print "In sentinel setter for " + var_name
             self.__setattr__('__' + var_name, value)
-            self.node.markModified()
+            self.node.modified = True
         except AttributeError:
+            print "Object has no node!"
             #no node in this object...hm, not so important here
             pass
     return setter
@@ -122,12 +123,6 @@ class ObjectNode(core.Nodes.DatabaseNode):
         self.name = name
         self.object_module = module
         self.object_database = odb
-        
-    def markModified(self):
-        modified = True
-        
-    def clearModified(self):
-        modified = False
     
     def addListener(self, listener):
         """

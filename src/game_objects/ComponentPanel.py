@@ -92,6 +92,7 @@ class Panel(wx.Panel):
             ridx.insert(0, idx)
         for i in ridx:
             self.prop_list.Delete(i)
+        self.component.properties = self.component.properties
         
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
