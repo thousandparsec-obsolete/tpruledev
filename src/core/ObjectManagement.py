@@ -307,10 +307,6 @@ class GameObjectTree(wx.TreeCtrl):
         self.InitializeTree()
     
     def HandleAdd(self, event):
-        print "Adding an element to the tree based on an Add event"
-        print "Object Name: ", event.node.name
-        print "Type: ", event.obj_type
-        print "Preceding Object: ", event.preceding
         type_id = self.type_ids[event.obj_type]
         new_id = None
         
@@ -341,16 +337,12 @@ class GameObjectTree(wx.TreeCtrl):
         and values of object names to highlight
         """
         #todo: error handling
-        print "Handling highlight"
         for obj_name in event.names:
-            print "Highlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, event.color)
     
     def HandleUnHighlight(self, event):
-        print "Handling unhighlight"
         for obj_name in self.odb.GetHighlightFor(event.id)[0]:
-            print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, 'WHITE')
     
@@ -370,17 +362,13 @@ class GameObjectTree(wx.TreeCtrl):
         and values of object names to highlight
         """
         #todo: error handling
-        print "Handling highlight"
         for obj_name in event.names:
-            print "Highlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLUE')
             self.SetItemBold(id, True)
     
     def HandleUnEmphasize(self, event):
-        print "Handling unhighlight"
         for obj_name in self.odb.GetEmphasisFor(event.id)[0]:
-            print "Unhighlighting object: ", obj_name
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLACK')
             self.SetItemBold(id, False)
