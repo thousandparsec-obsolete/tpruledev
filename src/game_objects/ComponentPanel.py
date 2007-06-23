@@ -49,6 +49,7 @@ class Panel(wx.Panel):
         #TODO sort this list alphabetically
         self.prop_list = wx.ListBox(self, wx.ID_ANY, style=wx.LB_MULTIPLE | wx.LB_SORT)
         prop_add_button = wx.Button(self, wx.ID_ANY, "Add Property")
+        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, prop_add_button)
         prop_remove_button = wx.Button(self, wx.ID_ANY, "Remove Property")
         self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, prop_remove_button)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -81,7 +82,25 @@ class Panel(wx.Panel):
         pass
         
     def OnAddProperty(self, event):
-        pass
+        print "On Add Property"
+        loose_props = filter(lambda x: not x in self.component.properties.keys(),
+                             [n.name for n in self.component.node.object_database.getObjectsOfType('Property')])
+        choice_diag = wx.MultiChoiceDialog(self, "Choose the Properties to add...",
+                                            "Add Properties...", loose_props)
+        choice_diag.ShowModal()
+        if len(choice_diag.GetSelections()) > 0:
+            print "Selection OK"
+            for i in choice_diag.GetSelections():
+                print "\t" + loose_props[i]
+                self.component.properties[loose_props[i]] = "(lambda (design) #)"
+                self.prop_list.Append(loose_props[i])
+            self.component.properties = self.component.properties
+        else:
+            #cancelled
+            print "CANCELED!"
+            print "Selections: ", choice_diag.GetSelections()
+            pass
+        choice_diag.Destroy()
         
     def OnRemoveProperty(self, event):
         #remove the selected properties
