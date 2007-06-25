@@ -93,18 +93,6 @@ class Object(ObjectUtilities.GameObject):
         #make the panel
         return ComponentPanel.Panel(self, parent)
 
-    def createLabel(self, panel, text):
-        return wx.StaticText(panel, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
-    
-    def addLabelToFlex(self, flex, label):
-        flex.Add(label, 2, wx.ALIGN_RIGHT | wx.ALIGN_TOP | wx.EXPAND, 5)
-
-    def createField(self, panel, text):
-        return wx.TextCtrl(panel, wx.ID_ANY, text)
-        
-    def addFieldToFlex(self, flex, field):
-        flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
-
 def saveObject(comp):
     """\
     Saves a Component to its persistence file.
