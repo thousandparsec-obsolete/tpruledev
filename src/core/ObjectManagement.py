@@ -102,9 +102,6 @@ class ObjectDatabase(object):
         self.objects[obj_type].insert(idx, node)
         print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
         
-        #create file
-        self.object_modules[obj_type].initializeSaveFile(name)
-        
         #let our listeners know we added a new object and let them
         # know the parent in terms of alphabetical order
         if idx == 0:

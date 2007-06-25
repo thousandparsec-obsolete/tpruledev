@@ -9,6 +9,7 @@ import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
+from ObjectUtilities import getXMLString, getXMLNum
 import PropertyPanel
 
 def generateEditPanel(parent):
@@ -52,6 +53,7 @@ class Object(ObjectUtilities.GameObject):
                  load_immediate=False):
 
         self.node = node
+        self.name = name
         self.filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
                                                'Property', name + '.xml')
                  
@@ -61,7 +63,6 @@ class Object(ObjectUtilities.GameObject):
             self.category_id = catid
             self.property_id = prop_id
             self.rank = rank
-            self.name = name
             self.description = desc
             self.display_text = disp_text
             self.tpcl_display = tpcl_disp
@@ -71,21 +72,32 @@ class Object(ObjectUtilities.GameObject):
             self.node.modified = False
 
     def __str__(self):
-        return "Property Game Object - " + self.name
+        return "<Property Game Object - %s>" % self.name
     
     def loadFromFile(self):
-        doc = xml.dom.minidom.parse(self.filename)
-        #there should only be one property node...but even so
-        root = doc.getElementsByTagName("property")[0]
-        self.name = root.getElementsByTagName("name")[0].childNodes[0].data
-        self.rank = root.getElementsByTagName("rank")[0].childNodes[0].data
-        self.property_id = root.getElementsByTagName("property_id")[0].childNodes[0].data
-        self.category_id = root.getElementsByTagName("category_id")[0].childNodes[0].data
-        self.description = root.getElementsByTagName("description")[0].childNodes[0].data
-        self.display_text = root.getElementsByTagName("display_text")[0].childNodes[0].data
-        self.tpcl_display = root.getElementsByTagName("tpcl_display")[0].childNodes[0].data
-        self.tpcl_requires = root.getElementsByTagName("tpcl_requires")[0].childNodes[0].data
-    
+        try:
+            doc = xml.dom.minidom.parse(self.filename)
+            #there should only be one property node...but even so
+            root = doc.getElementsByTagName("property")[0]
+            self.name = getXMLString(root, "name")
+            self.rank = getXMLNum(root, "rank")
+            self.property_id = getXMLNum(root, "property_id")
+            self.category_id = getXMLNum(root, "category_id")
+            self.description = getXMLString(root, "description")
+            self.display_text = getXMLString(root, "display_text")
+            self.tpcl_display = getXMLString(root, "tpcl_display")
+            self.tpcl_requires = getXMLString(root, "tpcl_requires")
+        except IOError:
+            #file does not exist
+            # fill with default values
+            self.rank = -1
+            self.property_id = -1
+            self.category_id = -1
+            self.description = ""
+            self.display_text = ""
+            self.tpcl_display = ""
+            self.tpcl_requires = ""
+        
     def generateEditPanel(self, parent):
         #make the panel
         return PropertyPanel.Panel(self, parent)    
@@ -103,14 +115,10 @@ class Object(ObjectUtilities.GameObject):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
         
 
-def saveObject(name, prop=None):
+def saveObject(name, prop):
     """\
-    Saves a Property to its persistence file. If no Property object is given
-    it will initialize a file with empty attributes
+    Saves a Property to its persistence file.
     """
-    if prop == None:
-        prop = Object(None, name)
-    
     filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
                                                'Property', name + '.xml')
     ofile = open(filename, 'w')
@@ -126,14 +134,7 @@ def saveObject(name, prop=None):
     ofile.write('</property>\n')	
     ofile.flush()
     ofile.close()
-    
-
-def initializeSaveFile(name):
-    """\
-    Creates an empty save file for the Component with the given name
-    """
-    saveObject(name)
-    
+  
     
 def deleteSaveFile(name):
     """\

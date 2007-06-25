@@ -26,6 +26,26 @@ def makeSentinelSetter(var_name):
 def sentinelProperty(var_name):
     return property(makeSentinelGetter(var_name), makeSentinelSetter(var_name))
     
+def getXMLString(parent, node_name):
+    """\
+    Gets a string from an XML node and return "" if the node doesn't exist, useful
+    for getting the attributes of an object for now.
+    """
+    try:
+        return parent.getElementsByTagName(node_name)[0].childNodes[0].data
+    except:
+        return ""
+
+def getXMLNum(parent, node_name):
+    """\
+    Gets a number from an XML node and return -1 if the node doesn't exist, useful
+    for getting the attributes of an object for now.
+    """
+    try:
+        return parent.getElementsByTagName(node_name)[0].childNodes[0].data
+    except:
+        return -1
+    
 class GameObject(object):
     """
     The base game object class. Defines a few variables
@@ -165,4 +185,4 @@ class ObjectNode(core.Nodes.DatabaseNode):
             del self.object
             
     def generateEditPanel(self, parent):
-            return self.getObject().generateEditPanel(parent)
+        return self.getObject().generateEditPanel(parent)

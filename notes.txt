@@ -1,17 +1,20 @@
 Todo:
-Allow Components to add and remove Property associations
 Allow for deleting projects
 Check validity of objects on loading and highlight those that are incomplete
+Allow for saving!
 ----------------------------------------
 Make it possible to add and delete objects through context menus in the object tree
 Robust Syntax Highlighting
 When saving a project and quitting save the last viewed object
-Make a panel to default to on start that describes the RDE
-Make panels for both the Properties and Components
+Make descriptive panels for both the Properties and Components
 Look into providing a way for objects to keep track of who they're associated with, or perhaps just some way to calculate that
 Recent projects menu item...
 Save config options on app close
 Get the object manipulation methods to accept lists as well as atoms
+
+Complete:
+Allow Components to add and remove Property associations
+Make a panel to default to on start that describes the RDE
 
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
