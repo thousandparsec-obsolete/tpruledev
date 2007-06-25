@@ -41,9 +41,8 @@ class ObjectDatabase(object):
     objects.
     """
     
-    HIGHEMP_ID = 0
-    emphases = {}
-    highlights = {}
+    highlighted = []
+    emphasized = []
     
     def __init__(self):
         self.config = RDE.GlobalConfig.config
@@ -133,45 +132,64 @@ class ObjectDatabase(object):
             
     def Highlight(self, obj_names, color="RED"):
         #todo: this can be so much more elegant
-        this_id = self.HIGHEMP_ID
-        self.HIGHEMP_ID += 1
-        self.highlights[this_id] = (obj_names, color)
         if isinstance(obj_names, list):
-            self.sendODBEvent(ODBHighlight(this_id, obj_names, color))
+            for name in obj_names:
+                if not name in self.highlighted:
+                    self.highlights.append(name)
+            self.sendODBEvent(ODBHighlight(obj_names, color))
         else:
-            self.sendODBEvent(ODBHighlight(this_id, [obj_names], color))
-        return this_id
+            if not obj_names in self.highlighted:
+                self.highlights.append(obj_names)
+            self.sendODBEvent(ODBHighlight([obj_names], color))
         
-    def UnHighlight(self, id):
-        if not id in self.emphases.keys():
-            raise NoSuchIDError(id)
-        else:    
-            self.sendODBEvent(ODBUnHighlight(id))
-            self.highlights.pop(id)
-        
-    def GetHighlightFor(self, id):
-        return self.highlights[id]
+    def UnHighlight(self, obj_names):
+        #todo: this can be so much more elegant
+        if isinstance(obj_names, list):
+            for name in obj_names:
+                try:
+                    self.highlighted.remove(name)
+                except ValueError:
+                    #don't care that it wasn't there
+                    pass
+            self.sendODBEvent(ODBUnHighlight(obj_names))
+        else:
+            try:
+                self.highlighted.remove(obj_names)
+            except ValueError:
+                #don't care that it wasn't there
+                pass
+            self.sendODBEvent(ODBHighlight([obj_names]))        
             
     def Emphasize(self, obj_names, color="BLUE"):
         #todo: this can be so much more elegant
-        this_id = self.HIGHEMP_ID
-        self.HIGHEMP_ID += 1
-        self.emphases[this_id] = (obj_names, color)
+        #todo: this can be so much more elegant
         if isinstance(obj_names, list):
-            self.sendODBEvent(ODBEmphasize(this_id, obj_names, color))
+            for name in obj_names:
+                if not name in self.emphasized:
+                    self.emphasized.append(name)
+            self.sendODBEvent(ODBEmphasize(obj_names, color))
         else:
-            self.sendODBEvent(ODBEmphasize(this_id, [obj_names], color))
-        return this_id
+            if not obj_names in self.emphasized:
+                self.emphasized.append(obj_names)
+            self.sendODBEvent(ODBEmphasize([obj_names], color))
         
-    def UnEmphasize(self, id):
-        if not id in self.emphases.keys():
-            raise NoSuchIDError(id)
-        else:    
-            self.sendODBEvent(ODBUnEmphasize(id))
-            self.emphases.pop(id)
-        
-    def GetEmphasisFor(self, id):
-        return self.emphases[id]
+    def UnEmphasize(self, obj_names):
+        #todo: this can be so much more elegant
+        if isinstance(obj_names, list):
+            for name in obj_names:
+                try:
+                    self.emphasized.remove(name)
+                except ValueError:
+                    #don't care that it wasn't there
+                    pass
+            self.sendODBEvent(ODBUnEmphasize(obj_names))
+        else:
+            try:
+                self.emphasized.remove(obj_names)
+            except ValueError:
+                #don't care that it wasn't there
+                pass
+            self.sendODBEvent(ODBUnEmphasize([obj_names])) 
     
     def getObjectTypes(self):
         return self.object_modules.keys()
@@ -244,16 +262,15 @@ class ODBModify(ODBEvent):
 class ODBHighlight(ODBEvent):
     type = ODBEvent.HIGHLIGHT
     
-    def __init__(self, id, names, color):
-        self.id = id
+    def __init__(self, names, color):
         self.names = names
         self.color = color
     
 class ODBUnHighlight(ODBEvent):
     type = ODBEvent.UNHIGHLIGHT
     
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, names):
+        self.names = names
     
 class ODBClearMarkers(ODBEvent):
     type = ODBEvent.CLEAR_MARKERS
@@ -261,16 +278,15 @@ class ODBClearMarkers(ODBEvent):
 class ODBEmphasize(ODBEvent):
     type = ODBEvent.EMPHASIZE
     
-    def __init__(self, id, names, color):
-        self.id = id
+    def __init__(self, names, color):
         self.names = names
         self.color = color
     
 class ODBUnEmphasize(ODBEvent):
     type = ODBEvent.UNEMPHASIZE
     
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, names):
+        self.names = names
         
 class ODBClearMarkers(ODBEvent):
     type = ODBEvent.UNINIT
@@ -339,7 +355,7 @@ class GameObjectTree(wx.TreeCtrl):
             self.SetItemBackgroundColour(id, event.color)
     
     def HandleUnHighlight(self, event):
-        for obj_name in self.odb.GetHighlightFor(event.id)[0]:
+        for obj_name in event.names:
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, 'WHITE')
     
@@ -347,10 +363,13 @@ class GameObjectTree(wx.TreeCtrl):
         """\
         clears all highlighting from objects in the tree
         """
-        for id in self.highlights:
-            self.HandleUnHighlight(ODBUnHighlight(id))
-        for id in self.emphases:
-            self.HandleUnEmphasize(ODBUnEmphasize(id))
+        for name in self.odb.highlighted:
+            id = self.object_ids[name]
+            self.SetItemBackgroundColour(id, 'WHITE')
+        for name in self.odb.emphasized:
+            id = self.object_ids[name]
+            self.SetItemTextColour(id, 'BLACK')
+            self.SetItemBold(id, False)
         
     def HandleEmphasize(self, event):
         """\
@@ -365,7 +384,7 @@ class GameObjectTree(wx.TreeCtrl):
             self.SetItemBold(id, True)
     
     def HandleUnEmphasize(self, event):
-        for obj_name in self.odb.GetEmphasisFor(event.id)[0]:
+        for obj_name in event.names:
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLACK')
             self.SetItemBold(id, False)

@@ -61,7 +61,7 @@ class Panel(wx.Panel):
         prop_sizer.Add((5,5))
         prop_sizer.Add(button_sizer, flag = wx.ALIGN_RIGHT)
         prop_names = []
-        #todo: fix display here
+        #todo: fix order of display here
         for pname, tpcl_cost in component.properties.iteritems():
             prop_names.append(pname)
             self.prop_list.Insert(str(pname), 0)
@@ -127,9 +127,5 @@ class Panel(wx.Panel):
         
     def cleanup(self):
         print "Cleaning up Component Panel"
-        try:
-            self.component.node.object_database.UnEmphasize(self.high_id)
-        except NoSuchIDError:
-            #someone already got rid of our emphasis...strange but OK
-            pass
+        self.component.node.object_database.UnEmphasize(self.prop_list.GetItems())
         self.component.node.clearObject()
