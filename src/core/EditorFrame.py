@@ -146,6 +146,7 @@ class Frame(wx.Frame):
         del_proj_item = file_menu.Append(-1, 'Delete Project', 'Delete the current TP Project')
         self.Bind(wx.EVT_MENU, self.OnDeleteProject, del_proj_item)
         save_proj_item = file_menu.Append(-1, 'Save Project', 'Save the current TP Project')
+        self.Bind(wx.EVT_MENU, self.OnSaveProject, save_proj_item)
         file_menu.AppendSeparator()
         quit_item = file_menu.Append(-1, 'Quit', 'Quit the Ruleset Development Evironment')
         self.Bind(wx.EVT_MENU, self.OnQuit, quit_item)
@@ -168,9 +169,7 @@ class Frame(wx.Frame):
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
         menubar.Append(edit_menu, 'Edit')
         
-        #disable unused menu items
-        save_proj_item.Enable(False)
-        
+        #disable unused menu items      
         ren_object_item.Enable(False)
         
         return menubar
@@ -209,6 +208,9 @@ class Frame(wx.Frame):
                                   caption = "Invalid Project Folder!", style=wx.OK)
         else:
             return
+            
+    def OnSaveProject(self, event):
+        self.object_database.SaveObjects()
             
     def OnDeleteProject(self, event):
         #confirm project deletion

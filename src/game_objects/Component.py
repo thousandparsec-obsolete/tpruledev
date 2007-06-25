@@ -105,12 +105,12 @@ class Object(ObjectUtilities.GameObject):
     def addFieldToFlex(self, flex, field):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
 
-def saveObject(name, comp):
+def saveObject(comp):
     """\
-    Saves a Property to its persistence file.
+    Saves a Component to its persistence file.
     """  
     filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Component', name + '.xml')
+                                               'Component', comp.name + '.xml')
     ofile = open(filename, 'w')
     ofile.write('<component>\n')
     ofile.write('    <name>' + comp.name + '</name>\n')
@@ -118,6 +118,13 @@ def saveObject(name, comp):
     ofile.write('    <category_id>' + str(comp.category_id) + '</category_id>\n')
     ofile.write('    <description>' + comp.description + '</description>\n')
     ofile.write('    <tpcl_requirements><![CDATA[' + comp.tpcl_requirements + ']]></tpcl_requirements>\n')
+    ofile.write('\n')
+    ofile.write('    <!--propertylist:-->\n')
+    for prop, cost_func in comp.properties.iteritems():
+        ofile.write('    <property>\n')
+        ofile.write('        <name>' + prop + '</name>\n')
+        ofile.write('        <tpcl_cost><![CDATA[' + cost_func + ']]></tpcl_cost>\n')
+        ofile.write('    </property>\n')
     ofile.write('</component>\n')
     ofile.flush()
     ofile.close()

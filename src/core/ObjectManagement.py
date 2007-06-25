@@ -85,6 +85,18 @@ class ObjectDatabase(object):
             #    print o
         #alert listeners to happy initialization
         self.sendODBEvent(ODBInitialize())
+        
+    def SaveObjects(self):
+        """\
+        Saves each modified object to its persistence file
+        """
+        for type, module in self.object_modules.iteritems():
+            print "Saving objects of type: %s" % type
+            for node in self.objects[type]:
+                if node.modified:
+                    print "\tSaving %s - %s" % (type, node.name)
+                    module.saveObject(node.getObject()) 
+                    self.UnHighlight(node.name)          
 
     def Add(self, obj_type, name):
         #check for duplicate object
@@ -139,7 +151,7 @@ class ObjectDatabase(object):
             self.sendODBEvent(ODBHighlight(obj_names, color))
         else:
             if not obj_names in self.highlighted:
-                self.highlights.append(obj_names)
+                self.highlighted.append(obj_names)
             self.sendODBEvent(ODBHighlight([obj_names], color))
         
     def UnHighlight(self, obj_names):
@@ -158,7 +170,7 @@ class ObjectDatabase(object):
             except ValueError:
                 #don't care that it wasn't there
                 pass
-            self.sendODBEvent(ODBHighlight([obj_names]))        
+            self.sendODBEvent(ODBUnHighlight([obj_names]))        
             
     def Emphasize(self, obj_names, color="BLUE"):
         #todo: this can be so much more elegant

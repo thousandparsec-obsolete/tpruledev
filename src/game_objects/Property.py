@@ -115,12 +115,12 @@ class Object(ObjectUtilities.GameObject):
         flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
         
 
-def saveObject(name, prop):
+def saveObject(prop):
     """\
     Saves a Property to its persistence file.
     """
     filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Property', name + '.xml')
+                                               'Property', prop.name + '.xml')
     ofile = open(filename, 'w')
     ofile.write('<property>\n')
     ofile.write('    <name>' + prop.name + '</name>\n')

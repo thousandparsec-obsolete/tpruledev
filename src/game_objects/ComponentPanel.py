@@ -96,7 +96,7 @@ class Panel(wx.Panel):
                 print "\t" + loose_props[i]
                 self.component.properties[loose_props[i]] = "(lambda (design) #)"
                 self.prop_list.Append(loose_props[i])
-            self.component.properties = self.component.properties
+            self.markCompModified()
         else:
             #cancelled
             print "CANCELED!"
@@ -106,14 +106,20 @@ class Panel(wx.Panel):
         
     def OnRemoveProperty(self, event):
         #remove the selected properties
-        ridx = []
-        for idx in self.prop_list.GetSelections():
-            prop_name = self.prop_list.GetString(idx)
-            del self.component.properties[prop_name]
-            ridx.insert(0, idx)
-        for i in ridx:
-            self.prop_list.Delete(i)
-        self.component.properties = self.component.properties
+        if self.prop_list.GetSelections() != []:
+            ridx = []
+            for idx in self.prop_list.GetSelections():
+                prop_name = self.prop_list.GetString(idx)
+                del self.component.properties[prop_name]
+                ridx.insert(0, idx)
+            for i in ridx:
+                self.prop_list.Delete(i)
+            self.markCompModified()            
+            
+    def markCompModified(self):
+        #mark modified and highlight
+        self.component.node.modified = True
+        self.component.node.object_database.Highlight(self.component.name, "RED")
         
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
