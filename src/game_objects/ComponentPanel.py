@@ -20,18 +20,18 @@ class Panel(wx.Panel):
         
         name_label = self.createLabel("Name:")
         self.addLabelToFlex(flex_sizer, name_label)
-        self.name_field = self.createField(str(component.name))
+        self.name_field = wx.StaticText(self, wx.ID_ANY, str(component.name), style=wx.ALIGN_LEFT | wx.ALIGN_TOP)
         self.addFieldToFlex(flex_sizer, self.name_field)
 
         comp_id_label = self.createLabel("Component ID:")
         self.addLabelToFlex(flex_sizer, comp_id_label)
-        self.comp_id_field = self.createField(str(component.component_id))
-        self.addFieldToFlex(flex_sizer, self.comp_id_field)
+        self.compid_field = self.createField(str(component.component_id))
+        self.addFieldToFlex(flex_sizer, self.compid_field)
 
         category_id_label = self.createLabel("Category ID:")
         self.addLabelToFlex(flex_sizer, category_id_label)
-        self.category_id_field = self.createField(str(component.category_id))
-        self.addFieldToFlex(flex_sizer, self.category_id_field)
+        self.catid_field = self.createField(str(component.category_id))
+        self.addFieldToFlex(flex_sizer, self.catid_field)
 
         desc_label = self.createLabel("Description:")
         self.addLabelToFlex(flex_sizer, desc_label)
@@ -96,7 +96,7 @@ class Panel(wx.Panel):
                 print "\t" + loose_props[i]
                 self.component.properties[loose_props[i]] = "(lambda (design) #)"
                 self.prop_list.Append(loose_props[i])
-            self.markCompModified()
+            self.MarkCompModified()
         else:
             #cancelled
             print "CANCELED!"
@@ -114,9 +114,36 @@ class Panel(wx.Panel):
                 ridx.insert(0, idx)
             for i in ridx:
                 self.prop_list.Delete(i)
-            self.markCompModified()            
+            self.MarkCompModified()            
+    
+    def CheckForModification(self):
+        print "Checking for modification..."
+        mod = False
+        #rank change
+        print "\component_id: %s <> %s" % (self.component.component_id, self.compid_field.GetValue())
+        if str(self.component.component_id) != self.compid_field.GetValue():
+            mod = True
+            self.component.component_id = self.compid_field.GetValue()
+        
+        print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
+        if str(self.component.category_id) != self.catid_field.GetValue():
+            mod = True
+            self.component.category_id = self.catid_field.GetValue()
+        
+        print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
+        if self.component.description != self.desc_field.GetValue():
+            mod = True
+            self.component.description = self.desc_field.GetValue()
             
-    def markCompModified(self):
+        print "\tpcl_requirements: %s <> %s" % (self.component.tpcl_requirements, self.tpcl_req_stc.GetText())
+        if self.component.tpcl_requirements != self.tpcl_req_stc.GetText():
+            mod = True
+            self.component.tpcl_requirements = self.tpcl_req_stc.GetValue()
+        
+        if mod:
+            self.MarkCompModified()
+            
+    def MarkCompModified(self):
         #mark modified and highlight
         self.component.node.modified = True
         self.component.node.object_database.Highlight(self.component.name, "RED")
@@ -135,5 +162,6 @@ class Panel(wx.Panel):
         
     def cleanup(self):
         print "Cleaning up Component Panel"
+        self.CheckForModification()
         self.component.node.object_database.UnEmphasize(self.prop_list.GetItems())
         self.component.node.clearObject()

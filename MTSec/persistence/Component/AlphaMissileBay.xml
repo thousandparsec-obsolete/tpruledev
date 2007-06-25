@@ -2,7 +2,7 @@
     <name>AlphaMissileBay</name>
     <component_id>10</component_id>
     <category_id>1</category_id>
-    <description>null</description>
+    <description>Missle bays designed by Mr. Alpha Omega</description>
     <tpcl_requirements><![CDATA[(lambda (design)
    (if (= (designType.num-ammo design) 1)
       (if (< (designType.AmmoSize design) 4)

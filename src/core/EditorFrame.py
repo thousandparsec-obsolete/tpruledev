@@ -258,11 +258,8 @@ class Frame(wx.Frame):
             # grabbed by objects if applicable
             #this will also clear any highlighting done by the
             # panel and stuff like that
-            try:
+            if hasattr(self.cp_right, "cleanup"):
                 self.cp_right.cleanup()
-            except AttributeError:
-                #no biggie, just doesn't have a cleanup method
-                pass
                 
             #generate the new panel and do highlighting and stuff like that
             # (all handled by the generateEditPanel method)

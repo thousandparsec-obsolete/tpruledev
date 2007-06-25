@@ -96,6 +96,7 @@ class ObjectDatabase(object):
                 if node.modified:
                     print "\tSaving %s - %s" % (type, node.name)
                     module.saveObject(node.getObject()) 
+                    node.modified = False
                     self.UnHighlight(node.name)          
 
     def Add(self, obj_type, name):

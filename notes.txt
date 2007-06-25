@@ -11,6 +11,7 @@ Look into providing a way for objects to keep track of who they're associated wi
 Recent projects menu item...
 Save config options on app close
 Get the object manipulation methods to accept lists as well as atoms
+Alert the user when they are going to quit with unsaved changes
 
 Complete:
 Allow Components to add and remove Property associations
@@ -19,6 +20,9 @@ Make a panel to default to on start that describes the RDE
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
 Need to have some mapping between the state of the objects inside of the object database and the state of the tree - ordering, highlighting, all such things as that...
+
+On loading objects:
+Need to have consistent representation of numerical values, are they strings or numbers? Meh.
 
 On wx and Strings:
 wxPython seems to use unicode strings. Hrm. That is a bit of a pain since it messes up sorting. I'll need to make it consistent, I think. Either I need to start using Unicode strings or I need to alwas convert when pulling data from a wx widget.
