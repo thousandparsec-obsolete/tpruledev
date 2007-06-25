@@ -60,12 +60,11 @@ class Panel(wx.Panel):
         prop_sizer.Add(self.prop_list, 1, wx.EXPAND | wx.ALL)
         prop_sizer.Add((5,5))
         prop_sizer.Add(button_sizer, flag = wx.ALIGN_RIGHT)
-        prop_names = []
+        
         #todo: fix order of display here
-        for pname, tpcl_cost in component.properties.iteritems():
-            prop_names.append(pname)
-            self.prop_list.Insert(str(pname), 0)
-        self.high_id = component.node.object_database.Emphasize(prop_names, "BLUE")
+        prop_names = [pname for pname in component.properties.keys()]
+        self.prop_list.SetItems(prop_names)
+        component.node.object_database.Emphasize(prop_names, "BLUE")
         self.addFieldToFlex(flex_sizer, prop_sizer)
        
         flex_sizer.AddGrowableCol(1) #field column
@@ -79,6 +78,9 @@ class Panel(wx.Panel):
         self.SetSizer(border2)
         
     def OnDClickProperty(self, event):
+        """\
+        Should open a window to edit the TPCL cost function here.
+        """
         pass
         
     def OnAddProperty(self, event):
