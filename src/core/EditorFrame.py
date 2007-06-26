@@ -212,11 +212,14 @@ class Frame(wx.Frame):
             return
             
     def OnSaveProject(self, event):
-        #try:
+        #we may want to locate the checkformodification function
+        # on the nodes...ionno.
+        print "OnProjectSave"
         node = self.tree.GetPyData(self.tree.GetSelection())
-        if hasattr(node, "CheckForModification"):
-            node.CheckForModification()
-        print "OnSaveProject trying to save..."
+        print "\topen object: %s" % node.name
+        for child in self.cp_right.GetChildren():
+            if hasattr(child, "CheckForModification"):
+                child.CheckForModification()
         self.object_database.SaveObjects()
             
     def OnDeleteProject(self, event):
