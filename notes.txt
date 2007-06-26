@@ -1,7 +1,6 @@
 Todo:
 Allow for deleting projects
 Check validity of objects on loading and highlight those that are incomplete
-Allow for saving!
 ----------------------------------------
 Make it possible to add and delete objects through context menus in the object tree
 Robust Syntax Highlighting
@@ -16,6 +15,7 @@ Alert the user when they are going to quit with unsaved changes
 Complete:
 Allow Components to add and remove Property associations
 Make a panel to default to on start that describes the RDE
+Allow for saving!
 
 ObjectDatabase and GameObjectTree design:
 Tree keeps hash of object names and treenodeid's
