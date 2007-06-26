@@ -112,7 +112,9 @@ class Frame(wx.Frame):
                                           wx.SP_3D)
         self.content_sizer.Add(self.splitter, 1, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER, 0)
         self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
-        self.cp_right.SetBackgroundColour("black")
+        self.cp_right_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.cp_right.SetSizer(self.cp_right_sizer)
+        #self.cp_right.SetBackgroundColour("black")
         
         self.tree = core.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
@@ -210,6 +212,11 @@ class Frame(wx.Frame):
             return
             
     def OnSaveProject(self, event):
+        #try:
+        node = self.tree.GetPyData(self.tree.GetSelection())
+        if hasattr(node, "CheckForModification"):
+            node.CheckForModification()
+        print "OnSaveProject trying to save..."
         self.object_database.SaveObjects()
             
     def OnDeleteProject(self, event):
@@ -250,29 +257,37 @@ class Frame(wx.Frame):
                 caption="Invalid Selection", style=wx.OK)
      
     def OnTreeSelect(self, event):
-        self.curr_node_id = event.GetItem()
-        if self.curr_node_id:
-            print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
-            
-            #cleanup the last panel, which will release resources
-            # grabbed by objects if applicable
-            #this will also clear any highlighting done by the
-            # panel and stuff like that
-            if hasattr(self.cp_right, "cleanup"):
-                self.cp_right.cleanup()
+        try:
+            print "Tree Selection: ", self.tree.GetSelections()
+            self.curr_node_id = event.GetItem()
+            if self.curr_node_id:
+                print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
                 
-            #generate the new panel and do highlighting and stuff like that
-            # (all handled by the generateEditPanel method)
-            panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.splitter)
-            self.splitter.ReplaceWindow(self.cp_right, panel)
-            
-            #destroy the old panel and refresh everything
-            self.cp_right.Destroy()
-            self.cp_right = panel
-            self.Refresh()
-            self.Update()
-            
-        event.Skip()
+                #cleanup the last panel, which will release resources
+                # grabbed by objects if applicable
+                #this will also clear any highlighting done by the
+                # panel and stuff like that
+                for child in self.cp_right.GetChildren():
+                    child.Hide()
+                    if hasattr(child, "cleanup"):
+                        child.cleanup()
+                    self.cp_right_sizer.Remove(child)
+                    child.Destroy()
+                    del child
+                    
+                #generate the new panel and do highlighting and stuff like that
+                # (all handled by the generateEditPanel method)
+                panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.cp_right)
+                self.cp_right_sizer.Add(panel, 1, wx.ALL | wx.EXPAND, 5)
+                self.cp_right.Layout()
+                
+                self.Refresh()
+                self.Update()
+                
+            event.Skip()
+        except wx.PyDeadObjectError:
+            #the app is closing
+            pass
         
     def OnQuit(self, event):
         self.Close()

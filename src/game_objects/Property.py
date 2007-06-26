@@ -22,9 +22,9 @@ def generateEditPanel(parent):
                     "Insert a nice little blurb about Properties here...\n")
     label.SetEditable(False)
     border1 = wx.BoxSizer(wx.HORIZONTAL)
-    border1.Add(label, 1, wx.ALL | wx.EXPAND, 5)
+    border1.Add(label, 1, wx.ALL | wx.EXPAND)
     border2 = wx.BoxSizer(wx.VERTICAL)
-    border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
+    border2.Add(border1, 1, wx.ALL | wx.EXPAND)
     panel.SetSizer(border2)
     return panel
     

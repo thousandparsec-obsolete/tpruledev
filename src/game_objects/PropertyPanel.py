@@ -63,12 +63,13 @@ class Panel(wx.Panel):
         flex_sizer.AddGrowableRow(7)
         
         border1 = wx.BoxSizer(wx.HORIZONTAL)
-        border1.Add(flex_sizer, 1, wx.ALL | wx.EXPAND, 5)
+        border1.Add(flex_sizer, 1, wx.ALL | wx.EXPAND)
         border2 = wx.BoxSizer(wx.VERTICAL)
-        border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
+        border2.Add(border1, 1, wx.ALL | wx.EXPAND)
         self.SetSizer(border2)
         
     def CheckForModification(self):
+        print "Checking Property %s for modifications" % self.property.name
         mod = False
         #print "\property_id: %s <> %s" % (self.component.property_id, self.property_id.GetValue())
         if str(self.property.property_id) != self.propid_field.GetValue():
@@ -106,6 +107,7 @@ class Panel(wx.Panel):
             self.property.tpcl_display = self.tpcl_disp_stc.GetValue()
         
         if mod:
+            print "Marking %s as modified" % self.property.name
             self.property.node.modified = True
             self.property.node.object_database.Highlight(self.property.name, "RED")
     

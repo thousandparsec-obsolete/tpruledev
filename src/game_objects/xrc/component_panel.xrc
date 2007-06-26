@@ -4,6 +4,7 @@
 <resource version="2.3.0.1">
 	<object class="wxPanel" name="component_panel">
 	    <style>wxTAB_TRAVERSAL</style>
+	    <flag>wxEXPAND</flag>
 	    <object class="wxBoxSizer">
 	        <orient>wxVERTICAL</orient>
 	        <object class="sizeritem">

@@ -74,7 +74,7 @@ class ObjectDatabase(object):
         """
         #print "Trying to dynamically load objects from storage"
         for name, module in self.object_modules.iteritems():
-            print "Loading object names for object type: " + name
+            #print "Loading object names for object type: " + name
             object_dir = os.path.join(self.save_location, name)
             #grab the object names from the filenames and use them to populate
             # the lists of objects
@@ -90,6 +90,7 @@ class ObjectDatabase(object):
         """\
         Saves each modified object to its persistence file
         """
+        print "Saving objects!"
         for type, module in self.object_modules.iteritems():
             print "Saving objects of type: %s" % type
             for node in self.objects[type]:
@@ -312,7 +313,7 @@ class GameObjectTree(wx.TreeCtrl):
     """
     
     def __init__(self, parent, id=-1, object_database = None, pos=wx.DefaultPosition, size=wx.DefaultSize,
-                    style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT, validator=wx.DefaultValidator,
+                    style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT | wx.TR_SINGLE , validator=wx.DefaultValidator,
                     name=wx.TreeCtrlNameStr):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
         self.odb = object_database
@@ -422,7 +423,6 @@ class GameObjectTree(wx.TreeCtrl):
         first_obj = self.type_ids[self.type_ids.keys()[0]]
         while  self.ItemHasChildren(first_obj):
             first_obj= self.GetFirstChild(first_obj)[0]
-            print "first_obj: ", first_obj
             
         self.SelectItem(first_obj)
 
