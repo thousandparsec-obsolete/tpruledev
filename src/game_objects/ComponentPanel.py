@@ -12,7 +12,7 @@ class Panel(wx.Panel):
     """
     A wx.Panel for displaying and editing Components
     """
-    
+        
     def __init__(self, component, parent, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
         pre = wx.PrePanel()
@@ -40,6 +40,7 @@ class Panel(wx.Panel):
         self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
         
         self.prop_list = XRCCTRL(self, "prop_list")
+        self.prop_sel = -1
         self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
         prop_names = [pname for pname in self.component.properties.keys()]
         self.prop_list.SetItems(prop_names)
@@ -60,9 +61,18 @@ class Panel(wx.Panel):
         pass
         
     def OnListBoxSelect(self, event):
-        prop_name = self.prop_list.GetStringSelection()
-        if prop_name != "":
-            self.tpcl_cost_stc.SetText(self.component.properties[prop_name])
+        if self.prop_sel > -1:
+            #there was a previously selected property
+            # we need to check for and save any changes to the cost function
+            old_name = self.prop_list.GetString(self.prop_sel)
+            if self.component.properties[old_name] != self.tpcl_cost_stc.GetText():
+                self.component.properties[old_name] = self.tpcl_cost_stc.GetText()
+                self.MarkModified()
+        sel_idx = self.prop_list.GetSelection()
+        if sel_idx != wx.NOT_FOUND:
+            self.prop_sel = sel_idx
+            self.tpcl_cost_stc.SetText(self.component.properties[
+                                            self.prop_list.GetString(sel_idx)])
         
     def OnAddProperty(self, event):
         print "On Add Property"
@@ -77,7 +87,7 @@ class Panel(wx.Panel):
                 print "\t" + loose_props[i]
                 self.component.properties[loose_props[i]] = "(lambda (design) #)"
                 self.prop_list.Append(loose_props[i])
-            self.MarkCompModified()
+            self.MarkModified()
         else:
             #cancelled
             print "CANCELED!"
@@ -95,7 +105,8 @@ class Panel(wx.Panel):
                 ridx.insert(0, idx)
             for i in ridx:
                 self.prop_list.Delete(i)
-            self.MarkCompModified()            
+            self.tpcl_cost_stc.SetText("")
+            self.MarkModified()            
     
     def CheckForModification(self):
         #print "Checking for modification..."
@@ -122,9 +133,9 @@ class Panel(wx.Panel):
             self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
         
         if mod:
-            self.MarkCompModified()
+            self.MarkModified()
             
-    def MarkCompModified(self):
+    def MarkModified(self):
         #mark modified and highlight
         self.component.node.modified = True
         self.component.node.object_database.Highlight(self.component.name, "RED")
