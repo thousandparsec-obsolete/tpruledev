@@ -45,5 +45,5 @@ def generateInfoPanel(parent):
     return panel    
 
 if __name__ == '__main__':
-    app = App(redirect=True)
+    app = App(redirect=False)
     app.MainLoop()
