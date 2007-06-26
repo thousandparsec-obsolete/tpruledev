@@ -5,7 +5,8 @@ a Component object
 
 import wx
 from core.Exceptions import NoSuchIDError
-import gui.TextCtrl
+import gui.TextCtrl, gui.XrcUtilities
+from wx.xrc import XmlResource, XRCCTRL
 
 class Panel(wx.Panel):
     """
@@ -13,69 +14,41 @@ class Panel(wx.Panel):
     """
     
     def __init__(self, component, parent, id=wx.ID_ANY, style=wx.EXPAND):
-        wx.Panel.__init__(self, parent, id, style=style)
+        #load from XRC, need to use two-stage create
+        pre = wx.PrePanel()
+        res = gui.XrcUtilities.XmlResource('./game_objects/xrc/component_panel.xrc')
+        res.LoadOnPanel(pre, parent, "component_panel")
+        self.PostCreate(pre)
+        
         self.component = component
-        flex_sizer = wx.FlexGridSizer(6, 2, 5, 5)
-        flex_sizer.SetFlexibleDirection(wx.BOTH)
+        self.OnCreate()
         
-        name_label = self.createLabel("Name:")
-        self.addLabelToFlex(flex_sizer, name_label)
-        self.name_field = wx.StaticText(self, wx.ID_ANY, str(component.name), style=wx.ALIGN_LEFT | wx.ALIGN_TOP)
-        self.addFieldToFlex(flex_sizer, self.name_field)
-
-        comp_id_label = self.createLabel("Component ID:")
-        self.addLabelToFlex(flex_sizer, comp_id_label)
-        self.compid_field = self.createField(str(component.component_id))
-        self.addFieldToFlex(flex_sizer, self.compid_field)
-
-        category_id_label = self.createLabel("Category ID:")
-        self.addLabelToFlex(flex_sizer, category_id_label)
-        self.catid_field = self.createField(str(component.category_id))
-        self.addFieldToFlex(flex_sizer, self.catid_field)
-
-        desc_label = self.createLabel("Description:")
-        self.addLabelToFlex(flex_sizer, desc_label)
-        self.desc_field = self.createField(str(component.description))
-        self.addFieldToFlex(flex_sizer, self.desc_field)
-
-        tpcl_req_label = self.createLabel("TPCL Requirements Function:")
-        self.addLabelToFlex(flex_sizer, tpcl_req_label)
-        self.tpcl_req_stc = gui.TextCtrl.SchemeSTC(self, -1, str(component.tpcl_requirements))
-        self.addFieldToFlex(flex_sizer, self.tpcl_req_stc)
-
-        props_label = self.createLabel("Associated Properties:")
-        self.addLabelToFlex(flex_sizer, props_label)
-        #TODO make this into a ListCtrl?
-        #TODO sort this list alphabetically
-        self.prop_list = wx.ListBox(self, wx.ID_ANY, style=wx.LB_MULTIPLE | wx.LB_SORT)
-        prop_add_button = wx.Button(self, wx.ID_ANY, "Add Property")
-        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, prop_add_button)
-        prop_remove_button = wx.Button(self, wx.ID_ANY, "Remove Property")
-        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, prop_remove_button)
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        button_sizer.Add(prop_add_button)
-        button_sizer.Add((5,5))
-        button_sizer.Add(prop_remove_button)
-        prop_sizer = wx.BoxSizer(wx.VERTICAL)
-        prop_sizer.Add(self.prop_list, 1, wx.EXPAND | wx.ALL)
-        prop_sizer.Add((5,5))
-        prop_sizer.Add(button_sizer, flag = wx.ALIGN_RIGHT)
+    def OnCreate(self):
+        self.name_field = XRCCTRL(self, "name_field")
+        self.name_field.SetValue(str(self.component.name))
         
-        #todo: fix order of display here
-        prop_names = [pname for pname in component.properties.keys()]
+        self.compid_field = XRCCTRL(self, "compid_field")
+        self.compid_field.SetValue(str(self.component.component_id))
+        
+        self.catid_field = XRCCTRL(self, "catid_field")
+        self.catid_field.SetValue(str(self.component.category_id))
+        
+        self.desc_field = XRCCTRL(self, "desc_field")
+        self.desc_field.SetValue(str(self.component.description))
+        
+        self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
+        self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
+        
+        self.prop_list = XRCCTRL(self, "prop_list")
+        prop_names = [pname for pname in self.component.properties.keys()]
         self.prop_list.SetItems(prop_names)
-        component.node.object_database.Emphasize(prop_names, "BLUE")
-        self.addFieldToFlex(flex_sizer, prop_sizer)
-       
-        flex_sizer.AddGrowableCol(1) #field column
-        flex_sizer.AddGrowableRow(4) #tpcl_requirements function
-        flex_sizer.AddGrowableRow(5) #property list
-
-        border1 = wx.BoxSizer(wx.HORIZONTAL)
-        border1.Add(flex_sizer, 1, wx.ALL | wx.EXPAND, 5)
-        border2 = wx.BoxSizer(wx.VERTICAL)
-        border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
-        self.SetSizer(border2)
+        self.component.node.object_database.Emphasize(prop_names, "BLUE")
+        
+        add_button = XRCCTRL(self, "add_button")
+        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)
+        
+        remove_button = XRCCTRL(self, "remove_button")
+        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)       
         
     def OnDClickProperty(self, event):
         """\
@@ -138,7 +111,7 @@ class Panel(wx.Panel):
         print "\tpcl_requirements: %s <> %s" % (self.component.tpcl_requirements, self.tpcl_req_stc.GetText())
         if self.component.tpcl_requirements != self.tpcl_req_stc.GetText():
             mod = True
-            self.component.tpcl_requirements = self.tpcl_req_stc.GetValue()
+            self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
         
         if mod:
             self.MarkCompModified()
