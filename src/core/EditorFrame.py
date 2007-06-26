@@ -144,8 +144,6 @@ class Frame(wx.Frame):
         new_proj_item = file_menu.Append(-1, 'New Project\tCtrl-n', 'Create a new TP Project')
         self.Bind(wx.EVT_MENU, self.OnNewProject, new_proj_item)
         open_proj_item = file_menu.Append(-1, 'Open Project\tCtrl-o', 'Open an existing TP Project')
-        self.Bind(wx.EVT_MENU, self.OnOpenProject, open_proj_item)
-        del_proj_item = file_menu.Append(-1, 'Delete Project', 'Delete the current TP Project')
         self.Bind(wx.EVT_MENU, self.OnDeleteProject, del_proj_item)
         save_proj_item = file_menu.Append(-1, 'Save Project\tCtrl-s', 'Save the current TP Project')
         self.Bind(wx.EVT_MENU, self.OnSaveProject, save_proj_item)
