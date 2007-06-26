@@ -40,9 +40,12 @@ class Panel(wx.Panel):
         self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
         
         self.prop_list = XRCCTRL(self, "prop_list")
+        self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
         prop_names = [pname for pname in self.component.properties.keys()]
         self.prop_list.SetItems(prop_names)
         self.component.node.object_database.Emphasize(prop_names, "BLUE")
+        
+        self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
         
         add_button = XRCCTRL(self, "add_button")
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)
@@ -55,6 +58,11 @@ class Panel(wx.Panel):
         Should open a window to edit the TPCL cost function here.
         """
         pass
+        
+    def OnListBoxSelect(self, event):
+        prop_name = self.prop_list.GetStringSelection()
+        if prop_name != "":
+            self.tpcl_cost_stc.SetText(self.component.properties[prop_name])
         
     def OnAddProperty(self, event):
         print "On Add Property"
@@ -90,25 +98,25 @@ class Panel(wx.Panel):
             self.MarkCompModified()            
     
     def CheckForModification(self):
-        print "Checking for modification..."
+        #print "Checking for modification..."
         mod = False
         #rank change
-        print "\component_id: %s <> %s" % (self.component.component_id, self.compid_field.GetValue())
+        #print "\component_id: %s <> %s" % (self.component.component_id, self.compid_field.GetValue())
         if str(self.component.component_id) != self.compid_field.GetValue():
             mod = True
             self.component.component_id = self.compid_field.GetValue()
         
-        print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
+        #print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
         if str(self.component.category_id) != self.catid_field.GetValue():
             mod = True
             self.component.category_id = self.catid_field.GetValue()
         
-        print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
+        #print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
         if self.component.description != self.desc_field.GetValue():
             mod = True
             self.component.description = self.desc_field.GetValue()
             
-        print "\tpcl_requirements: %s <> %s" % (self.component.tpcl_requirements, self.tpcl_req_stc.GetText())
+        #print "\tpcl_requirements: %s <> %s" % (self.component.tpcl_requirements, self.tpcl_req_stc.GetText())
         if self.component.tpcl_requirements != self.tpcl_req_stc.GetText():
             mod = True
             self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
