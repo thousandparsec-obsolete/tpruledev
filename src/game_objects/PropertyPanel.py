@@ -4,7 +4,8 @@ a Property object
 """
 
 import wx
-import gui.TextCtrl
+import gui.TextCtrl, gui.XrcUtilities
+from wx.xrc import XRCCTRL
 
 class Panel(wx.Panel):
     """
@@ -12,61 +13,30 @@ class Panel(wx.Panel):
     """
     
     def __init__(self, property, parent, id=wx.ID_ANY, style=wx.EXPAND):
-        wx.Panel.__init__(self, parent, id=id, style=style)
+        #load from XRC, need to use two-stage create
+        pre = wx.PrePanel()
+        res = gui.XrcUtilities.XmlResource('./game_objects/xrc/PropertyPanel.xrc')
+        res.LoadOnPanel(pre, parent, "PropertyPanel")
+        self.PostCreate(pre)
+        
         self.property = property
-        flex_sizer = wx.FlexGridSizer(8, 2, 5, 5)
-        flex_sizer.SetFlexibleDirection(wx.BOTH)
-        
-        name_label = self.createLabel("Name:")
-        self.addLabelToFlex(flex_sizer, name_label)
-        name_field = wx.StaticText(self, wx.ID_ANY, str(property.name),
-                                        style=wx.ALIGN_LEFT | wx.ALIGN_TOP)
-        self.addFieldToFlex(flex_sizer, name_field)
-
-        rank_label = self.createLabel("Rank:")
-        self.addLabelToFlex(flex_sizer, rank_label)
-        self.rank_field = self.createField(str(property.rank))
-        self.addFieldToFlex(flex_sizer, self.rank_field)
-
-        property_id_label = self.createLabel("Property ID:")
-        self.addLabelToFlex(flex_sizer, property_id_label)
-        self.propid_field = self.createField(str(property.property_id))
-        self.addFieldToFlex(flex_sizer, self.propid_field)
-
-        category_id_label = self.createLabel("Category ID:")
-        self.addLabelToFlex(flex_sizer, category_id_label)
-        self.catid_field = self.createField(str(property.category_id))
-        self.addFieldToFlex(flex_sizer, self.catid_field)
-
-        desc_label = self.createLabel("Description:")
-        self.addLabelToFlex(flex_sizer, desc_label)
-        self.desc_field = self.createField(str(property.description))
-        self.addFieldToFlex(flex_sizer, self.desc_field)
-
-        disp_label = self.createLabel("Display Text:")
-        self.addLabelToFlex(flex_sizer, disp_label)
-        self.disp_field = self.createField(str(property.display_text))
-        self.addFieldToFlex(flex_sizer, self.disp_field)
-
-        tpcl_disp_label = self.createLabel("TPCL Display Function:")
-        self.addLabelToFlex(flex_sizer, tpcl_disp_label)
-        self.tpcl_disp_stc = self.createTextArea(str(property.tpcl_display))
-        self.addFieldToFlex(flex_sizer, self.tpcl_disp_stc)
-
-        tpcl_req_label = self.createLabel("TPCL Requires Function:")
-        self.addLabelToFlex(flex_sizer, tpcl_req_label)
-        self.tpcl_req_stc = self.createTextArea(str(property.tpcl_requires))
-        self.addFieldToFlex(flex_sizer, self.tpcl_req_stc)
-       
-        flex_sizer.AddGrowableCol(1)
-        flex_sizer.AddGrowableRow(6)
-        flex_sizer.AddGrowableRow(7)
-        
-        border1 = wx.BoxSizer(wx.HORIZONTAL)
-        border1.Add(flex_sizer, 1, wx.ALL | wx.EXPAND)
-        border2 = wx.BoxSizer(wx.VERTICAL)
-        border2.Add(border1, 1, wx.ALL | wx.EXPAND)
-        self.SetSizer(border2)
+        self.OnCreate()
+    
+    def OnCreate(self):
+        self.rank_field = XRCCTRL(self, "rank_field")
+        self.rank_field.SetValue(str(self.property.rank))
+        self.propid_field = XRCCTRL(self, "propid_field")
+        self.propid_field.SetValue(str(self.property.property_id))
+        self.catid_field = XRCCTRL(self, "catid_field")
+        self.catid_field.SetValue(str(self.property.category_id))
+        self.desc_field = XRCCTRL(self, "desc_field")
+        self.desc_field.SetValue(str(self.property.description))
+        self.disp_field = XRCCTRL(self, "disp_field")
+        self.disp_field.SetValue(str(self.property.display_text))
+        self.tpcl_disp_stc = XRCCTRL(self, "tpcl_disp_stc")
+        self.tpcl_disp_stc.SetText(str(self.property.tpcl_display))        
+        self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
+        self.tpcl_req_stc.SetText(str(self.property.tpcl_requires))
         
     def CheckForModification(self):
         print "Checking Property %s for modifications" % self.property.name

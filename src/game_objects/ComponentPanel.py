@@ -16,7 +16,7 @@ class Panel(wx.Panel):
     def __init__(self, component, parent, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
         pre = wx.PrePanel()
-        res = gui.XrcUtilities.XmlResource('./game_objects/xrc/component_panel.xrc')
+        res = gui.XrcUtilities.XmlResource('./game_objects/xrc/ComponentPanel.xrc')
         res.LoadOnPanel(pre, parent, "component_panel")
         self.PostCreate(pre)
         
