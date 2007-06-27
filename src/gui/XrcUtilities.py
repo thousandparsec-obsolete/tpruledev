@@ -7,6 +7,6 @@ import wx, wx.xrc
 import gui.TextCtrl
 
 class XmlResource(wx.xrc.XmlResource):
-    def __init__(self, filemask, flags=wx.xrc.XRC_USE_LOCALE, domain=wx.EmptyString):
-        wx.xrc.XmlResource.__init__(self, filemask, flags, domain)
+    def __init__(self, filemask, flags=wx.xrc.XRC_USE_LOCALE):
+        wx.xrc.XmlResource.__init__(self, filemask, flags)
         self.InsertHandler(gui.TextCtrl.wxSchemeStcHandler())

@@ -318,7 +318,7 @@ class GameObjectTree(wx.TreeCtrl):
         wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
         self.odb = object_database
         self.root_id = self.AddRoot('RDE')
-        self.SetPyData(self.root_id, RDE)
+        #self.SetPyData(self.root_id, RDE)
         
     def SetObjectDatabase(self, odb):
         self.odb = odb

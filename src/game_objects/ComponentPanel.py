@@ -43,7 +43,7 @@ class Panel(wx.Panel):
         self.prop_sel = -1
         self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
         prop_names = [pname for pname in self.component.properties.keys()]
-        self.prop_list.SetItems(prop_names)
+        self.prop_list.Set(prop_names)
         self.component.node.object_database.Emphasize(prop_names, "BLUE")
         
         self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
@@ -155,5 +155,6 @@ class Panel(wx.Panel):
     def cleanup(self):
         print "Cleaning up Component Panel"
         self.CheckForModification()
-        self.component.node.object_database.UnEmphasize(self.prop_list.GetItems())
+        self.component.node.object_database.UnEmphasize(
+            [self.prop_list.GetString(i) for i in range(0, self.prop_list.GetCount())])
         self.component.node.clearObject()

@@ -130,7 +130,11 @@ def deleteSaveFile(name):
     """
     filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
                                                'Property', name + '.xml')
-    os.remove(filename)
+    if os.path.exists(filename):
+        os.remove(filename)
+    else:
+        #no persistence file has yet been created
+        pass
     
 
 def getName():

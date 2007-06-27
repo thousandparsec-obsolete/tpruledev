@@ -1,5 +1,5 @@
 Todo:
-Allow for deleting projects
+Fix new object problems (modified tag doesn't stick, meh!)
 Check validity of objects on loading and highlight those that are incomplete
 ----------------------------------------
 Make it possible to add and delete objects through context menus in the object tree
