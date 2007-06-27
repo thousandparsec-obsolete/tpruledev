@@ -17,9 +17,10 @@ Allow Components to add and remove Property associations
 Make a panel to default to on start that describes the RDE
 Allow for saving!
 
-ObjectDatabase and GameObjectTree design:
-Tree keeps hash of object names and treenodeid's
-Need to have some mapping between the state of the objects inside of the object database and the state of the tree - ordering, highlighting, all such things as that...
+----------------------------------------------------
+
+On panel loading:
+A single editing panel should exist for every object type and it should be filled with the appropriate data as necessary since StyledTextControls are so expensive to create.
 
 On loading objects:
 Need to have consistent representation of numerical values, are they strings or numbers? Meh.
