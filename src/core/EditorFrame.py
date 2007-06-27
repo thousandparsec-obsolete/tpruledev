@@ -174,6 +174,11 @@ class Frame(wx.Frame):
         
         return menubar
         
+    def CheckCurrentObjectForModifications(self):
+        for child in self.cp_right.GetChildren():
+            if hasattr(child, "CheckForModification"):
+                child.CheckForModification()
+    
     def OnNewProject(self, event):
         #get project name
         proj_name = wx.GetTextFromUser('Enter the name of the ruleset:', 'Input Ruleset Name')
@@ -215,9 +220,7 @@ class Frame(wx.Frame):
         print "OnProjectSave"
         node = self.tree.GetPyData(self.tree.GetSelection())
         print "\topen object: %s" % node.name
-        for child in self.cp_right.GetChildren():
-            if hasattr(child, "CheckForModification"):
-                child.CheckForModification()
+        self.CheckCurrentObjectForModifications()
         self.object_database.SaveObjects()
             
     def OnDeleteProject(self, event):
@@ -291,4 +294,12 @@ class Frame(wx.Frame):
             pass
         
     def OnQuit(self, event):
+        self.CheckCurrentObjectForModifications()
+        if self.object_database.pending_modifications:
+            choice = wx.MessageBox("You have unsaved changes!\nAre you sure you want to quit?",
+                caption="Confirm Quit", style = wx.YES_NO)
+            if choice == wx.YES:
+                self.Close()
+            else:
+                return
         self.Close()

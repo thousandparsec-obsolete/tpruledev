@@ -133,7 +133,7 @@ class Panel(wx.Panel):
             self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
         
         if mod:
-            self.node.SetModified(True)
+            self.component.node.SetModified(True)
         
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
