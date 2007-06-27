@@ -133,12 +133,7 @@ class Panel(wx.Panel):
             self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
         
         if mod:
-            self.MarkModified()
-            
-    def MarkModified(self):
-        #mark modified and highlight
-        self.component.node.modified = True
-        self.component.node.object_database.Highlight(self.component.name, "RED")
+            self.node.SetModified(True)
         
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)

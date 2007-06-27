@@ -141,6 +141,14 @@ class ObjectNode(core.Nodes.DatabaseNode):
         self.name = name
         self.object_module = module
         self.object_database = odb
+        
+    def SetModified(self, b):
+        self.modified = b
+        if b:
+            self.object_database.pending_modifications = True
+            self.object_database.Highlight(self.name, "RED")
+        else:
+            self.object_database.UnHighlight(self.name)
     
     def addListener(self, listener):
         """

@@ -107,9 +107,7 @@ class Panel(wx.Panel):
             self.property.tpcl_display = self.tpcl_disp_stc.GetValue()
         
         if mod:
-            print "Marking %s as modified" % self.property.name
-            self.property.node.modified = True
-            self.property.node.object_database.Highlight(self.property.name, "RED")
+            self.node.SetModified(True)
     
     def createLabel(self, text):
         return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)

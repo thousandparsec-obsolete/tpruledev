@@ -43,6 +43,7 @@ class ObjectDatabase(object):
     
     highlighted = []
     emphasized = []
+    pending_modifications = False
     
     def __init__(self):
         self.config = RDE.GlobalConfig.config
@@ -97,8 +98,7 @@ class ObjectDatabase(object):
                 if node.modified:
                     print "\tSaving %s - %s" % (type, node.name)
                     module.saveObject(node.getObject()) 
-                    node.modified = False
-                    self.UnHighlight(node.name)          
+                    node.SetModified(False)        
 
     def Add(self, obj_type, name):
         #check for duplicate object
@@ -122,6 +122,8 @@ class ObjectDatabase(object):
             self.sendODBEvent(ODBAdd(node, obj_type, None))
         else:
             self.sendODBEvent(ODBAdd(node, obj_type, self.objects[obj_type][idx-1].name))
+            
+        node.SetModified(True)
 
     def Remove(self, obj_type, name):
         if not self.ObjectExists(obj_type, name):

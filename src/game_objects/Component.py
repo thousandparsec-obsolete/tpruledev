@@ -35,11 +35,11 @@ def compareFunction(comp1, comp2):
     return 1
 
 class Object(ObjectUtilities.GameObject):
-    component_id = ObjectUtilities.sentinelProperty('component_id')
-    description = ObjectUtilities.sentinelProperty('description')
-    category_id = ObjectUtilities.sentinelProperty('category_id')
-    tpcl_requirements = ObjectUtilities.sentinelProperty('tpcl_requirements')
-    properties = ObjectUtilities.sentinelProperty('properties')
+    #component_id = ObjectUtilities.sentinelProperty('component_id')
+    #description = ObjectUtilities.sentinelProperty('description')
+    #category_id = ObjectUtilities.sentinelProperty('category_id')
+    #tpcl_requirements = ObjectUtilities.sentinelProperty('tpcl_requirements')
+    #properties = ObjectUtilities.sentinelProperty('properties')
 
     def __init__(self, node, name, comp_id = -1,
                  desc = "Null", cat_id = -1,
@@ -59,9 +59,6 @@ class Object(ObjectUtilities.GameObject):
             self.name = name
             self.description = desc
             self.tpcl_requirements = tpcl_req
-        
-        if node != None:
-            self.node.modified = False
 
     def __str__(self):
         return "Component Game Object - " + self.name
@@ -81,7 +78,7 @@ class Object(ObjectUtilities.GameObject):
             for prop in root.getElementsByTagName("property"):
                 self.properties[getXMLString(prop, "name")] = getXMLString(prop, "tpcl_cost")
         except IOError:
-            #file does not exist
+            #file does not exist - we are creating this property for the first time
             # fill with default values
             self.component_id = -1
             self.category_id = -1
