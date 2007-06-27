@@ -2,7 +2,7 @@
 
 [DEFAULT]
 tprde_dir: ./
-current_project: ../MTSec/tprde.cfg
+current_project: ../Minisec/tprde.cfg
 
 [Object Types]
 types = Property, Component

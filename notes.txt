@@ -28,7 +28,7 @@ On wx and Strings:
 wxPython seems to use unicode strings. Hrm. That is a bit of a pain since it messes up sorting. I'll need to make it consistent, I think. Either I need to start using Unicode strings or I need to alwas convert when pulling data from a wx widget.
 
 On Highlighting and Emphasis:
-Save lists of emphasis and highlighting groups? Pass out an ID when a highlight/emphasis is requested and then use that to roll back the changes? Hm.
+Save lists of emphasis and highlighting groups? Pass out an ID when a highlight/emphasis is requested and then use that to roll back the changes? Hm. It's probably best to have image icons to give objects as well. An exclamation point for an error? Or for an unsaved object? Some visual clue. There will be a number of things, then - highlighting, text color, bolding and icon that can be used to convey info.
 
 Menubar:
 File

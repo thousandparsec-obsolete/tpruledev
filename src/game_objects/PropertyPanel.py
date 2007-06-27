@@ -99,12 +99,12 @@ class Panel(wx.Panel):
         #print "\tpcl_requires: %s <> %s" % (self.property.tpcl_requires, self.tpcl_req_ctrl.GetText())
         if self.property.tpcl_requires != self.tpcl_req_stc.GetText():
             mod = True
-            self.property.tpcl_requires = self.tpcl_req_stc.GetValue()
+            self.property.tpcl_requires = self.tpcl_req_stc.GetText()
             
         #print "\tpcl_display: %s <> %s" % (self.property.tpcl_display, self.tpcl_req_ctrl.GetText())
         if self.property.tpcl_display != self.tpcl_disp_stc.GetText():
             mod = True
-            self.property.tpcl_display = self.tpcl_disp_stc.GetValue()
+            self.property.tpcl_display = self.tpcl_disp_stc.GetText()
         
         if mod:
             self.property.node.SetModified(True)

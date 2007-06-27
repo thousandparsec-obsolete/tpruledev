@@ -1,0 +1,12 @@
+<property>
+    <name>Armour</name>
+    <property_id>3</property_id>
+    <category_id>1</category_id>
+    <rank>0</rank>
+    <display_text>Armour</display_text>
+    <description>The amount of amour on the ship</description>
+    <tpcl_display><![CDATA[(lambda (design bits)
+	(let ((n (apply + bits)))
+		(cons n (string-append (number->string n) \" HP\")) ) )]]></tpcl_display>
+    <tpcl_requires><![CDATA[(lambda (design) (cons #t \"\"))]]></tpcl_requires>
+</property>
