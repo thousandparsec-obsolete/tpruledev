@@ -98,7 +98,16 @@ class ObjectDatabase(object):
                 if node.modified:
                     print "\tSaving %s - %s" % (type, node.name)
                     module.saveObject(node.getObject()) 
-                    node.SetModified(False)        
+                    node.SetModified(False)
+                    
+    def GenerateCode(self):
+        """\
+        Generates C++ code for the objects.
+        """
+        print "Generating code..."
+        for type, module in self.object_modules.iteritems():
+            print "Generating code for objects of type: %s" % type
+            module.GenerateCode(self)       
 
     def Add(self, obj_type, name):
         #check for duplicate object

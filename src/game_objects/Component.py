@@ -130,5 +130,104 @@ def getName():
     return 'Component'
 
 
-def generateCode(outdir, props):
-    print "Called Component's generateCode function"
+import re
+def GenerateCode(object_database):
+    """\
+    Generates C++ code for use with tpserver-cpp
+    Code is placed in the .../ProjectName/code/Component directory.
+    """
+    
+    print "BEGINNING CODE GENERATION FOR PROPERTIES!"
+    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
+                                               'code', getName())
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+                                               
+    #we make two files, a header and a cpp file
+    hfile_path = os.path.join(outdir, "componentfactory.h")
+    cfile_path = os.path.join(outdir, "componentfactory.cpp")
+
+    HFILE = open(hfile_path, 'w')
+    CFILE = open(cfile_path, 'w')
+    
+    h_header = \
+"""\
+#ifndef COMPFAC_H
+#define COMPFAC_H
+
+class ComponentFactory {
+ public:
+  ComponentFactory();
+  
+  void initComponents();
+  
+ private:
+"""
+    HFILE.write(h_header)
+    HFILE.flush()
+    
+    cpp_header = \
+"""\
+#include <tpserver/game.h>
+#include <tpserver/designstore.h>
+#include <tpserver/component.h>
+
+#include <componentfactory.h>
+
+ComponentFactory::ComponentFactory(){
+
+}
+
+"""
+    CFILE.write(cpp_header)
+    CFILE.flush()
+
+    func_calls =[]
+    
+    #generate the code
+    for comp_node in object_database.getObjectsOfType(getName()):
+        comp = comp_node.getObject()
+        func_name = "init%sComp()" % comp.name.replace('-', '')
+        func_calls.append("%s;" % func_name)
+        
+        #write to header file
+        HFILE.write("  void %s;\n" % func_name)
+        HFILE.flush()
+        
+        #write to cpp file
+        #regex to handle newline stuffs...we write the TPCL code on one line
+        regex = re.compile('\s*\r?\n\s*')
+        CFILE.write('void ComponentFactory::%s {\n' % func_name)
+        CFILE.write('  std::map<unsigned int, std::string> propertylist;\n')
+        CFILE.write('  DesignStore *ds = Game::getGame()->getDesignStore();\n');
+        CFILE.write('  Component* comp = new Component();\n');
+        CFILE.write('\n')
+        CFILE.write('  comp->setCategoryId(%s);\n' % comp.category_id)
+        CFILE.write('  comp->setName("%s");\n' % comp.name)
+        CFILE.write('  comp->setDescription("%s");\n' % comp.description)
+        CFILE.write('  comp->setTpclRequirementsFunction("%s");\n' % \
+                        " ".join(regex.split(comp.tpcl_requirements)))
+        #now the properties...
+        for name, cost_func in comp.properties.iteritems():
+            CFILE.write('  propertylist[ds->getPropertyByName("%s")] = "%s";\n' % \
+                (name, " ".join(regex.split(cost_func))))
+        CFILE.write('  comp->setPropertyList(propertylist);\n')
+        CFILE.write('  ds->addComponent(comp);\n')
+        CFILE.write('  return;\n}\n\n')
+        CFILE.flush()
+        comp_node.clearObject()
+    
+    HFILE.write('};\n#endif\n')
+    HFILE.flush()
+    
+    #finish up by adding the initProperties function
+    CFILE.write('void ComponentFactory::initComponents() {\n')
+    for call in func_calls:
+        CFILE.write("  %s\n" % call)
+    CFILE.write('  return;\n}\n')
+    CFILE.flush()
+    
+    CFILE.close()
+    HFILE.close()
+    
+    print "ALL DONE GENERATING CODE FOR PROPERTIES!"

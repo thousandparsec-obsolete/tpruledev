@@ -140,6 +140,103 @@ def deleteSaveFile(name):
 def getName():
     return 'Property'
     
+import re
+def GenerateCode(object_database):
+    """\
+    Generates C++ code for use with tpserver-cpp
+    Code is placed in the .../ProjectName/code/ directory.
+    """
+    
+    print "BEGINNING CODE GENERATION FOR PROPERTIES!"
+    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
+                                               'code', getName())
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+                                               
+    #we make two files, a header and a cpp file
+    hfile_path = os.path.join(outdir, "propertyfactory.h")
+    cfile_path = os.path.join(outdir, "propertyfactory.cpp")
 
-def generateCode(outdir, props=None):
-    print "Called Property's generateCode function"
+    HFILE = open(hfile_path, 'w')
+    CFILE = open(cfile_path, 'w')
+    
+    h_header = \
+"""\
+#ifndef PROPFAC_H
+#define PROPFAC_H
+
+class PropertyFactory {
+ public:
+  PropertyFactory();
+  
+  void initProperties();
+  
+ private:
+"""
+    HFILE.write(h_header)
+    HFILE.flush()
+    
+    cpp_header = \
+"""\
+#include <tpserver/game.h>
+#include <tpserver/designstore.h>
+#include <tpserver/property.h>
+
+#include <propertyfactory.h>
+
+PropertyFactory::PropertyFactory(){
+
+}
+
+"""
+    CFILE.write(cpp_header)
+    CFILE.flush()
+
+    func_calls =[]
+    
+    #generate the code
+    for prop_node in object_database.getObjectsOfType(getName()):
+        prop = prop_node.getObject()
+        func_name = "init%sProp()" % prop.name.replace('-', '')
+        func_calls.append("%s;" % func_name)
+        
+        #write to header file
+        HFILE.write("  void %s;\n" % func_name)
+        HFILE.flush()
+        
+        #write to cpp file
+        #regex to handle newline stuffs...we write the TPCL code on one line
+        regex = re.compile('\s*\r?\n\s*')
+        CFILE.write("void PropertyFactory::%s {\n" % func_name)
+        CFILE.write("  Property* prop = new Property();\n")
+        CFILE.write("  DesignStore *ds = Game::getGame()->getDesignStore();\n")
+        CFILE.write("\n")
+        CFILE.write("  prop->setCategoryId(%s);\n" % prop.category_id)
+        CFILE.write("  prop->setRank(%s);\n" % prop.rank)
+        CFILE.write('  prop->setName("%s");\n' % prop.name)
+        CFILE.write('  prop->setDisplayName("%s");\n' % prop.display_text)
+        CFILE.write('  prop->setDescription("%s");\n' % prop.description)
+        CFILE.write('  prop->setTpclDisplayFunction("%s");\n' % \
+                        " ".join(regex.split(prop.tpcl_display)))
+        CFILE.write('  prop->setTpclRequirementsFunction("%s");\n' % \
+                        " ".join(regex.split(prop.tpcl_requires)))
+        CFILE.write('  ds->addProperty(prop);\n')
+        CFILE.write('  return;\n')
+        CFILE.write('}\n\n')
+        CFILE.flush()
+        prop_node.clearObject()
+    
+    HFILE.write('};\n#endif\n')
+    HFILE.flush()
+    
+    #finish up by adding the initProperties function
+    CFILE.write('void PropertyFactory::initProperties() {\n')
+    for call in func_calls:
+        CFILE.write("  %s\n" % call)
+    CFILE.write('  return;\n}\n')
+    CFILE.flush()
+    
+    CFILE.close()
+    HFILE.close()
+    
+    print "ALL DONE GENERATING CODE FOR PROPERTIES!"

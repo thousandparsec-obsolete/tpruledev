@@ -167,6 +167,8 @@ class Frame(wx.Frame):
         del_object_item = edit_menu.Append(-1, 'Delete Object', 'Deletes the currently selected object')
         self.Bind(wx.EVT_MENU, self.OnDeleteObject, del_object_item)
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
+        gen_code_item = edit_menu.Append(-1, 'Generate Code', 'Generates C++ code for the project')
+        self.Bind(wx.EVT_MENU, self.OnGenCode, gen_code_item)
         menubar.Append(edit_menu, 'Edit')
         
         #disable unused menu items      
@@ -213,6 +215,16 @@ class Frame(wx.Frame):
                                   caption = "Invalid Project Folder!", style=wx.OK)
         else:
             return
+            
+    def OnGenCode(self, event):
+        self.CheckCurrentObjectForModifications()
+        if self.object_database.pending_modifications:
+            choice = wx.MessageBox("You have unsaved changes!\nYou cannot generate code without saving.",
+                caption="Confirm Quit", style = wx.OK)
+            return
+        else:
+            self.object_database.GenerateCode()
+        
             
     def OnSaveProject(self, event):
         #we may want to locate the checkformodification function
