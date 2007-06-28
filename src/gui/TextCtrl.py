@@ -70,24 +70,20 @@ import wx.xrc as xrc
 class wxSchemeStcHandler(xrc.XmlResourceHandler):
     def __init__(self):
         xrc.XmlResourceHandler.__init__(self)
-        print "Initializing a wxSchemeStcHandler..."
         self.AddWindowStyles()
         
     def CanHandle(self, node):
         return self.IsOfClass(node, "SchemeSTC")
     
     def DoCreateResource(self):
-        print "wxSchemeStcHandler handling a resource..."
         stc = SchemeSTC(
             self.GetParentAsWindow(),
             self.GetID(),
             pos = self.GetPosition(),
             size = self.GetSize(),
             style=self.GetStyle()
-        )
-        print "StyledTextControl created successfully"        
+        )      
         self.SetupWindow(stc)     # handles font, bg/fg color
-        print "wxSchemeStcHandler finished handling..."
         return stc
 
 class SchemeSTC(stc.StyledTextCtrl):
@@ -100,6 +96,8 @@ class SchemeSTC(stc.StyledTextCtrl):
         self.CmdKeyAssign(ord('B'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
         self.CmdKeyAssign(ord('N'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
 
+        self.SetModEventMask(wx.stc.STC_MOD_INSERTTEXT | wx.stc.STC_MOD_DELETETEXT | wx.stc.STC_PERFORMED_USER)
+    
         self.SetLexer(stc.STC_LEX_LISP)
         self.SetKeyWords(0, " ".join(keyword.kwlist))
 

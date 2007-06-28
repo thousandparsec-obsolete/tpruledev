@@ -10,12 +10,12 @@
 
     <!--propertylist:-->
     <property>
-        <name>BuildTime</name>
-        <tpcl_cost><![CDATA[(lambda (design) 2)]]></tpcl_cost>
-    </property>
-    <property>
         <name>Armour</name>
         <tpcl_cost><![CDATA[(lambda (design) 4)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>BuildTime</name>
+        <tpcl_cost><![CDATA[(lambda (design) 2)]]></tpcl_cost>
     </property>
     <property>
         <name>WeaponWin</name>

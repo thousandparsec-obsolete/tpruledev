@@ -3,7 +3,7 @@ wx.Panel and associated methods for editing
 a Component object
 """
 
-import wx
+import wx, wx.stc
 from core.Exceptions import NoSuchIDError
 import gui.TextCtrl, gui.XrcUtilities
 from wx.xrc import XmlResource, XRCCTRL
@@ -47,6 +47,8 @@ class Panel(wx.Panel):
         self.component.node.object_database.Emphasize(prop_names, "BLUE")
         
         self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
+        self.tpcl_cost_stc.Bind(wx.EVT_KEY_UP, self.OnCostEdit)
+        self.tpcl_cost_stc.Enable(False)
         
         add_button = XRCCTRL(self, "add_button")
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)
@@ -61,18 +63,28 @@ class Panel(wx.Panel):
         pass
         
     def OnListBoxSelect(self, event):
-        if self.prop_sel > -1:
-            #there was a previously selected property
-            # we need to check for and save any changes to the cost function
-            old_name = self.prop_list.GetString(self.prop_sel)
-            if self.component.properties[old_name] != self.tpcl_cost_stc.GetText():
-                self.component.properties[old_name] = self.tpcl_cost_stc.GetText()
-                self.MarkModified()
         sel_idx = self.prop_list.GetSelection()
         if sel_idx != wx.NOT_FOUND:
+            self.tpcl_cost_stc.Enable(True)
             self.prop_sel = sel_idx
             self.tpcl_cost_stc.SetText(self.component.properties[
                                             self.prop_list.GetString(sel_idx)])
+    
+    def OnCostEdit(self, event):
+        """\
+        Saves changes made to the TPCL cost functions
+        """
+        print "Handling a cost edit event!"
+        idx = self.prop_list.GetSelection()
+        if idx == wx.NOT_FOUND:
+            pass
+        else:
+            if not event.GetKeyCode() == wx.WXK_CONTROL and not event.ControlDown():
+                self.component.properties[self.prop_list.GetString(idx)] = \
+                        self.tpcl_cost_stc.GetText()
+                self.component.node.SetModified(True)
+            event.Skip()
+        
         
     def OnAddProperty(self, event):
         print "On Add Property"
@@ -87,7 +99,7 @@ class Panel(wx.Panel):
                 print "\t" + loose_props[i]
                 self.component.properties[loose_props[i]] = "(lambda (design) #)"
                 self.prop_list.Append(loose_props[i])
-            self.MarkModified()
+            self.component.node.SetModified(True)
         else:
             #cancelled
             print "CANCELED!"
@@ -106,7 +118,7 @@ class Panel(wx.Panel):
             for i in ridx:
                 self.prop_list.Delete(i)
             self.tpcl_cost_stc.SetText("")
-            self.MarkModified()            
+            self.component.node.SetModified(True)            
     
     def CheckForModification(self):
         #print "Checking for modification..."
