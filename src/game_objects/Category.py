@@ -178,7 +178,7 @@ CategoryFactory::CategoryFactory(){
     HFILE.flush()
     
     #finish up by adding the initProperties function
-    CFILE.write('void CategoryFactory::initProperties() {\n')
+    CFILE.write('void CategoryFactory::initCategories() {\n')
     for call in func_calls:
         CFILE.write("  %s\n" % call)
     CFILE.write('  return;\n}\n')
