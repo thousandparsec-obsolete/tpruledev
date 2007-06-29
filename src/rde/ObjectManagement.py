@@ -24,7 +24,7 @@ import ConfigParser, bisect
 from ConfigParser import ConfigParser
 import RDE, Nodes
 import game_objects.ObjectUtilities
-from core.Exceptions import *
+from rde.Exceptions import *
 
 if hasattr(str, 'partition'):
 	def partition(str, sep):

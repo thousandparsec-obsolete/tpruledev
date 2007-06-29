@@ -5,7 +5,7 @@ Thousand Parsec Ruleset Developement Environment launcher script.
 """
 
 import wx, ConfigParser
-import core.EditorFrame
+import gui.EditorFrame
 import sys  
 
 class GlobalConfig(object):
@@ -13,7 +13,7 @@ class GlobalConfig(object):
 
 class App(wx.App):
     def OnInit(self):
-        self.frame = core.EditorFrame.Frame(None, wx.ID_ANY, 'Splitter Test', size=(800,600))
+        self.frame = gui.EditorFrame.Frame(None, wx.ID_ANY, 'Splitter Test', size=(800,600))
         self.frame.Show()
         self.SetTopWindow(self.frame)
         GlobalConfig.config = ConfigParser.ConfigParser()

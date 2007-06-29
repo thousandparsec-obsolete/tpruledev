@@ -8,9 +8,9 @@ import wx, os, ConfigParser, sys
 from ConfigParser import ConfigParser
 
 import RDE
-import core.ObjectManagement, core.ProjectManagement
+import rde.ObjectManagement, rde.ProjectManagement
 import game_objects.ObjectUtilities
-from core.Exceptions import *
+from rde.Exceptions import *
 
 SPLITTER_ID = 101
 
@@ -104,7 +104,7 @@ class Frame(wx.Frame):
         self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
         
         #initialize odbase and gui components
-        self.object_database = core.ObjectManagement.ObjectDatabase()       
+        self.object_database = rde.ObjectManagement.ObjectDatabase()       
         
         self.splitter = wx.SplitterWindow(self.content_panel, SPLITTER_ID,
                                           style=wx.SP_NO_XP_THEME |
@@ -116,7 +116,7 @@ class Frame(wx.Frame):
         self.cp_right.SetSizer(self.cp_right_sizer)
         #self.cp_right.SetBackgroundColour("black")
         
-        self.tree = core.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
+        self.tree = rde.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
         
@@ -194,7 +194,7 @@ class Frame(wx.Frame):
             if dir_dialog.ShowModal() == wx.ID_OK:
                 try:
                     #create project dir and config
-                    core.ProjectManagement.createNewProject(dir_dialog.GetPath(), proj_name,
+                    rde.ProjectManagement.createNewProject(dir_dialog.GetPath(), proj_name,
                                                 self.config.get('Object Types', 'types').split(', '))
                 except DuplicateProjectError:
                     wx.MessageBox("A project with that name already exists in that location!",

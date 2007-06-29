@@ -5,7 +5,7 @@ import os
 print os.getcwd()
 
 import game_objects
-import core.Nodes
+import rde.Nodes
 
 def makeSentinelGetter(var_name):
     def getter(self):
@@ -58,7 +58,7 @@ class GameObject(object):
     def __init__(self, node):
         self.node = node
 
-class ObjectNode(core.Nodes.DatabaseNode):
+class ObjectNode(rde.Nodes.DatabaseNode):
     """
     Class for keeping track of the state of a
     game object. Tracks such things as whether

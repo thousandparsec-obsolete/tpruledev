@@ -4,7 +4,7 @@ a Component object
 """
 
 import wx, wx.stc
-from core.Exceptions import NoSuchIDError
+from rde.Exceptions import NoSuchIDError
 import gui.TextCtrl, gui.XrcUtilities
 from wx.xrc import XmlResource, XRCCTRL
 
@@ -16,7 +16,7 @@ class Panel(wx.Panel):
     def __init__(self, component, parent, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
         pre = wx.PrePanel()
-        res = gui.XrcUtilities.XmlResource('./game_objects/xrc/ComponentPanel.xrc')
+        res = gui.XrcUtilities.XmlResource('./gui/xrc/ComponentPanel.xrc')
         res.LoadOnPanel(pre, parent, "component_panel")
         self.PostCreate(pre)
         
