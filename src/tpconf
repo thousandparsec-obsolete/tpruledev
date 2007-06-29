@@ -5,4 +5,4 @@ tprde_dir: ./
 current_project: ../Minisec/tprde.cfg
 
 [Object Types]
-types = Property, Component
+types = Property, Component, Category
