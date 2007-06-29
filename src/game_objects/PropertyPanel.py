@@ -75,21 +75,6 @@ class Panel(wx.Panel):
         
         if mod:
             self.property.node.SetModified(True)
-    
-    def createLabel(self, text):
-        return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
-    
-    def addLabelToFlex(self, flex, label):
-        flex.Add(label, 2, wx.ALIGN_RIGHT | wx.ALIGN_TOP | wx.EXPAND, 5)
-
-    def createField(self, text):
-        return wx.TextCtrl(self, wx.ID_ANY, text)
-        
-    def createTextArea(self, text):
-        return gui.TextCtrl.SchemeSTC(self, wx.ID_ANY, text)
-        
-    def addFieldToFlex(self, flex, field):
-        flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
         
     def cleanup(self):
         self.CheckForModification()
