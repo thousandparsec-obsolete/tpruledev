@@ -23,6 +23,8 @@ class Panel(wx.Panel):
         self.OnCreate()
     
     def OnCreate(self):
+        name_field = XRCCTRL(self, "name_field")
+        name_field.SetLabel(str(self.property.name))
         self.rank_field = XRCCTRL(self, "rank_field")
         self.rank_field.SetValue(str(self.property.rank))
         self.propid_field = XRCCTRL(self, "propid_field")
