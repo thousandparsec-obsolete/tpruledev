@@ -17,7 +17,7 @@ class Panel(wx.Panel):
         #load from XRC, need to use two-stage create
         pre = wx.PrePanel()
         res = gui.XrcUtilities.XmlResource('./gui/xrc/ComponentPanel.xrc')
-        res.LoadOnPanel(pre, parent, "component_panel")
+        res.LoadOnPanel(pre, parent, "ComponentPanel")
         self.PostCreate(pre)
         
         self.component = component
@@ -25,7 +25,7 @@ class Panel(wx.Panel):
         
     def OnCreate(self):
         self.name_field = XRCCTRL(self, "name_field")
-        self.name_field.SetValue(str(self.component.name))
+        self.name_field.SetLabel(str(self.component.name))
         
         self.compid_field = XRCCTRL(self, "compid_field")
         self.compid_field.SetValue(str(self.component.component_id))
