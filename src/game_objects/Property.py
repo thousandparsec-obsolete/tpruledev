@@ -40,13 +40,6 @@ def compareFunction(prop1, prop2):
     
 
 class Object(ObjectUtilities.GameObject):
-    property_id = ObjectUtilities.sentinelProperty('property_id')
-    category_id = ObjectUtilities.sentinelProperty('category_id')
-    rank = ObjectUtilities.sentinelProperty('rank')
-    description = ObjectUtilities.sentinelProperty('description')
-    display_text = ObjectUtilities.sentinelProperty('display_text')
-    tpcl_display = ObjectUtilities.sentinelProperty('tpcl_display')
-    tpcl_requires = ObjectUtilities.sentinelProperty('tpcl_requires')
 
     def __init__(self, node, name, category = "", prop_id = -1, rank = -1,
                  desc = '', disp_text = '', tpcl_disp = '', tpcl_req = '',
