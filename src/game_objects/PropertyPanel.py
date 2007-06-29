@@ -27,10 +27,7 @@ class Panel(wx.Panel):
         name_field.SetLabel(str(self.property.name))
         self.rank_field = XRCCTRL(self, "rank_field")
         self.rank_field.SetValue(str(self.property.rank))
-        self.propid_field = XRCCTRL(self, "propid_field")
-        self.propid_field.SetValue(str(self.property.property_id))
-        self.catid_field = XRCCTRL(self, "catid_field")
-        self.catid_field.SetValue(str(self.property.category_id))
+        self.cat_choice = XRCCTRL(self, "cat_choice")
         self.desc_field = XRCCTRL(self, "desc_field")
         self.desc_field.SetValue(str(self.property.description))
         self.disp_field = XRCCTRL(self, "disp_field")
@@ -45,15 +42,11 @@ class Panel(wx.Panel):
     def CheckForModification(self):
         print "Checking Property %s for modifications" % self.property.name
         mod = False
-        #print "\property_id: %s <> %s" % (self.component.property_id, self.property_id.GetValue())
-        if str(self.property.property_id) != self.propid_field.GetValue():
-            mod = True
-            self.property.component_id = self.propid_field.GetValue()
         
         #print "\category_id: %s <> %s" % (self.property.category_id, self.catid_field.GetValue())
-        if str(self.property.category_id) != self.catid_field.GetValue():
-            mod = True
-            self.property.category_id = self.catid_field.GetValue()
+        #if str(self.property.category_id) != self.catid_field.GetValue():
+        #    mod = True
+        #    self.property.category_id = self.catid_field.GetValue()
         
         #display text
         if self.property.display_text != self.disp_field.GetValue():

@@ -25,20 +25,13 @@ class Panel(wx.Panel):
         
     def OnCreate(self):
         self.name_field = XRCCTRL(self, "name_field")
-        self.name_field.SetLabel(str(self.component.name))
-        
-        self.compid_field = XRCCTRL(self, "compid_field")
-        self.compid_field.SetValue(str(self.component.component_id))
-        
-        self.catid_field = XRCCTRL(self, "catid_field")
-        self.catid_field.SetValue(str(self.component.category_id))
-        
+        self.name_field.SetLabel(str(self.component.name))      
+        self.cat_choice = XRCCTRL(self, "cat_choice")    
         self.desc_field = XRCCTRL(self, "desc_field")
-        self.desc_field.SetValue(str(self.component.description))
-        
+        self.desc_field.SetValue(str(self.component.description))        
         self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
         self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
-        
+                
         self.prop_list = XRCCTRL(self, "prop_list")
         self.prop_sel = -1
         self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
@@ -51,8 +44,7 @@ class Panel(wx.Panel):
         self.tpcl_cost_stc.Enable(False)
         
         add_button = XRCCTRL(self, "add_button")
-        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)
-        
+        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        
         remove_button = XRCCTRL(self, "remove_button")
         self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
         
@@ -125,16 +117,11 @@ class Panel(wx.Panel):
     def CheckForModification(self):
         #print "Checking for modification..."
         mod = False
-        #rank change
-        #print "\component_id: %s <> %s" % (self.component.component_id, self.compid_field.GetValue())
-        if str(self.component.component_id) != self.compid_field.GetValue():
-            mod = True
-            self.component.component_id = self.compid_field.GetValue()
         
         #print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
-        if str(self.component.category_id) != self.catid_field.GetValue():
-            mod = True
-            self.component.category_id = self.catid_field.GetValue()
+        #if str(self.component.category_id) != self.catid_field.GetValue():
+        #    mod = True
+        #    self.component.category_id = self.catid_field.GetValue()
         
         #print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
         if self.component.description != self.desc_field.GetValue():
