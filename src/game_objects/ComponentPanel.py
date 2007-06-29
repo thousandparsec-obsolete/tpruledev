@@ -25,13 +25,24 @@ class Panel(wx.Panel):
         
     def OnCreate(self):
         self.name_field = XRCCTRL(self, "name_field")
-        self.name_field.SetLabel(str(self.component.name))      
-        self.cat_choice = XRCCTRL(self, "cat_choice")    
+        self.name_field.SetLabel(str(self.component.name))        
         self.desc_field = XRCCTRL(self, "desc_field")
         self.desc_field.SetValue(str(self.component.description))        
         self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
         self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
                 
+        #fill the category choice box
+        self.cat_choice = XRCCTRL(self, "cat_choice")
+        self.cat_choice.Clear()
+        self.cat_choice.Append("")
+        catidx = 0
+        for catnode in self.component.node.object_database.getObjectsOfType('Category'):
+            idx = self.cat_choice.Append(catnode.name)                
+            if self.component.category == catnode.name:
+                catidx = idx
+        self.cat_choice.Select(catidx)
+        
+        #create the property list
         self.prop_list = XRCCTRL(self, "prop_list")
         self.prop_sel = -1
         self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
@@ -119,9 +130,9 @@ class Panel(wx.Panel):
         mod = False
         
         #print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
-        #if str(self.component.category_id) != self.catid_field.GetValue():
-        #    mod = True
-        #    self.component.category_id = self.catid_field.GetValue()
+        if self.component.category != self.cat_choice.GetStringSelection():
+            mod = True
+            self.component.category = self.cat_choice.GetStringSelection()
         
         #print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
         if self.component.description != self.desc_field.GetValue():

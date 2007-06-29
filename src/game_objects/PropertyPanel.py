@@ -27,7 +27,6 @@ class Panel(wx.Panel):
         name_field.SetLabel(str(self.property.name))
         self.rank_field = XRCCTRL(self, "rank_field")
         self.rank_field.SetValue(str(self.property.rank))
-        self.cat_choice = XRCCTRL(self, "cat_choice")
         self.desc_field = XRCCTRL(self, "desc_field")
         self.desc_field.SetValue(str(self.property.description))
         self.disp_field = XRCCTRL(self, "disp_field")
@@ -37,6 +36,17 @@ class Panel(wx.Panel):
         self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
         self.tpcl_req_stc.SetText(str(self.property.tpcl_requires))
         
+        #fill the category choice box
+        self.cat_choice = XRCCTRL(self, "cat_choice")
+        self.cat_choice.Clear()
+        self.cat_choice.Append("")
+        catidx = 0
+        for catnode in self.property.node.object_database.getObjectsOfType('Category'):
+            idx = self.cat_choice.Append(catnode.name)                
+            if self.property.category == catnode.name:
+                catidx = idx
+        self.cat_choice.Select(catidx)
+        
         self.property.node.visible = True 
         
     def CheckForModification(self):
@@ -44,9 +54,9 @@ class Panel(wx.Panel):
         mod = False
         
         #print "\category_id: %s <> %s" % (self.property.category_id, self.catid_field.GetValue())
-        #if str(self.property.category_id) != self.catid_field.GetValue():
-        #    mod = True
-        #    self.property.category_id = self.catid_field.GetValue()
+        if self.property.category != self.cat_choice.GetStringSelection():
+            mod = True
+            self.property.category = self.cat_choice.GetStringSelection()
         
         #display text
         if self.property.display_text != self.disp_field.GetValue():

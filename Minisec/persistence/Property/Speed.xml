@@ -1,7 +1,6 @@
 <property>
     <name>Speed</name>
-    <property_id>1</property_id>
-    <category_id>1</category_id>
+    <category>Ships</category>
     <rank>0</rank>
     <display_text>Speed</display_text>
     <description>The number of units the ship can move each turn</description>

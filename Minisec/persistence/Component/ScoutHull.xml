@@ -1,7 +1,7 @@
 <component>
     <name>ScoutHull</name>
     <component_id>1</component_id>
-    <category_id>1</category_id>
+    <category>Ships</category>
     <description>The scout hull, fitted out with everything a scout needs</description>
     <tpcl_requirements><![CDATA[(lambda (design) 
 	(if (= (designType._num-components design) 1) 
@@ -10,12 +10,12 @@
 
     <!--propertylist:-->
     <property>
-        <name>Armour</name>
-        <tpcl_cost><![CDATA[(lambda (design) 2)]]></tpcl_cost>
-    </property>
-    <property>
         <name>BuildTime</name>
         <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
+    </property>
+    <property>
+        <name>Armour</name>
+        <tpcl_cost><![CDATA[(lambda (design) 2)]]></tpcl_cost>
     </property>
     <property>
         <name>WeaponWin</name>

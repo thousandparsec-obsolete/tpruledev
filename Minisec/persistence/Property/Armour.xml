@@ -1,7 +1,6 @@
 <property>
     <name>Armour</name>
-    <property_id>3</property_id>
-    <category_id>1</category_id>
+    <category>Ships</category>
     <rank>0</rank>
     <display_text>Armour</display_text>
     <description>The amount of amour on the ship</description>

@@ -95,6 +95,96 @@ def getName():
     return 'Category'
 
 
+import re
 def GenerateCode(object_database):
-    #don't want to yet
-    return
+    """\
+    Generates C++ code for use with tpserver-cpp
+    Code is placed in the .../ProjectName/code/ directory.
+    """
+    
+    print "BEGINNING CODE GENERATION FOR CATEGORIES!"
+    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
+                                               'code', getName())
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+                                               
+    #we make two files, a header and a cpp file
+    hfile_path = os.path.join(outdir, "categoryfactory.h")
+    cfile_path = os.path.join(outdir, "categoryfactory.cpp")
+
+    HFILE = open(hfile_path, 'w')
+    CFILE = open(cfile_path, 'w')
+    
+    h_header = \
+"""\
+#ifndef CATEFAC_H
+#define CATEFAC_H
+
+class CategoryFactory {
+ public:
+  CategoryFactory();
+  
+  void initCategories();
+  
+ private:
+"""
+    HFILE.write(h_header)
+    HFILE.flush()
+    
+    cpp_header = \
+"""\
+#include <tpserver/game.h>
+#include <tpserver/designstore.h>
+#include <tpserver/category.h>
+
+#include <categoryfactory.h>
+
+CategoryFactory::CategoryFactory(){
+
+}
+
+"""
+    CFILE.write(cpp_header)
+    CFILE.flush()
+
+    func_calls =[]
+    
+    #generate the code
+    for cat_node in object_database.getObjectsOfType(getName()):
+        cat = cat_node.getObject()
+        func_name = "init%sCat()" % cat.name.replace('-', '')
+        func_calls.append("%s;" % func_name)
+        
+        #write to header file
+        HFILE.write("  void %s;\n" % func_name)
+        HFILE.flush()
+        
+        #write to cpp file
+        #regex to handle newline stuffs...we write the TPCL code on one line
+        regex = re.compile('\s*\r?\n\s*')
+        CFILE.write("void CategoryFactory::%s {\n" % func_name)
+        CFILE.write("  Category* cat = new Category();\n")
+        CFILE.write("  DesignStore *ds = Game::getGame()->getDesignStore();\n")
+        CFILE.write("\n")        
+        CFILE.write('  cat->setName("%s");\n' % cat.name)
+        CFILE.write('  cat->setDescription("%s");\n' % cat.description)
+        CFILE.write('  ds->addCategory(cat);\n')
+        CFILE.write('  return;\n')
+        CFILE.write('}\n\n')
+        CFILE.flush()
+        cat_node.clearObject()
+    
+    HFILE.write('};\n#endif\n')
+    HFILE.flush()
+    
+    #finish up by adding the initProperties function
+    CFILE.write('void CategoryFactory::initProperties() {\n')
+    for call in func_calls:
+        CFILE.write("  %s\n" % call)
+    CFILE.write('  return;\n}\n')
+    CFILE.flush()
+    
+    CFILE.close()
+    HFILE.close()
+    
+    print "ALL DONE GENERATING CODE FOR CATEGORIES!"

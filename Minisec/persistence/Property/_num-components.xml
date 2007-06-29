@@ -1,7 +1,6 @@
 <property>
     <name>_num-components</name>
-    <property_id>7</property_id>
-    <category_id>1</category_id>
+    <category>Ships</category>
     <rank>0</rank>
     <display_text>Number of Conponents</display_text>
     <description>The total number of components in the design</description>

@@ -99,8 +99,7 @@ def saveObject(comp):
     ofile = open(filename, 'w')
     ofile.write('<component>\n')
     ofile.write('    <name>' + comp.name + '</name>\n')
-    ofile.write('    <component_id>' + str(comp.component_id) + '</component_id>\n')
-    ofile.write('    <category>' + str(comp.category) + '</category>\n')
+    ofile.write('    <category>' + comp.category + '</category>\n')
     ofile.write('    <description>' + comp.description + '</description>\n')
     ofile.write('    <tpcl_requirements><![CDATA[' + comp.tpcl_requirements + ']]></tpcl_requirements>\n')
     ofile.write('\n')
@@ -202,7 +201,7 @@ ComponentFactory::ComponentFactory(){
         CFILE.write('  DesignStore *ds = Game::getGame()->getDesignStore();\n');
         CFILE.write('  Component* comp = new Component();\n');
         CFILE.write('\n')
-        CFILE.write('  comp->setCategoryId(%s);\n' % comp.category_id)
+        CFILE.write('  comp->setCategoryId(ds->getCategoryByName("%s"));\n' % comp.category)
         CFILE.write('  comp->setName("%s");\n' % comp.name)
         CFILE.write('  comp->setDescription("%s");\n' % comp.description)
         CFILE.write('  comp->setTpclRequirementsFunction("%s");\n' % \
@@ -210,7 +209,7 @@ ComponentFactory::ComponentFactory(){
         #now the properties...
         for name, cost_func in comp.properties.iteritems():
             CFILE.write('  propertylist[ds->getPropertyByName("%s")] = "%s";\n' % \
-                (name, " ".join(regex.split(cost_func))))
+                (name.replace('-', ''), " ".join(regex.split(cost_func))))
         CFILE.write('  comp->setPropertyList(propertylist);\n')
         CFILE.write('  ds->addComponent(comp);\n')
         CFILE.write('  return;\n}\n\n')

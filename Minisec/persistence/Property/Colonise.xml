@@ -1,7 +1,6 @@
 <property>
     <name>Colonise</name>
-    <property_id>6</property_id>
-    <category_id>1</category_id>
+    <category>Ships</category>
     <rank>0</rank>
     <display_text>Can Colonise Planets</display_text>
     <description>Can the ship colonise planets</description>

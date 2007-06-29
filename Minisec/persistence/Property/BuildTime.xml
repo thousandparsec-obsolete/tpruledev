@@ -1,7 +1,6 @@
 <property>
     <name>BuildTime</name>
-    <property_id>2</property_id>
-    <category_id>1</category_id>
+    <category>Ships</category>
     <rank>0</rank>
     <display_text>Build Time</display_text>
     <description>The number of turns to build the ship</description>
