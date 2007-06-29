@@ -138,6 +138,10 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/ directory.
     """
     
+    FILENAME = getName().lower() + "factory"
+    CLASS_NAME = getName() + "Factory"
+    INIT_FUNC_NAME = "init%sObjects()" % getName()
+    
     print "BEGINNING CODE GENERATION FOR PROPERTIES!"
     outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
                                                'code', getName())
@@ -145,8 +149,8 @@ def GenerateCode(object_database):
         os.makedirs(outdir)
                                                
     #we make two files, a header and a cpp file
-    hfile_path = os.path.join(outdir, "propertyfactory.h")
-    cfile_path = os.path.join(outdir, "propertyfactory.cpp")
+    hfile_path = os.path.join(outdir, "%s.h" % FILENAME)
+    cfile_path = os.path.join(outdir, "%s.cpp" % FILENAME)
 
     HFILE = open(hfile_path, 'w')
     CFILE = open(cfile_path, 'w')
@@ -156,14 +160,15 @@ def GenerateCode(object_database):
 #ifndef PROPFAC_H
 #define PROPFAC_H
 
-class PropertyFactory {
+class %s {
  public:
-  PropertyFactory();
+  %s();
   
-  void initProperties();
+  void %s();
   
  private:
-"""
+""" % (CLASS_NAME, CLASS_NAME, INIT_FUNC_NAME)
+
     HFILE.write(h_header)
     HFILE.flush()
     
@@ -173,13 +178,14 @@ class PropertyFactory {
 #include <tpserver/designstore.h>
 #include <tpserver/property.h>
 
-#include <propertyfactory.h>
+#include <%s.h>
 
-PropertyFactory::PropertyFactory(){
+%s::%s(){
 
 }
 
-"""
+""" % (FILENAME, CLASS_NAME, CLASS_NAME)
+
     CFILE.write(cpp_header)
     CFILE.flush()
 
@@ -191,7 +197,7 @@ PropertyFactory::PropertyFactory(){
         #NOTE:
         # we here replace hyphens with underscores in the names of properties
         # since hyphens are not valid in variable names in C++
-        func_name = "init%sProp()" % prop.name.replace('-', '_')
+        func_name = "init%s%s()" % (prop.name.replace('-', '_'), getName())
         func_calls.append("%s;" % func_name)
         
         #write to header file
@@ -201,7 +207,7 @@ PropertyFactory::PropertyFactory(){
         #write to cpp file
         #regex to handle newline stuffs...we write the TPCL code on one line
         regex = re.compile('\s*\r?\n\s*')
-        CFILE.write("void PropertyFactory::%s {\n" % func_name)
+        CFILE.write("void %s::%s {\n" % (CLASS_NAME, func_name))
         CFILE.write("  Property* prop = new Property();\n")
         CFILE.write("  DesignStore *ds = Game::getGame()->getDesignStore();\n")
         CFILE.write("\n")
@@ -224,7 +230,7 @@ PropertyFactory::PropertyFactory(){
     HFILE.flush()
     
     #finish up by adding the initProperties function
-    CFILE.write('void PropertyFactory::initProperties() {\n')
+    CFILE.write('void %s::%s() {\n' % (CLASS_NAME, INIT_FUNC_NAME))
     for call in func_calls:
         CFILE.write("  %s\n" % call)
     CFILE.write('  return;\n}\n')

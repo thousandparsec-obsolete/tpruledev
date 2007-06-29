@@ -136,6 +136,10 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/Component directory.
     """
     
+    FILENAME = getName().lower() + "factory"
+    CLASS_NAME = getName() + "Factory"
+    INIT_FUNC_NAME = "init%sObjects()" % getName()
+    
     print "BEGINNING CODE GENERATION FOR PROPERTIES!"
     outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
                                                'code', getName())
@@ -143,8 +147,8 @@ def GenerateCode(object_database):
         os.makedirs(outdir)
                                                
     #we make two files, a header and a cpp file
-    hfile_path = os.path.join(outdir, "componentfactory.h")
-    cfile_path = os.path.join(outdir, "componentfactory.cpp")
+    hfile_path = os.path.join(outdir, "%s.h" % FILENAME)
+    cfile_path = os.path.join(outdir, "%s.cpp" % FILENAME)
 
     HFILE = open(hfile_path, 'w')
     CFILE = open(cfile_path, 'w')
@@ -154,14 +158,15 @@ def GenerateCode(object_database):
 #ifndef COMPFAC_H
 #define COMPFAC_H
 
-class ComponentFactory {
+class %s {
  public:
-  ComponentFactory();
+  %s();
   
-  void initComponents();
+  void %s();
   
  private:
-"""
+""" % (CLASS_NAME, CLASS_NAME, INIT_FUNC_NAME)
+
     HFILE.write(h_header)
     HFILE.flush()
     
@@ -171,13 +176,14 @@ class ComponentFactory {
 #include <tpserver/designstore.h>
 #include <tpserver/component.h>
 
-#include <componentfactory.h>
+#include <%s.h>
 
-ComponentFactory::ComponentFactory(){
+%s::%s(){
 
 }
 
-"""
+""" % (FILENAME, CLASS_NAME, CLASS_NAME)
+
     CFILE.write(cpp_header)
     CFILE.flush()
 
@@ -186,7 +192,7 @@ ComponentFactory::ComponentFactory(){
     #generate the code
     for comp_node in object_database.getObjectsOfType(getName()):
         comp = comp_node.getObject()
-        func_name = "init%sComp()" % comp.name.replace('-', '')
+        func_name = "init%s%s()" % (comp.name.replace('-', ''), getName)
         func_calls.append("%s;" % func_name)
         
         #write to header file
@@ -196,7 +202,7 @@ ComponentFactory::ComponentFactory(){
         #write to cpp file
         #regex to handle newline stuffs...we write the TPCL code on one line
         regex = re.compile('\s*\r?\n\s*')
-        CFILE.write('void ComponentFactory::%s {\n' % func_name)
+        CFILE.write('void %s::%s {\n' % (CLASS_NAME, func_name))
         CFILE.write('  std::map<unsigned int, std::string> propertylist;\n')
         CFILE.write('  DesignStore *ds = Game::getGame()->getDesignStore();\n');
         CFILE.write('  Component* comp = new Component();\n');
@@ -223,7 +229,7 @@ ComponentFactory::ComponentFactory(){
     HFILE.flush()
     
     #finish up by adding the initProperties function
-    CFILE.write('void ComponentFactory::initComponents() {\n')
+    CFILE.write('void %s::%s() {\n' % (CLASS_NAME, INIT_FUNC_NAME))
     for call in func_calls:
         CFILE.write("  %s\n" % call)
     CFILE.write('  return;\n}\n')

@@ -102,6 +102,10 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/ directory.
     """
     
+    FILENAME = getName().lower() + "factory"
+    CLASS_NAME = getName() + "Factory"
+    INIT_FUNC_NAME = "init%sObjects()" % getName()
+    
     print "BEGINNING CODE GENERATION FOR CATEGORIES!"
     outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
                                                'code', getName())
@@ -109,25 +113,28 @@ def GenerateCode(object_database):
         os.makedirs(outdir)
                                                
     #we make two files, a header and a cpp file
-    hfile_path = os.path.join(outdir, "categoryfactory.h")
-    cfile_path = os.path.join(outdir, "categoryfactory.cpp")
+    hfile_path = os.path.join(outdir, "%s.h" % FILENAME)
+    cfile_path = os.path.join(outdir, "%s.cpp" % FILENAME)
 
     HFILE = open(hfile_path, 'w')
     CFILE = open(cfile_path, 'w')
+    
+    
     
     h_header = \
 """\
 #ifndef CATEFAC_H
 #define CATEFAC_H
 
-class CategoryFactory {
+class %s {
  public:
-  CategoryFactory();
+  %s();
   
-  void initCategories();
+  void %s;
   
  private:
-"""
+""" % (CLASS_NAME, CLASS_NAME, INIT_FUNC_NAME)
+
     HFILE.write(h_header)
     HFILE.flush()
     
@@ -137,13 +144,13 @@ class CategoryFactory {
 #include <tpserver/designstore.h>
 #include <tpserver/category.h>
 
-#include <categoryfactory.h>
+#include <%s.h>
 
-CategoryFactory::CategoryFactory(){
+%s::%s(){
 
 }
 
-"""
+""" % (FILENAME , CLASS_NAME, CLASS_NAME)
     CFILE.write(cpp_header)
     CFILE.flush()
 
@@ -152,7 +159,7 @@ CategoryFactory::CategoryFactory(){
     #generate the code
     for cat_node in object_database.getObjectsOfType(getName()):
         cat = cat_node.getObject()
-        func_name = "init%sCat()" % cat.name.replace('-', '')
+        func_name = "init%s%s()" % (cat.name.replace('-', ''), getName())
         func_calls.append("%s;" % func_name)
         
         #write to header file
@@ -162,7 +169,7 @@ CategoryFactory::CategoryFactory(){
         #write to cpp file
         #regex to handle newline stuffs...we write the TPCL code on one line
         regex = re.compile('\s*\r?\n\s*')
-        CFILE.write("void CategoryFactory::%s {\n" % func_name)
+        CFILE.write("void %s::%s {\n" % (CLASS_NAME, func_name))
         CFILE.write("  Category* cat = new Category();\n")
         CFILE.write("  DesignStore *ds = Game::getGame()->getDesignStore();\n")
         CFILE.write("\n")        
@@ -178,7 +185,7 @@ CategoryFactory::CategoryFactory(){
     HFILE.flush()
     
     #finish up by adding the initProperties function
-    CFILE.write('void CategoryFactory::initCategories() {\n')
+    CFILE.write('void %s::%s {\n' % (CLASS_NAME, INIT_FUNC_NAME))
     for call in func_calls:
         CFILE.write("  %s\n" % call)
     CFILE.write('  return;\n}\n')
