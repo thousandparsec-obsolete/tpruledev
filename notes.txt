@@ -1,5 +1,6 @@
 Todo:
 Handle deletions of existing objects better...if we delete a Property we're going to mess things up royally, since Components will reference it unless we make efforts to erase those references, same thing with renaming
+Need to ensure that all the properties that a component affects and the component itself all share a category
 Check validity of objects on loading and highlight those that are incomplete
 ----------------------------------------
 Make it possible to add and delete objects through context menus in the object tree

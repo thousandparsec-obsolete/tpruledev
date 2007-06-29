@@ -42,8 +42,8 @@ class Object(ObjectUtilities.GameObject):
     #properties = ObjectUtilities.sentinelProperty('properties')
 
     def __init__(self, node, name, comp_id = -1,
-                 desc = "Null", cat_id = -1,
-                 tpcl_req = "Null", load_immediate = False):
+                 desc = "", category = "",
+                 tpcl_req = "", load_immediate = False):
                  
         self.node = node
         self.name = name
@@ -55,7 +55,7 @@ class Object(ObjectUtilities.GameObject):
         else:
             self.properties = {}
             self.component_id = comp_id
-            self.category_id = cat_id
+            self.category = category
             self.name = name
             self.description = desc
             self.tpcl_requirements = tpcl_req
@@ -70,7 +70,7 @@ class Object(ObjectUtilities.GameObject):
             root = doc.getElementsByTagName("component")[0]
             self.name = getXMLString(root, "name")
             self.component_id = getXMLNum(root, "component_id")
-            self.category_id = getXMLNum(root, "category_id")
+            self.category = getXMLString(root, "category")
             self.description = getXMLString(root, "description")
             self.tpcl_requirements = getXMLString(root, "tpcl_requirements")
             #now the properties associated with this component
@@ -81,7 +81,7 @@ class Object(ObjectUtilities.GameObject):
             #file does not exist - we are creating this property for the first time
             # fill with default values
             self.component_id = -1
-            self.category_id = -1
+            self.category = ""
             self.description = ""
             self.tpcl_requirements = ""
             self.properties = {}
@@ -100,7 +100,7 @@ def saveObject(comp):
     ofile.write('<component>\n')
     ofile.write('    <name>' + comp.name + '</name>\n')
     ofile.write('    <component_id>' + str(comp.component_id) + '</component_id>\n')
-    ofile.write('    <category_id>' + str(comp.category_id) + '</category_id>\n')
+    ofile.write('    <category>' + str(comp.category) + '</category>\n')
     ofile.write('    <description>' + comp.description + '</description>\n')
     ofile.write('    <tpcl_requirements><![CDATA[' + comp.tpcl_requirements + ']]></tpcl_requirements>\n')
     ofile.write('\n')

@@ -48,8 +48,8 @@ class Object(ObjectUtilities.GameObject):
     tpcl_display = ObjectUtilities.sentinelProperty('tpcl_display')
     tpcl_requires = ObjectUtilities.sentinelProperty('tpcl_requires')
 
-    def __init__(self, node, name, catid = -1, prop_id = -1, rank = -1,
-                 desc = 'Null', disp_text = 'Null', tpcl_disp = 'Null', tpcl_req = 'Null',
+    def __init__(self, node, name, category = "", prop_id = -1, rank = -1,
+                 desc = '', disp_text = '', tpcl_disp = '', tpcl_req = '',
                  load_immediate=False):
 
         self.node = node
@@ -60,7 +60,7 @@ class Object(ObjectUtilities.GameObject):
         if (load_immediate):
             self.loadFromFile()
         else:
-            self.category_id = catid
+            self.category = category
             self.property_id = prop_id
             self.rank = rank
             self.description = desc
@@ -82,7 +82,7 @@ class Object(ObjectUtilities.GameObject):
             self.name = getXMLString(root, "name")
             self.rank = getXMLNum(root, "rank")
             self.property_id = getXMLNum(root, "property_id")
-            self.category_id = getXMLNum(root, "category_id")
+            self.category = getXMLString(root, "category")
             self.description = getXMLString(root, "description")
             self.display_text = getXMLString(root, "display_text")
             self.tpcl_display = getXMLString(root, "tpcl_display")
@@ -92,7 +92,7 @@ class Object(ObjectUtilities.GameObject):
             # fill with default values
             self.rank = -1
             self.property_id = -1
-            self.category_id = -1
+            self.category = ""
             self.description = ""
             self.display_text = ""
             self.tpcl_display = ""
@@ -113,7 +113,7 @@ def saveObject(prop):
     ofile.write('<property>\n')
     ofile.write('    <name>' + prop.name + '</name>\n')
     ofile.write('    <property_id>' + str(prop.property_id) + '</property_id>\n')
-    ofile.write('    <category_id>' + str(prop.category_id) + '</category_id>\n')
+    ofile.write('    <category>' + str(prop.category) + '</category>\n')
     ofile.write('    <rank>' + str(prop.rank) + '</rank>\n')
     ofile.write('    <display_text>' + prop.display_text + '</display_text>\n')
     ofile.write('    <description>' + prop.description + '</description>\n')
