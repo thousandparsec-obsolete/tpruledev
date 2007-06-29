@@ -188,7 +188,10 @@ PropertyFactory::PropertyFactory(){
     #generate the code
     for prop_node in object_database.getObjectsOfType(getName()):
         prop = prop_node.getObject()
-        func_name = "init%sProp()" % prop.name.replace('-', '')
+        #NOTE:
+        # we here replace hyphens with underscores in the names of properties
+        # since hyphens are not valid in variable names in C++
+        func_name = "init%sProp()" % prop.name.replace('-', '_')
         func_calls.append("%s;" % func_name)
         
         #write to header file

@@ -208,8 +208,11 @@ ComponentFactory::ComponentFactory(){
                         " ".join(regex.split(comp.tpcl_requirements)))
         #now the properties...
         for name, cost_func in comp.properties.iteritems():
+            #NOTE:
+            # we here replace hyphens with underscores in the names of properties
+            # since hyphens are not valid in variable names in C++
             CFILE.write('  propertylist[ds->getPropertyByName("%s")] = "%s";\n' % \
-                (name.replace('-', ''), " ".join(regex.split(cost_func))))
+                (name.replace('-', '_'), " ".join(regex.split(cost_func))))
         CFILE.write('  comp->setPropertyList(propertylist);\n')
         CFILE.write('  ds->addComponent(comp);\n')
         CFILE.write('  return;\n}\n\n')
