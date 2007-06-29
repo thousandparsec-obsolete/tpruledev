@@ -360,10 +360,12 @@ class GameObjectTree(wx.TreeCtrl):
         # treeid hash for objects
         self.object_ids[event.node.name] = new_id
         self.SetPyData(new_id, event.node)
+        self.Refresh()
     
     def HandleRemove(self, event):
         obj_id = self.object_ids[event.name]
         self.Delete(obj_id)
+        self.Refresh()
     
     def HandleModify(self, event):
         pass
@@ -378,11 +380,13 @@ class GameObjectTree(wx.TreeCtrl):
         for obj_name in event.names:
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, event.color)
+        self.Refresh()
     
     def HandleUnHighlight(self, event):
         for obj_name in event.names:
             id = self.object_ids[obj_name]
             self.SetItemBackgroundColour(id, 'WHITE')
+        self.Refresh()
     
     def HandleClear(self, event):
         """\
@@ -395,6 +399,7 @@ class GameObjectTree(wx.TreeCtrl):
             id = self.object_ids[name]
             self.SetItemTextColour(id, 'BLACK')
             self.SetItemBold(id, False)
+        self.Refresh()
         
     def HandleEmphasize(self, event):
         """\
@@ -407,12 +412,14 @@ class GameObjectTree(wx.TreeCtrl):
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLUE')
             self.SetItemBold(id, True)
+        self.Refresh()
     
     def HandleUnEmphasize(self, event):
         for obj_name in event.names:
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLACK')
             self.SetItemBold(id, False)
+        self.Refresh()
         
     def HandleUnInit(self, event):
         pass

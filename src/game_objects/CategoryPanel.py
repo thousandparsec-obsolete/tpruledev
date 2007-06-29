@@ -28,18 +28,18 @@ class Panel(wx.Panel):
         self.desc_field = XRCCTRL(self, "desc_field")
         self.desc_field.SetValue(str(self.category.description))
         
-        self.property.node.visible = True 
+        self.category.node.visible = True 
         
     def CheckForModification(self):
-        print "Checking Category %s for modifications" % self.property.name
-        
+        print "Checking Category %s for modifications" % self.category.name
+        mod = False
         #print "\description: %s <> %s" % (self.category.description, self.desc_field.GetValue())
         if self.category.description != self.desc_field.GetValue():
             mod = True
             self.category.description = self.desc_field.GetValue()
         
         if mod:
-            self.property.node.SetModified(True)
+            self.category.node.SetModified(True)
         
     def cleanup(self):
         self.CheckForModification()
