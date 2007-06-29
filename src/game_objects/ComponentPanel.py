@@ -54,7 +54,9 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)
         
         remove_button = XRCCTRL(self, "remove_button")
-        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)       
+        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
+        
+        self.component.node.visible = True   
         
     def OnDClickProperty(self, event):
         """\
@@ -164,4 +166,5 @@ class Panel(wx.Panel):
         self.CheckForModification()
         self.component.node.object_database.UnEmphasize(
             [self.prop_list.GetString(i) for i in range(0, self.prop_list.GetCount())])
+        self.component.node.visible = False
         self.component.node.clearObject()

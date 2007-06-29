@@ -136,6 +136,7 @@ class ObjectNode(core.Nodes.DatabaseNode):
     object_module=None
     object_database=None
     object=None
+    visible=False
     
     def __init__(self, odb, name, module):
         self.name = name
@@ -189,7 +190,7 @@ class ObjectNode(core.Nodes.DatabaseNode):
         made
         """
         print "Clearing ", self.name
-        if not self.modified:
+        if not self.modified and not self.visible:
             del self.object
             
     def generateEditPanel(self, parent):

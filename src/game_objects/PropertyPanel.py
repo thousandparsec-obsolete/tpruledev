@@ -38,6 +38,8 @@ class Panel(wx.Panel):
         self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
         self.tpcl_req_stc.SetText(str(self.property.tpcl_requires))
         
+        self.property.node.visible = True 
+        
     def CheckForModification(self):
         print "Checking Property %s for modifications" % self.property.name
         mod = False
@@ -96,4 +98,5 @@ class Panel(wx.Panel):
         
     def cleanup(self):
         self.CheckForModification()
+        self.property.node.visible = False
         self.property.node.clearObject()
