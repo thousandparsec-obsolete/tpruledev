@@ -49,7 +49,7 @@ def main():
     app.MainLoop()
 
 if __name__ == '__main__':
-    if True:
+    if len(sys.argv) > 1 and sys.argv[1] == "--profile":
         import cProfile
         cProfile.run('main()')
     else:
