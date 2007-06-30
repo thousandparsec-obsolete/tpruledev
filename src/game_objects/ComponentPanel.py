@@ -13,26 +13,38 @@ class Panel(wx.Panel):
     A wx.Panel for displaying and editing Components
     """
         
-    def __init__(self, component, parent, id=wx.ID_ANY, style=wx.EXPAND):
+    def __init__(self, parent, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
         pre = wx.PrePanel()
         res = gui.XrcUtilities.XmlResource('./gui/xrc/ComponentPanel.xrc')
         res.LoadOnPanel(pre, parent, "ComponentPanel")
         self.PostCreate(pre)
         
-        self.component = component
         self.OnCreate()
         
     def OnCreate(self):
         self.name_field = XRCCTRL(self, "name_field")
-        self.name_field.SetLabel(str(self.component.name))        
         self.desc_field = XRCCTRL(self, "desc_field")
-        self.desc_field.SetValue(str(self.component.description))        
         self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
-        self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
-                
-        #fill the category choice box
         self.cat_choice = XRCCTRL(self, "cat_choice")
+        self.prop_list = XRCCTRL(self, "prop_list")
+        self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
+        self.tpcl_cost_stc.Bind(wx.EVT_KEY_UP, self.OnCostEdit)
+        self.tpcl_cost_stc.Enable(False)
+        add_button = XRCCTRL(self, "add_button")
+        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        
+        remove_button = XRCCTRL(self, "remove_button")
+        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
+        
+    def LoadObject(self, comp):
+        self.component = comp
+        self.component.node.visible = True
+        
+        self.name_field.SetLabel(str(self.component.name))
+        self.desc_field.SetValue(str(self.component.description))
+        self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
+        
+        #fill the category choice box        
         self.cat_choice.Clear()
         self.cat_choice.Append("")
         catidx = 0
@@ -42,24 +54,14 @@ class Panel(wx.Panel):
                 catidx = idx
         self.cat_choice.Select(catidx)
         
-        #create the property list
-        self.prop_list = XRCCTRL(self, "prop_list")
+        #create the property list        
         self.prop_sel = -1
         self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
         prop_names = [pname for pname in self.component.properties.keys()]
         self.prop_list.Set(prop_names)
         self.component.node.object_database.Emphasize(prop_names, "BLUE")
-        
-        self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
-        self.tpcl_cost_stc.Bind(wx.EVT_KEY_UP, self.OnCostEdit)
-        self.tpcl_cost_stc.Enable(False)
-        
-        add_button = XRCCTRL(self, "add_button")
-        self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        
-        remove_button = XRCCTRL(self, "remove_button")
-        self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
-        
-        self.component.node.visible = True   
+        self.Show()
+        return self        
         
     def OnDClickProperty(self, event):
         """\
@@ -146,18 +148,12 @@ class Panel(wx.Panel):
         
         if mod:
             self.component.node.SetModified(True)
-        
-    def createLabel(self, text):
-        return wx.StaticText(self, wx.ID_ANY, text, style=wx.ALIGN_RIGHT | wx.ALIGN_TOP)
     
-    def addLabelToFlex(self, flex, label):
-        flex.Add(label, 2, wx.ALIGN_RIGHT | wx.ALIGN_TOP | wx.EXPAND, 5)
-
-    def createField(self, text):
-        return wx.TextCtrl(self, wx.ID_ANY, text)
+    def Destroy(self):
+        self.Hide()
         
-    def addFieldToFlex(self, flex, field):
-        flex.Add(field, 1, wx.EXPAND | wx.ALIGN_CENTER | wx.LEFT | wx.RIGHT, 5)
+    def ReallyDestroy(self):
+        wx.Panel.Destroy(self)
         
     def cleanup(self):
         print "Cleaning up Component Panel"

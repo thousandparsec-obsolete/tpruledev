@@ -33,14 +33,15 @@ def compareFunction(comp1, comp2):
     if id1 == id2:
         return 0
     return 1
-
+    
+edit_panel = None
 class Object(ObjectUtilities.GameObject):
     #component_id = ObjectUtilities.sentinelProperty('component_id')
     #description = ObjectUtilities.sentinelProperty('description')
     #category_id = ObjectUtilities.sentinelProperty('category_id')
     #tpcl_requirements = ObjectUtilities.sentinelProperty('tpcl_requirements')
     #properties = ObjectUtilities.sentinelProperty('properties')
-
+    
     def __init__(self, node, name, comp_id = -1,
                  desc = "", category = "",
                  tpcl_req = "", load_immediate = False):
@@ -88,7 +89,15 @@ class Object(ObjectUtilities.GameObject):
     
     def generateEditPanel(self, parent):
         #make the panel
-        return ComponentPanel.Panel(self, parent)
+        global edit_panel
+        if not edit_panel:
+            edit_panel = ComponentPanel.Panel(parent)
+        return edit_panel.LoadObject(self)
+        
+    def deleteEditPanel(self):
+        #we keep our edit panel around
+        edit_panel.Hide()
+        return
 
 def saveObject(comp):
     """\

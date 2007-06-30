@@ -43,7 +43,14 @@ def generateInfoPanel(parent):
     border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
     panel.SetSizer(border2)
     return panel    
-
-if __name__ == '__main__':
+    
+def main():
     app = App(redirect=False)
     app.MainLoop()
+
+if __name__ == '__main__':
+    if True:
+        import cProfile
+        cProfile.run('main()')
+    else:
+        main()

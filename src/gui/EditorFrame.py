@@ -98,6 +98,7 @@ class Frame(wx.Frame):
     def initProjectGUI(self, project_file):
         self.clearGUI()
         self.project_active = True
+        self.curr_node_id = None
         
         #read in the project info
         self.config.read(project_file)
@@ -126,7 +127,6 @@ class Frame(wx.Frame):
                                       200)
                                       
         self.object_database.loadObjectNodes()
-        self.curr_node_id = None
         self.content_panel.Layout()
         
     def cleanupCurrentProject(self):
@@ -275,6 +275,9 @@ class Frame(wx.Frame):
     def OnTreeSelect(self, event):
         try:
             print "Tree Selection: ", self.tree.GetSelections()
+            old_node = None
+            if self.curr_node_id:
+                old_node = self.tree.GetPyData(self.curr_node_id)
             self.curr_node_id = event.GetItem()
             if self.curr_node_id:
                 print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
@@ -289,8 +292,9 @@ class Frame(wx.Frame):
                         child.cleanup()
                     self.cp_right_sizer.Remove(child)
                     child.Destroy()
-                    del child
-                    
+
+                if old_node:
+                    old_node.deleteEditPanel()                    
                 #generate the new panel and do highlighting and stuff like that
                 # (all handled by the generateEditPanel method)
                 panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.cp_right)

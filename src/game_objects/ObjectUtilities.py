@@ -195,3 +195,9 @@ class ObjectNode(rde.Nodes.DatabaseNode):
             
     def generateEditPanel(self, parent):
         return self.getObject().generateEditPanel(parent)
+        
+    def deleteEditPanel(self):
+        if hasattr(self.getObject(), "deleteEditPanel"):
+            self.getObject().deleteEditPanel()
+        else:
+            return
