@@ -8,7 +8,7 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/ directory.
     """
     
-    NAME = Category.getName()
+    NAME = Category.GetName()
     FILENAME = NAME.lower() + "factory"
     CLASS_NAME = NAME + "Factory"
     INIT_FUNC_NAME = "init%sObjects" % NAME

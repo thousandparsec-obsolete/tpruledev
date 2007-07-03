@@ -126,5 +126,5 @@ def deleteSaveFile(name):
         #persistence file was never created
         pass
 
-def getName():
+def GetName():
     return 'Component'

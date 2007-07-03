@@ -8,7 +8,8 @@ import wx, os, ConfigParser, sys
 from ConfigParser import ConfigParser
 
 import RDE
-import rde.ObjectManagement, rde.ProjectManagement, gui.GameObjectTree
+import rde.ObjectManagement, rde.ProjectManagement
+from gui import GameObjectTree, EditPanel
 import game_objects.ObjectUtilities
 from rde.Exceptions import *
 
@@ -112,19 +113,16 @@ class Frame(wx.Frame):
                                           wx.SP_3DSASH | wx.BORDER |
                                           wx.SP_3D)
         self.content_sizer.Add(self.splitter, 1, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER, 0)
-        self.cp_right = wx.Panel(self.splitter, wx.ID_ANY)
-        self.cp_right_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.cp_right.SetSizer(self.cp_right_sizer)
-        #self.cp_right.SetBackgroundColour("black")
+        self.edit_panel = EditPanel.EditPanel(self.splitter)
         
-        self.tree = gui.GameObjectTree.GameObjectTree(self.splitter, wx.ID_ANY)
+        self.tree = GameObjectTree.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGING, self.OnTreeSelecting)
         
         self.splitter.SetMinimumPaneSize(140)
         self.splitter.SplitVertically(self.tree,
-                                      self.cp_right,
+                                      self.edit_panel,
                                       200)
                                       
         self.object_database.loadObjectNodes()
@@ -254,12 +252,12 @@ class Frame(wx.Frame):
             data = self.tree.GetPyData(self.tree.GetSelection())
             if isinstance(data, game_objects.ObjectUtilities.ObjectNode):
                 #confirm the delete
-                confirm = wx.MessageBox("Are you sure you want to delete the " + data.object_module.getName() +
+                confirm = wx.MessageBox("Are you sure you want to delete the " + data.object_module.GetName() +
                                 " " + data.name + "?", caption="Confirm Delete",
                                 style=wx.OK | wx.CANCEL)
                 if confirm == wx.OK:
                     #perform the delete
-                    self.object_database.Remove(data.object_module.getName(), data.name)
+                    self.object_database.Remove(data.object_module.GetName(), data.name)
                 else:
                     #user changed his mind
                     pass
@@ -284,40 +282,7 @@ class Frame(wx.Frame):
     
     def OnTreeSelect(self, event):
         try:
-            print "Using event methods:"
-            print "\tevent.GetItem(): ", self.tree.GetItemText(event.GetItem())
-            print "\tevent.GetOldItem(): ", self.tree.GetItemText(event.GetOldItem())
-            print ""
-            print "Tree Selection: ", self.tree.GetSelections()
-            old_node = None
-            if self.curr_node_id:
-                old_node = self.tree.GetPyData(self.curr_node_id)
-            self.curr_node_id = event.GetItem()
-            if self.curr_node_id:
-                print "OnSelChanged: %s" % self.tree.GetItemText(self.curr_node_id)
-                
-                #cleanup the last panel, which will release resources
-                # grabbed by objects if applicable
-                #this will also clear any highlighting done by the
-                # panel and stuff like that
-                for child in self.cp_right.GetChildren():
-                    child.Hide()
-                    if hasattr(child, "cleanup"):
-                        child.cleanup()
-                    self.cp_right_sizer.Remove(child)
-                    child.Destroy()
-
-                if old_node:
-                    old_node.deleteEditPanel()                    
-                #generate the new panel and do highlighting and stuff like that
-                # (all handled by the generateEditPanel method)
-                panel = self.tree.GetPyData(self.curr_node_id).generateEditPanel(self.cp_right)
-                self.cp_right_sizer.Add(panel, 1, wx.ALL | wx.EXPAND, 5)
-                self.cp_right.Layout()
-                
-                self.Refresh()
-                self.Update()
-                
+            self.edit_panel.node = self.tree.GetPyData(event.GetItem())                
             event.Skip()
         except wx.PyDeadObjectError:
             #the app is closing

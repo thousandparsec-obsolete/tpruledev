@@ -35,6 +35,7 @@ class Panel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        
         remove_button = XRCCTRL(self, "remove_button")
         self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
+        self.loaded = False
         
     def LoadObject(self, comp):
         self.component = comp
@@ -60,6 +61,8 @@ class Panel(wx.Panel):
         prop_names = [pname for pname in self.component.properties.keys()]
         self.prop_list.Set(prop_names)
         self.component.node.object_database.Emphasize(prop_names, "BLUE")
+        self.loaded = True
+        
         self.Show()
         return self        
         
@@ -129,25 +132,26 @@ class Panel(wx.Panel):
     
     def CheckForModification(self):
         #print "Checking for modification..."
-        mod = False
-        
-        #print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
-        if self.component.category != self.cat_choice.GetStringSelection():
-            mod = True
-            self.component.category = self.cat_choice.GetStringSelection()
-        
-        #print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
-        if self.component.description != self.desc_field.GetValue():
-            mod = True
-            self.component.description = self.desc_field.GetValue()
+        if self.loaded:
+            mod = False
             
-        #print "\tpcl_requirements: %s <> %s" % (self.component.tpcl_requirements, self.tpcl_req_stc.GetText())
-        if self.component.tpcl_requirements != self.tpcl_req_stc.GetText():
-            mod = True
-            self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
-        
-        if mod:
-            self.component.node.SetModified(True)
+            #print "\category_id: %s <> %s" % (self.component.category_id, self.catid_field.GetValue())
+            if self.component.category != self.cat_choice.GetStringSelection():
+                mod = True
+                self.component.category = self.cat_choice.GetStringSelection()
+            
+            #print "\description: %s <> %s" % (self.component.description, self.desc_field.GetValue())
+            if self.component.description != self.desc_field.GetValue():
+                mod = True
+                self.component.description = self.desc_field.GetValue()
+                
+            #print "\tpcl_requirements: %s <> %s" % (self.component.tpcl_requirements, self.tpcl_req_stc.GetText())
+            if self.component.tpcl_requirements != self.tpcl_req_stc.GetText():
+                mod = True
+                self.component.tpcl_requirements = self.tpcl_req_stc.GetText()
+            
+            if mod:
+                self.component.node.SetModified(True)
     
     def Destroy(self):
         self.Hide()
@@ -161,4 +165,7 @@ class Panel(wx.Panel):
         self.component.node.object_database.UnEmphasize(
             [self.prop_list.GetString(i) for i in range(0, self.prop_list.GetCount())])
         self.component.node.visible = False
+        self.Hide()
         self.component.node.clearObject()
+        self.component = None
+        self.loaded = False

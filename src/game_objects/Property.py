@@ -135,5 +135,5 @@ def deleteSaveFile(name):
         pass
     
 
-def getName():
+def GetName():
     return 'Property'
