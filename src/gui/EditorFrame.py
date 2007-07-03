@@ -284,6 +284,10 @@ class Frame(wx.Frame):
     
     def OnTreeSelect(self, event):
         try:
+            print "Using event methods:"
+            print "\tevent.GetItem(): ", self.tree.GetItemText(event.GetItem())
+            print "\tevent.GetOldItem(): ", self.tree.GetItemText(event.GetOldItem())
+            print ""
             print "Tree Selection: ", self.tree.GetSelections()
             old_node = None
             if self.curr_node_id:
