@@ -96,8 +96,8 @@ class Object(ObjectUtilities.GameObject):
         
     def deleteEditPanel(self):
         #we keep our edit panel around
+        global edit_panel
         edit_panel.Hide()
-        return
 
 def saveObject(comp):
     """\
@@ -145,13 +145,13 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/Component directory.
     """
     
-    FILENAME = getName().lower() + "factory"
-    CLASS_NAME = getName() + "Factory"
-    INIT_FUNC_NAME = "init%sObjects()" % getName()
+    NAME = getName()
+    FILENAME = NAME.lower() + "factory"
+    CLASS_NAME = NAME + "Factory"
+    INIT_FUNC_NAME = "init%sObjects" % NAME
     
     print "BEGINNING CODE GENERATION FOR PROPERTIES!"
-    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
-                                               'code', getName())
+    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'), 'code')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
                                                
@@ -199,9 +199,9 @@ class %s {
     func_calls =[]
     
     #generate the code
-    for comp_node in object_database.getObjectsOfType(getName()):
+    for comp_node in object_database.getObjectsOfType(NAME):
         comp = comp_node.getObject()
-        func_name = "init%s%s()" % (comp.name.replace('-', ''), getName)
+        func_name = "init%s%s()" % (comp.name.replace('-', ''), NAME)
         func_calls.append("%s;" % func_name)
         
         #write to header file

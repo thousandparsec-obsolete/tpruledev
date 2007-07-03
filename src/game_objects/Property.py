@@ -38,7 +38,7 @@ def compareFunction(prop1, prop2):
         return 0
     return 1
     
-
+edit_panel = None
 class Object(ObjectUtilities.GameObject):
 
     def __init__(self, node, name, category = "", prop_id = -1, rank = -1,
@@ -92,7 +92,14 @@ class Object(ObjectUtilities.GameObject):
         
     def generateEditPanel(self, parent):
         #make the panel
-        return PropertyPanel.Panel(self, parent)    
+        global edit_panel
+        if not edit_panel:
+            edit_panel = PropertyPanel.Panel(parent)
+        return edit_panel.LoadObject(self)    
+        
+    def deleteEditPanel(self):
+        global edit_panel
+        edit_panel.Hide()
         
 
 def saveObject(prop):
@@ -138,13 +145,14 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/ directory.
     """
     
-    FILENAME = getName().lower() + "factory"
-    CLASS_NAME = getName() + "Factory"
-    INIT_FUNC_NAME = "init%sObjects()" % getName()
+    NAME = getName()
+    FILENAME = NAME.lower() + "factory"
+    print "Filename: ", FILENAME
+    CLASS_NAME = NAME + "Factory"
+    INIT_FUNC_NAME = "init%sObjects" % NAME
     
     print "BEGINNING CODE GENERATION FOR PROPERTIES!"
-    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
-                                               'code', getName())
+    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'), 'code')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
                                                
@@ -192,12 +200,12 @@ class %s {
     func_calls =[]
     
     #generate the code
-    for prop_node in object_database.getObjectsOfType(getName()):
+    for prop_node in object_database.getObjectsOfType(NAME):
         prop = prop_node.getObject()
         #NOTE:
         # we here replace hyphens with underscores in the names of properties
         # since hyphens are not valid in variable names in C++
-        func_name = "init%s%s()" % (prop.name.replace('-', '_'), getName())
+        func_name = "init%s%s()" % (prop.name.replace('-', '_'), NAME)
         func_calls.append("%s;" % func_name)
         
         #write to header file

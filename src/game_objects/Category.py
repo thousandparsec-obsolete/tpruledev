@@ -102,13 +102,13 @@ def GenerateCode(object_database):
     Code is placed in the .../ProjectName/code/ directory.
     """
     
-    FILENAME = getName().lower() + "factory"
-    CLASS_NAME = getName() + "Factory"
-    INIT_FUNC_NAME = "init%sObjects()" % getName()
+    NAME = getName()
+    FILENAME = NAME.lower() + "factory"
+    CLASS_NAME = NAME + "Factory"
+    INIT_FUNC_NAME = "init%sObjects" % NAME
     
     print "BEGINNING CODE GENERATION FOR CATEGORIES!"
-    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'),
-                                               'code', getName())
+    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'), 'code')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
                                                
@@ -130,7 +130,7 @@ class %s {
  public:
   %s();
   
-  void %s;
+  void %s();
   
  private:
 """ % (CLASS_NAME, CLASS_NAME, INIT_FUNC_NAME)
@@ -157,9 +157,9 @@ class %s {
     func_calls =[]
     
     #generate the code
-    for cat_node in object_database.getObjectsOfType(getName()):
+    for cat_node in object_database.getObjectsOfType(NAME):
         cat = cat_node.getObject()
-        func_name = "init%s%s()" % (cat.name.replace('-', ''), getName())
+        func_name = "init%s%s()" % (cat.name.replace('-', ''), NAME)
         func_calls.append("%s;" % func_name)
         
         #write to header file
@@ -185,7 +185,7 @@ class %s {
     HFILE.flush()
     
     #finish up by adding the initProperties function
-    CFILE.write('void %s::%s {\n' % (CLASS_NAME, INIT_FUNC_NAME))
+    CFILE.write('void %s::%s() {\n' % (CLASS_NAME, INIT_FUNC_NAME))
     for call in func_calls:
         CFILE.write("  %s\n" % call)
     CFILE.write('  return;\n}\n')
