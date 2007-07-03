@@ -4,41 +4,12 @@ Representation of Properties.
 """
 
 import os
-import os.path
-import wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
 from gui import PropertyPanel
-
-def generateEditPanel(parent):
-    print "Generating panel for Property module."
-    panel = wx.Panel(parent, wx.ID_ANY)
-    panel.SetBackgroundColour('white')
-    label = wx.TextCtrl(panel, wx.ID_ANY, style=wx.TE_MULTILINE)
-    label.SetValue( "Property Objects\n"
-                    "------------------------\n"
-                    "Insert a nice little blurb about Properties here...\n")
-    label.SetEditable(False)
-    border1 = wx.BoxSizer(wx.HORIZONTAL)
-    border1.Add(label, 1, wx.ALL | wx.EXPAND)
-    border2 = wx.BoxSizer(wx.VERTICAL)
-    border2.Add(border1, 1, wx.ALL | wx.EXPAND)
-    panel.SetSizer(border2)
-    return panel
     
-
-def compareFunction(prop1, prop2):
-    id1 = int(prop1.property_id)
-    id2 = int(prop2.property_id)
-    if id1 < id2:
-        return -1
-    if id1 == id2:
-        return 0
-    return 1
-    
-edit_panel = None
 class Object(ObjectUtilities.GameObject):
 
     def __init__(self, node, name, category = "", prop_id = -1, rank = -1,
@@ -89,17 +60,6 @@ class Object(ObjectUtilities.GameObject):
             self.display_text = ""
             self.tpcl_display = ""
             self.tpcl_requires = ""
-        
-    def generateEditPanel(self, parent):
-        #make the panel
-        global edit_panel
-        if not edit_panel:
-            edit_panel = PropertyPanel.Panel(parent)
-        return edit_panel.LoadObject(self)    
-        
-    def deleteEditPanel(self):
-        global edit_panel
-        edit_panel.Hide()
         
 
 def saveObject(prop):

@@ -3,30 +3,13 @@ Component.py
 Representation of Components.
 """
 
-import os, wx
+import os
 import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
 from gui import ComponentPanel
-
-def generateEditPanel(parent):
-    print "Generating panel for Component module."
-    panel = wx.Panel(parent, wx.ID_ANY)
-    panel.SetBackgroundColour('white')
-    label = wx.TextCtrl(panel, wx.ID_ANY, style=wx.TE_MULTILINE)
-    label.SetValue( "Component Objects\n"
-                    "------------------------\n"
-                    "Insert a nice little blurb about Components here...\n")
-    label.SetEditable(False)
-    border1 = wx.BoxSizer(wx.HORIZONTAL)
-    border1.Add(label, 1, wx.ALL | wx.EXPAND)
-    border2 = wx.BoxSizer(wx.VERTICAL)
-    border2.Add(border1, 1, wx.ALL | wx.EXPAND)
-    panel.SetSizer(border2)
-    return panel
     
-edit_panel = None
 class Object(ObjectUtilities.GameObject):
     #component_id = ObjectUtilities.sentinelProperty('component_id')
     #description = ObjectUtilities.sentinelProperty('description')
@@ -78,18 +61,7 @@ class Object(ObjectUtilities.GameObject):
             self.description = ""
             self.tpcl_requirements = ""
             self.properties = {}
-    
-    def generateEditPanel(self, parent):
-        #make the panel
-        global edit_panel
-        if not edit_panel:
-            edit_panel = ComponentPanel.Panel(parent)
-        return edit_panel.LoadObject(self)
-        
-    def deleteEditPanel(self):
-        #we keep our edit panel around
-        global edit_panel
-        edit_panel.Hide()
+            
 
 def saveObject(comp):
     """\

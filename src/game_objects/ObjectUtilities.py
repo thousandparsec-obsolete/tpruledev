@@ -192,12 +192,3 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         print "Clearing ", self.name
         if not self.modified and not self.visible and self.object:
             del self.object
-            
-    def generateEditPanel(self, parent):
-        return self.getObject().generateEditPanel(parent)
-        
-    def deleteEditPanel(self):
-        if hasattr(self.getObject(), "deleteEditPanel"):
-            self.getObject().deleteEditPanel()
-        else:
-            return

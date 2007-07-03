@@ -3,28 +3,12 @@ Category.py
 Representation of Categories.
 """
 
-import os, wx
+import os
 import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
 from gui import CategoryPanel
-
-def generateEditPanel(parent):
-    print "Generating panel for Category module."
-    panel = wx.Panel(parent, wx.ID_ANY)
-    panel.SetBackgroundColour('white')
-    label = wx.TextCtrl(panel, wx.ID_ANY, style=wx.TE_MULTILINE)
-    label.SetValue( "Category Objects\n"
-                    "------------------------\n"
-                    "Insert a nice little blurb about Categories here...\n")
-    label.SetEditable(False)
-    border1 = wx.BoxSizer(wx.HORIZONTAL)
-    border1.Add(label, 1, wx.ALL | wx.EXPAND)
-    border2 = wx.BoxSizer(wx.VERTICAL)
-    border2.Add(border1, 1, wx.ALL | wx.EXPAND)
-    panel.SetSizer(border2)
-    return panel
 
 class Object(ObjectUtilities.GameObject):
 
@@ -54,10 +38,6 @@ class Object(ObjectUtilities.GameObject):
             #file does not exist - we are creating this property for the first time
             # fill with default values
             self.description = ""
-    
-    def generateEditPanel(self, parent):
-        #make the panel
-        return CategoryPanel.Panel(self, parent)
 
 def saveObject(cat):
     """\
