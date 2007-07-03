@@ -10,7 +10,7 @@ import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
-import PropertyPanel
+from gui import PropertyPanel
 
 def generateEditPanel(parent):
     print "Generating panel for Property module."

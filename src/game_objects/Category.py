@@ -6,8 +6,9 @@ Representation of Categories.
 import os, wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
-import ObjectUtilities, RDE, CategoryPanel
+import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
+from gui import CategoryPanel
 
 def generateEditPanel(parent):
     print "Generating panel for Category module."

@@ -6,8 +6,9 @@ Representation of Components.
 import os, wx
 import xml.dom.minidom
 from xml.dom.minidom import Node
-import ObjectUtilities, RDE, ComponentPanel
+import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
+from gui import ComponentPanel
 
 def generateEditPanel(parent):
     print "Generating panel for Component module."
