@@ -25,15 +25,6 @@ def generateEditPanel(parent):
     border2.Add(border1, 1, wx.ALL | wx.EXPAND)
     panel.SetSizer(border2)
     return panel
-
-def compareFunction(comp1, comp2):
-    id1 = int(comp1.component_id)
-    id2 = int(comp2.component_id)
-    if id1 < id2:
-        return -1
-    if id1 == id2:
-        return 0
-    return 1
     
 edit_panel = None
 class Object(ObjectUtilities.GameObject):

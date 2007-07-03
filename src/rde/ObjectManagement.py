@@ -19,7 +19,7 @@ will be more complete so as to provide different
 views.
 """
 
-import os, wx
+import os
 import ConfigParser, bisect
 from ConfigParser import ConfigParser
 import RDE, Nodes
@@ -54,11 +54,6 @@ class ObjectDatabase(object):
         self.save_location = self.config.get('Current Project', 'persistence_directory')
         self.odb_listeners = []
         return
-
-    def getTree(self, parent, id=wx.ID_ANY):
-        tree = GameObjectTree(self, parent, id)
-        self.addODBListener(tree)
-        return tree
         
     def initObjectTypes(self):
         #print "Trying to initialize object types"

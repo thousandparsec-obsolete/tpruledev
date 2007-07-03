@@ -26,13 +26,6 @@ def generateEditPanel(parent):
     panel.SetSizer(border2)
     return panel
 
-def compareFunction(cat1, cat2):
-    if cat1.name < cat2.name:
-        return -1
-    if cat1.name == cat2.name:
-        return 0
-    return 1
-
 class Object(ObjectUtilities.GameObject):
 
     def __init__(self, node, name, desc = "Null", load_immediate = False):
