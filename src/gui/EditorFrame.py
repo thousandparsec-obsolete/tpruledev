@@ -282,7 +282,8 @@ class Frame(wx.Frame):
     
     def OnTreeSelect(self, event):
         try:
-            self.edit_panel.node = self.tree.GetPyData(event.GetItem())                
+            if event.GetItem().IsOk():
+                self.edit_panel.node = self.tree.GetPyData(event.GetItem())                
             event.Skip()
         except wx.PyDeadObjectError:
             #the app is closing

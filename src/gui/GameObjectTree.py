@@ -119,6 +119,9 @@ class GameObjectTree(wx.TreeCtrl):
                 self.object_ids[object_name] = self.AppendItem(self.type_ids[object_type], object_name)
                 self.SetPyData(self.object_ids[object_name], node)
         
+        #we want to have everything expanded at default
+        self.ExpandAll()
+        
         #we will blindly assume that there will always be some game object types included
         # else why would there be an editor for it, eh?
         #later we will save the last open object for a given project, but that's not now
@@ -152,6 +155,18 @@ class GameObjectTree(wx.TreeCtrl):
             return self.compare_function(self.GetPyData(item1), self.GetPyData(item2))
         else:
             return 0
+            
+    def ExpandAllChildren(self, item):
+        if self.IsVisible(item): self.Expand(item)
+        
+        child, cookie = self.GetFirstChild(item)
+        while child.IsOk():
+            self.Expand(child)
+            if self.ItemHasChildren(child): self.ExpandAllChildren(child)
+            child, cookie = self.GetNextChild(item, cookie)
+    
+    def ExpandAll(self):
+        self.ExpandAllChildren(self.GetRootItem())
             
     eventDict = {ObjectManagement.ODBEvent.INIT: HandleInit,
                  ObjectManagement.ODBEvent.ADD: HandleAdd,
