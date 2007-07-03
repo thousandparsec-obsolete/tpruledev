@@ -120,6 +120,7 @@ class Frame(wx.Frame):
         self.tree = gui.GameObjectTree.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
+        self.tree.Bind(wx.EVT_TREE_SEL_CHANGING, self.OnTreeSelecting)
         
         self.splitter.SetMinimumPaneSize(140)
         self.splitter.SplitVertically(self.tree,
@@ -271,7 +272,16 @@ class Frame(wx.Frame):
             #there was no selection
             wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
                 caption="Invalid Selection", style=wx.OK)
-     
+    
+    def OnTreeSelecting(self, event):
+        """\
+        Called when the selection on the tree is changing. We only
+        want to allow game objects to be selected.
+        """
+        pydata = self.tree.GetPyData(event.GetItem())
+        if pydata == None or not isinstance(pydata, game_objects.ObjectUtilities.ObjectNode):
+            event.Veto()
+    
     def OnTreeSelect(self, event):
         try:
             print "Tree Selection: ", self.tree.GetSelections()
