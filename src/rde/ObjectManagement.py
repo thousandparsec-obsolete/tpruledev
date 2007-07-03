@@ -100,9 +100,10 @@ class ObjectDatabase(object):
         Generates C++ code for the objects.
         """
         print "Generating code..."
-        for type, module in self.object_modules.iteritems():
+        for type in self.getObjectTypes():
+            generator = __import__("codegen.Cpp" + type, globals(), locals(), [''])
             print "Generating code for objects of type: %s" % type
-            module.GenerateCode(self)       
+            generator.GenerateCode(self)       
 
     def Add(self, obj_type, name):
         #check for duplicate object
