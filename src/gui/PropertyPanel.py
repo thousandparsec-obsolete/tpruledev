@@ -12,32 +12,36 @@ class Panel(wx.Panel):
     A wx.Panel for displaying and editing Properties
     """
     
-    def __init__(self, property, parent, id=wx.ID_ANY, style=wx.EXPAND):
+    def __init__(self, parent, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
         pre = wx.PrePanel()
         res = gui.XrcUtilities.XmlResource('./gui/xrc/PropertyPanel.xrc')
         res.LoadOnPanel(pre, parent, "PropertyPanel")
         self.PostCreate(pre)
-        
-        self.property = property
+
         self.OnCreate()
     
     def OnCreate(self):
-        name_field = XRCCTRL(self, "name_field")
-        name_field.SetLabel(str(self.property.name))
+        self.name_field = XRCCTRL(self, "name_field")
         self.rank_field = XRCCTRL(self, "rank_field")
-        self.rank_field.SetValue(str(self.property.rank))
         self.desc_field = XRCCTRL(self, "desc_field")
-        self.desc_field.SetValue(str(self.property.description))
         self.disp_field = XRCCTRL(self, "disp_field")
+        self.tpcl_disp_stc = XRCCTRL(self, "tpcl_disp_stc")      
+        self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")        
+        self.cat_choice = XRCCTRL(self, "cat_choice")        
+        
+    def LoadObject(self, prop):
+        self.property = prop
+        self.property.node.visible = True
+        
+        self.name_field.SetLabel(str(self.property.name))
+        self.rank_field.SetValue(str(self.property.rank))
+        self.desc_field.SetValue(str(self.property.description))
         self.disp_field.SetValue(str(self.property.display_text))
-        self.tpcl_disp_stc = XRCCTRL(self, "tpcl_disp_stc")
-        self.tpcl_disp_stc.SetText(str(self.property.tpcl_display))        
-        self.tpcl_req_stc = XRCCTRL(self, "tpcl_req_stc")
+        self.tpcl_disp_stc.SetText(str(self.property.tpcl_display))
         self.tpcl_req_stc.SetText(str(self.property.tpcl_requires))
         
         #fill the category choice box
-        self.cat_choice = XRCCTRL(self, "cat_choice")
         self.cat_choice.Clear()
         self.cat_choice.Append("")
         catidx = 0
@@ -47,7 +51,8 @@ class Panel(wx.Panel):
                 catidx = idx
         self.cat_choice.Select(catidx)
         
-        self.property.node.visible = True 
+        self.Show()
+        return self           
         
     def CheckForModification(self):
         print "Checking Property %s for modifications" % self.property.name
@@ -85,6 +90,12 @@ class Panel(wx.Panel):
         
         if mod:
             self.property.node.SetModified(True)
+            
+    def Destroy(self):
+        self.Hide()
+        
+    def ReallyDestroy(self):
+        wx.Panel.Destroy(self)
         
     def cleanup(self):
         self.CheckForModification()

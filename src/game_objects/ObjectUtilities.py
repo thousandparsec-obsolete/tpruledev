@@ -190,7 +190,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         made
         """
         print "Clearing ", self.name
-        if not self.modified and not self.visible:
+        if not self.modified and not self.visible and self.object:
             del self.object
             
     def generateEditPanel(self, parent):
