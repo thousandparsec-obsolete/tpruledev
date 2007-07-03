@@ -8,7 +8,7 @@ import wx, os, ConfigParser, sys
 from ConfigParser import ConfigParser
 
 import RDE
-import rde.ObjectManagement, rde.ProjectManagement
+import rde.ObjectManagement, rde.ProjectManagement, gui.GameObjectTree
 import game_objects.ObjectUtilities
 from rde.Exceptions import *
 
@@ -117,7 +117,7 @@ class Frame(wx.Frame):
         self.cp_right.SetSizer(self.cp_right_sizer)
         #self.cp_right.SetBackgroundColour("black")
         
-        self.tree = rde.ObjectManagement.GameObjectTree(self.splitter, wx.ID_ANY)
+        self.tree = gui.GameObjectTree.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
         
