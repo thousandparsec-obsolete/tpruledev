@@ -9,6 +9,7 @@ from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
 from gui import ComponentPanel
+import game_objects.Category, game_objects.Property
     
 class Object(ObjectUtilities.GameObject):
     #component_id = ObjectUtilities.sentinelProperty('component_id')
@@ -62,6 +63,19 @@ class Object(ObjectUtilities.GameObject):
             self.tpcl_requirements = ""
             self.properties = {}
             
+    def OnObjectDeletion(self, object_type, object_name):
+        if object_type == game_objects.Property.GetName():
+            try:
+                self.properties.pop(object_name)
+                self.node.SetModified(True)
+            except KeyError:
+                #we weren't associated with that property, that's fine
+                pass
+        elif object_type == game_objects.Category.GetName():
+            if self.category == object_name:
+                self.category = ""
+                self.node.SetModified(True)
+                    
 
 def saveObject(comp):
     """\

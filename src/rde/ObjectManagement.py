@@ -139,8 +139,24 @@ class ObjectDatabase(object):
         self.objects[obj_type].remove(name)
         self.object_modules[obj_type].deleteSaveFile(name)
         print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
+        
+        #now we have to call the OnObjectDeletion method of all other game objects
+        for type, objects in self.objects.iteritems():
+            for node in objects:
+                node.getObject().OnObjectDeletion(obj_type, name)
+                node.clearObject()
+                
         self.sendODBEvent(ODBRemove(name))
            
+    def GetType(self, obj_name):
+        """\
+        Gets the type of the object with the given name
+        """
+        for type, objects in self.objects.iteritems():
+            if obj_name in objects:
+                return type
+        raise NoSuchObjectError("Object %s doesn't exist." % obj_name)
+    
     def ObjectExists(self, obj_type, name):
         #check that the object type exists
         if not self.objects.has_key(obj_type):

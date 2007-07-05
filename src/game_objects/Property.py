@@ -9,6 +9,7 @@ from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
 from gui import PropertyPanel
+import game_objects.Category
     
 class Object(ObjectUtilities.GameObject):
 
@@ -60,6 +61,12 @@ class Object(ObjectUtilities.GameObject):
             self.display_text = ""
             self.tpcl_display = ""
             self.tpcl_requires = ""
+            
+    def OnObjectDeletion(self, object_type, object_name):
+        if object_type == game_objects.Category.GetName() and \
+                self.category == object_name:
+            self.category = ""
+            self.node.SetModified(True)
         
 
 def saveObject(prop):

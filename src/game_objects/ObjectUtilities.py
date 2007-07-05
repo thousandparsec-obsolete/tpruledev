@@ -52,11 +52,19 @@ class GameObject(object):
     that are necessary for every game object such as the
     ObjectNode which contains this GameObject and the
     name property.
-    """
-    name = sentinelProperty('name')
-    
+    """    
     def __init__(self, node):
         self.node = node
+        
+    def OnObjectDeletion(self, object_type, object_name):
+        """\
+        Removes any associations that the object has with the given
+        object that is being deleted. Since we can delete only the object
+        that is currently selected and the deletion process occurs
+        before a new object is selected we don't have to worry about
+        updating the current edit panel view. Yet.
+        """
+        pass
 
 class ObjectNode(rde.Nodes.DatabaseNode):
     """
