@@ -44,6 +44,7 @@ class Panel(wx.Panel):
         self.name_field.SetLabel(str(self.component.name))
         self.desc_field.SetValue(str(self.component.description))
         self.tpcl_req_stc.SetText(self.component.tpcl_requirements)
+        self.tpcl_cost_stc.SetText("")
         
         #fill the category choice box        
         self.cat_choice.Clear()

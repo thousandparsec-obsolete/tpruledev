@@ -135,7 +135,7 @@ class GameObjectTree(wx.TreeCtrl):
         self.SelectItem(first_obj)
         
     def InitImageList(self):
-        il = wx.ImageList(10, 10)
+        il = wx.ImageList(6, 6)
         self.noimg_idx = il.Add(wx.BitmapFromImage(wx.Image('images/noimg.png', wx.BITMAP_TYPE_ANY)))
         self.modimg_idx = il.Add(wx.BitmapFromImage(wx.Image('images/modified.png', wx.BITMAP_TYPE_ANY)))
         print "Tree ImageList Indexes:"

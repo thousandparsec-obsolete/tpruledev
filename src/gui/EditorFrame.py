@@ -176,9 +176,7 @@ class Frame(wx.Frame):
         return menubar
         
     def CheckCurrentObjectForModifications(self):
-        for child in self.cp_right.GetChildren():
-            if hasattr(child, "CheckForModification"):
-                child.CheckForModification()
+        self.edit_panel.CheckForModification()
     
     def OnNewProject(self, event):
         #get project name
