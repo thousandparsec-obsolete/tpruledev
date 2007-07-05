@@ -63,13 +63,15 @@ class GameObjectTree(wx.TreeCtrl):
         #todo: error handling
         for obj_name in event.names:
             id = self.object_ids[obj_name]
-            self.SetItemBackgroundColour(id, event.color)
+            #self.SetItemBackgroundColour(id, event.color)
+            self.SetItemImage(id, self.modimg_idx)
         self.Refresh()
     
     def HandleUnHighlight(self, event):
         for obj_name in event.names:
             id = self.object_ids[obj_name]
-            self.SetItemBackgroundColour(id, 'WHITE')
+            #self.SetItemBackgroundColour(id, 'WHITE')
+            self.SetItemImage(id, self.noimg_idx)
         self.Refresh()
     
     def HandleClear(self, event):
@@ -109,6 +111,7 @@ class GameObjectTree(wx.TreeCtrl):
         pass
         
     def InitializeTree(self):
+        self.InitImageList()
         self.type_ids = {}
         self.object_ids = {}
         for object_type in self.odb.getObjectTypes():
@@ -130,7 +133,15 @@ class GameObjectTree(wx.TreeCtrl):
             first_obj= self.GetFirstChild(first_obj)[0]
             
         self.SelectItem(first_obj)
-
+        
+    def InitImageList(self):
+        il = wx.ImageList(10, 10)
+        self.noimg_idx = il.Add(wx.BitmapFromImage(wx.Image('images/noimg.png', wx.BITMAP_TYPE_ANY)))
+        self.modimg_idx = il.Add(wx.BitmapFromImage(wx.Image('images/modified.png', wx.BITMAP_TYPE_ANY)))
+        print "Tree ImageList Indexes:"
+        print "\tnoimg: ", self.noimg_idx
+        print "\tmodimg: ", self.modimg_idx
+        self.AssignImageList(il)
     
     #the following methods allow the tree to have its objects
     # sorted using external functions so that objects of a certain
