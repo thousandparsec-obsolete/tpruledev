@@ -55,10 +55,12 @@ class Frame(wx.Frame):
         
         #check to see if there's a current project that we can load
         self.initGUI()
-        if ConfigManager.config.has_option('DEFAULT', 'current_project'):
-            self.initProjectGUI(ConfigManager.config.get('DEFAULT', 'current_project'))
+        if ConfigManager.config.has_option('Global', 'current_project'):
+            self.initProjectGUI(ConfigManager.config.get('Global', 'current_project'))
         else:
             self.initRDEInfo()
+        
+        self.Bind(wx.EVT_CLOSE, self.OnClosing)
         
         self.Show(True)
 
@@ -101,6 +103,7 @@ class Frame(wx.Frame):
         self.curr_node_id = None
         
         #read in the project info
+        ConfigManager.config.set("Global", "current_project", project_file)
         ConfigManager.config.read(project_file)
         self.SetTitle("TP-RDE: " + ConfigManager.config.get('Current Project', 'project_name'))
         
@@ -291,6 +294,17 @@ class Frame(wx.Frame):
         except wx.PyDeadObjectError:
             #the app is closing
             pass
+            
+    def OnClosing(self, event):
+        #we want to save config information now
+        print "Writing out default options:"
+        ConfigManager.WriteConfigData("tpconf", ["Global", "Object Types"])
+        if ConfigManager.config.has_option("Global", "current_project"):
+            print "Writing out project options"
+            ConfigManager.WriteConfigData(ConfigManager.config.get("Global", "current_project"),
+                                            "Current Project")
+        self.Destroy()
+        event.Skip()
         
     def OnQuit(self, event):
         self.CheckCurrentObjectForModifications()
