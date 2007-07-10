@@ -7,7 +7,6 @@ import os
 import xml.dom.minidom
 from xml.dom.minidom import Node
 import ObjectUtilities, RDE
-from ObjectUtilities import getXMLString, getXMLNum
 from gui import ComponentPanel
 import game_objects.Category, game_objects.Property
 
