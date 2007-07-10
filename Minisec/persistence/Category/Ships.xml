@@ -1,4 +1,1 @@
-<category>
-    <name>Ships</name>
-    <description>The Ship design and component category</description>
-</category>
+<category description="The Ship design and component category" name="Ships" version="1.0" />

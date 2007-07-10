@@ -1,36 +1,4 @@
-<component>
-    <name>BattleshipHull</name>
-    <component_id>3</component_id>
-    <category>Ships</category>
-    <description>The battleship hull, fitted out with everything a battleship needs</description>
-    <tpcl_requirements><![CDATA[(lambda (design) 
+<component category="Ships" description="The battleship hull, fitted out with everything a battleship needs" name="BattleshipHull" version="1.0"><tpcl_requirements>(lambda (design) 
 	(if (= (designType._num-components design) 1) 
 		(cons #t \"\") 
-		(cons #f \"This is a complete component, nothing else can be included\")))]]></tpcl_requirements>
-
-    <!--propertylist:-->
-    <property>
-        <name>BuildTime</name>
-        <tpcl_cost><![CDATA[(lambda (design) 4)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>Armour</name>
-        <tpcl_cost><![CDATA[(lambda (design) 6)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>WeaponWin</name>
-        <tpcl_cost><![CDATA[(lambda (design) 3)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>WeaponDraw</name>
-        <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>Speed</name>
-        <tpcl_cost><![CDATA[(lambda (design) 300000000)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>_num-components</name>
-        <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
-    </property>
-</component>
+		(cons #f \"This is a complete component, nothing else can be included\")))</tpcl_requirements><!-- propertylist --><property name="BuildTime"><tpcl_cost>(lambda (design) 4)</tpcl_cost></property><property name="Armour"><tpcl_cost>(lambda (design) 6)</tpcl_cost></property><property name="WeaponWin"><tpcl_cost>(lambda (design) 3)</tpcl_cost></property><property name="WeaponDraw"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Speed"><tpcl_cost>(lambda (design) 300000000)</tpcl_cost></property><property name="_num-components"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property></component>

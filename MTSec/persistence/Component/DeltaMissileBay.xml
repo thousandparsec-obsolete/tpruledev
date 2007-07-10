@@ -1,51 +1,8 @@
-<component>
-    <name>DeltaMissileBay</name>
-    <component_id>13</component_id>
-    <category_id>1</category_id>
-    <description>null</description>
-    <tpcl_requirements><![CDATA[(lambda (design)
+<component category="" description="null" name="DeltaMissileBay" version="1.0"><tpcl_requirements>(lambda (design)
    (if (= (designType.num-ammo design) 1)
-      (if (< (designType.AmmoSize design) 13)
+      (if (&lt; (designType.AmmoSize design) 13)
          (cons #t "")
          (cons #f "Explosive is too large for gamma missiles"))
-      (cons #f "Missiles can only handle one type of explosive")))]]></tpcl_requirements>
-    <!--propertylist:-->
-    <property>
-        <name>Armor</name>
-        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>BuildTime</name>
-        <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>Colonise</name>
-        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>num-baytypes</name>
-        <tpcl_cost><![CDATA[(lambda (design) 1)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>Speed</name>
-        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>MissileFirepower</name>
-        <tpcl_cost><![CDATA[(lambda (design)
-   (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)));]]></tpcl_cost>
-    </property>
-    <property>
-        <name>MissileCost</name>
-        <tpcl_cost><![CDATA[(lambda (design)
-   (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoCost design)));]]></tpcl_cost>
-    </property>
-    <property>
-        <name>StartingHitPoints</name>
-        <tpcl_cost><![CDATA[(lambda (design) 0)]]></tpcl_cost>
-    </property>
-    <property>
-        <name>MissileSize</name>
-        <tpcl_cost><![CDATA[(lambda (design) 12)]]></tpcl_cost>
-    </property>
-</component>
+      (cons #f "Missiles can only handle one type of explosive")))</tpcl_requirements><!-- propertylist --><property name="Armor"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="BuildTime"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Colonise"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="num-baytypes"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Speed"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="MissileFirepower"><tpcl_cost>(lambda (design)
+   (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoExplosiveness design)));</tpcl_cost></property><property name="MissileCost"><tpcl_cost>(lambda (design)
+   (* (floor (/ 12 (designType.AmmoSize design))) (designType.AmmoCost design)));</tpcl_cost></property><property name="StartingHitPoints"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="MissileSize"><tpcl_cost>(lambda (design) 12)</tpcl_cost></property></component>

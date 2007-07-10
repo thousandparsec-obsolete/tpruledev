@@ -1,11 +1,3 @@
-<property>
-    <name>BuildTime</name>
-    <category>Ships</category>
-    <rank>0</rank>
-    <display_text>Build Time</display_text>
-    <description>The number of turns to build the ship</description>
-    <tpcl_display><![CDATA[(lambda (design bits)
+<prop category="Ships" description="The number of turns to build the ship" display_text="Build Time" name="BuildTime" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
 	(let ((n (apply + bits)))
-		(cons n (string-append (number->string n) \" turns\")) ) )]]></tpcl_display>
-    <tpcl_requires><![CDATA[(lambda (design) (cons #t \"\"))]]></tpcl_requires>
-</property>
+		(cons n (string-append (number-&gt;string n) \" turns\")) ) )</tpcl_display><tpcl_requires>(lambda (design) (cons #t \"\"))</tpcl_requires></prop>

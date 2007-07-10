@@ -1,11 +1,3 @@
-<property>
-    <name>Colonise</name>
-    <category>Ships</category>
-    <rank>0</rank>
-    <display_text>Can Colonise Planets</display_text>
-    <description>Can the ship colonise planets</description>
-    <tpcl_display><![CDATA[(lambda (design bits)
+<prop category="Ships" description="Can the ship colonise planets" display_text="Can Colonise Planets" name="Colonise" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
 	(let ((n (apply + bits)))
-		(cons n (if (= n 1) \"Yes\" \"No\")) ) )]]></tpcl_display>
-    <tpcl_requires><![CDATA[(lambda (design) (cons #t \"\"))]]></tpcl_requires>
-</property>
+		(cons n (if (= n 1) \"Yes\" \"No\")) ) )</tpcl_display><tpcl_requires>(lambda (design) (cons #t \"\"))</tpcl_requires></prop>

@@ -1,13 +1,4 @@
-<property>
-    <name>Armor</name>
-    <property_id>11</property_id>
-    <category_id>1</category_id>
-    <rank>0</rank>
-    <display_text>Armor</display_text>
-    <description>The amount of armor on the ship</description>
-    <tpcl_display><![CDATA[(lambda (design bits)
+<prop category="" description="The amount of armor on the ship" display_text="Armor" name="Armor" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (string-append (number->string n) " HP")) ) )]]></tpcl_display>
-    <tpcl_requires><![CDATA[(lambda (design)
-   (cons #t ""))]]></tpcl_requires>
-</property>
+      (cons n (string-append (number-&gt;string n) " HP")) ) )</tpcl_display><tpcl_requires>(lambda (design)
+   (cons #t ""))</tpcl_requires></prop>

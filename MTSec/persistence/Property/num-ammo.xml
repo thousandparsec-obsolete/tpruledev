@@ -1,13 +1,4 @@
-<property>
-	<name>num-ammo</name>
-	<property_id>14</property_id>
-	<category_id>1</category_id>
-	<rank>0</rank>
-	<display_text>Number of missile and torpedo warhead types</display_text>
-	<description>The number of missile and torpedo warhead types in the design</description>
-	<tpcl_display><![CDATA[(lambda (design bits)
+<prop category="" description="The number of missile and torpedo warhead types in the design" display_text="Number of missile and torpedo warhead types" name="num-ammo" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (string-append (number->string n) " explosive types"))))]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design)
-   (cons #t ""))]]></tpcl_requires>
-</property>
+      (cons n (string-append (number-&gt;string n) " explosive types"))))</tpcl_display><tpcl_requires>(lambda (design)
+   (cons #t ""))</tpcl_requires></prop>

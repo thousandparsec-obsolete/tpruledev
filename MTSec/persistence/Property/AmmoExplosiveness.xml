@@ -1,13 +1,4 @@
-<property>
-	<name>AmmoExplosiveness</name>
-	<property_id>3</property_id>
-	<category_id>1</category_id>
-	<rank>0</rank>
-	<display_text>Unit Explosive Punch</display_text>
-	<description>The explosiveness of a unit of the explosive used in the weapons of the ship</description>
-	<tpcl_display><![CDATA[(lambda (design bits)
+<prop category="" description="The explosiveness of a unit of the explosive used in the weapons of the ship" display_text="Unit Explosive Punch" name="AmmoExplosiveness" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (string-append (number->string n) " hit points")) ) )]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design)
-   (cons #t ""))]]></tpcl_requires>
-</property>
+      (cons n (string-append (number-&gt;string n) " hit points")) ) )</tpcl_display><tpcl_requires>(lambda (design)
+   (cons #t ""))</tpcl_requires></prop>

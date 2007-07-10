@@ -1,13 +1,4 @@
-<property>
-	<name>MissileCost</name>
-	<property_id>6</property_id>
-	<category_id>1</category_id>
-	<rank>1</rank>
-	<display_text>MissileCost</display_text>
-	<description>The relative cost of a missile</description>
-	<tpcl_display><![CDATA[(lambda (design bits)
+<prop category="" description="The relative cost of a missile" display_text="MissileCost" name="MissileCost" rank="1" version="1.0"><tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (number->string n))))]]></tpcl_display>
-	<tpcl_requires><![CDATA[(lambda (design)
-   (cons #t ""))]]></tpcl_requires>
-</property>
+      (cons n (number-&gt;string n))))</tpcl_display><tpcl_requires>(lambda (design)
+   (cons #t ""))</tpcl_requires></prop>
