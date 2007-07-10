@@ -8,6 +8,7 @@ import wx, os, ConfigParser, sys
 from ConfigParser import ConfigParser
 
 import RDE
+from rde import ConfigManager
 import rde.ObjectManagement, rde.ProjectManagement
 from gui import GameObjectTree, EditPanel
 import game_objects.ObjectUtilities
@@ -50,14 +51,12 @@ class Frame(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, pos, size)
             
         #import configuration settings, will build on this as is necessary
-        RDE.GlobalConfig.config = ConfigParser()
-        self.config = RDE.GlobalConfig.config
-        self.config.readfp(open(os.path.join(sys.path[0], 'tpconf')))
+        ConfigManager.LoadFromFP(open(os.path.join(sys.path[0], 'tpconf')))
         
         #check to see if there's a current project that we can load
         self.initGUI()
-        if self.config.has_option('DEFAULT', 'current_project'):
-            self.initProjectGUI(self.config.get('DEFAULT', 'current_project'))
+        if ConfigManager.config.has_option('DEFAULT', 'current_project'):
+            self.initProjectGUI(ConfigManager.config.get('DEFAULT', 'current_project'))
         else:
             self.initRDEInfo()
         
@@ -102,8 +101,8 @@ class Frame(wx.Frame):
         self.curr_node_id = None
         
         #read in the project info
-        self.config.read(project_file)
-        self.SetTitle("TP-RDE: " + self.config.get('Current Project', 'project_name'))
+        ConfigManager.config.read(project_file)
+        self.SetTitle("TP-RDE: " + ConfigManager.config.get('Current Project', 'project_name'))
         
         #initialize odbase and gui components
         self.object_database = rde.ObjectManagement.ObjectDatabase()       
@@ -156,7 +155,7 @@ class Frame(wx.Frame):
         #create the items for creating new objects
         new_obj_menu = wx.Menu()
         self.obj_create_menu_items = {}
-        for type in self.config.get('Object Types', 'types').split(', '):
+        for type in ConfigManager.config.get('Object Types', 'types').split(', '):
             type = type.strip()
             id = new_obj_menu.Append(-1, type)
             self.obj_create_menu_items[type] = id
@@ -192,7 +191,7 @@ class Frame(wx.Frame):
                 try:
                     #create project dir and config
                     rde.ProjectManagement.createNewProject(dir_dialog.GetPath(), proj_name,
-                                                self.config.get('Object Types', 'types').split(', '))
+                                                ConfigManager.config.get('Object Types', 'types').split(', '))
                 except DuplicateProjectError:
                     wx.MessageBox("A project with that name already exists in that location!",
                                   caption = "Duplicate Project Error", style=wx.OK)

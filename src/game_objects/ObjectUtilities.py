@@ -6,6 +6,7 @@ print os.getcwd()
 
 import game_objects, RDE
 import rde.Nodes
+from rde import ConfigManager
     
 class GameObject(object):
     """
@@ -71,7 +72,7 @@ class GameObject(object):
             pass
         
     def GetFilename(self):
-        return os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
+        return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
                                 self.type, self.name + '.xml')
     
     filename = property(GetFilename)

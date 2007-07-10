@@ -23,6 +23,7 @@ import os
 import ConfigParser, bisect
 from ConfigParser import ConfigParser
 import RDE, Nodes
+from rde import ConfigManager
 import game_objects.ObjectUtilities
 from rde.Exceptions import *
 
@@ -46,19 +47,18 @@ class ObjectDatabase(object):
     pending_modifications = False
     
     def __init__(self):
-        self.config = RDE.GlobalConfig.config
         #hash of object names
         self.objects = {}
         #hash of object modules
         self.object_modules = self.initObjectTypes()
-        self.save_location = self.config.get('Current Project', 'persistence_directory')
+        self.save_location = ConfigManager.config.get('Current Project', 'persistence_directory')
         self.odb_listeners = []
         return
         
     def initObjectTypes(self):
         #print "Trying to initialize object types"
         object_modules = {}
-        for name in self.config.get('Object Types', 'types').split(', '):
+        for name in ConfigManager.config.get('Object Types', 'types').split(', '):
             name = name.strip()
             object_modules[name] = __import__("game_objects." + name, globals(), locals(), [''])
         return object_modules

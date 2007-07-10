@@ -1,4 +1,5 @@
-import re, os, RDE
+import re, os
+from rde import ConfigManager
 from game_objects import Property
 from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary
 
@@ -14,7 +15,7 @@ def GenerateCode(object_database):
     INIT_FUNC_NAME = "init%sObjects" % NAME
     
     print "BEGINNING CODE GENERATION FOR PROPERTIES!"
-    outdir = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'project_directory'), 'code')
+    outdir = os.path.join(ConfigManager.config.get('Current Project', 'project_directory'), 'code')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
                                                
