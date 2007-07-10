@@ -136,8 +136,8 @@ class ObjectDatabase(object):
             
         print "Removing an object"
         print "Object List Before: ", [o.__str__() for o in self.objects[obj_type]]
+        self.GetObjectNode(obj_type, name).getObject(load_imm=False).DeleteSaveFile()
         self.objects[obj_type].remove(name)
-        self.object_modules[obj_type].deleteSaveFile(name)
         print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
         
         #now we have to call the OnObjectDeletion method of all other game objects
@@ -146,8 +146,13 @@ class ObjectDatabase(object):
                 node.getObject().OnObjectDeletion(obj_type, name)
                 node.clearObject()
                 
-        self.sendODBEvent(ODBRemove(name))
+        self.sendODBEvent(ODBRemove(name))           
            
+    def GetObjectNode(self, type, name):
+        for node in self.objects[type]:
+            if node == name:
+                return node
+    
     def GetType(self, obj_name):
         """\
         Gets the type of the object with the given name

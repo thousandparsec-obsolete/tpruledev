@@ -97,6 +97,17 @@ class GameObject(object):
         else:
             #no save file created yet, we're fine with defaults
             pass
+            
+    def DeleteSaveFile(self):
+        """\
+        Deletes an objects XML save file
+        """
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+        else:
+            #no file in existence, guess we just created
+            # this object and never saved it, no biggie
+            pass
         
     def GetFilename(self):
         return os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
@@ -221,13 +232,13 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         for l in self.listeners:
             l.handleObjectEvent(event)
             
-    def getObject(self):
+    def getObject(self, load_imm=True):
         """
         Gets the game object object associated with this
         node.
         """
         if not self.object:
-            self.object = self.object_module.Object(self, self.name, load_immediate = True)
+            self.object = self.object_module.Object(self, self.name, load_immediate = load_imm)
             
         return self.object
         

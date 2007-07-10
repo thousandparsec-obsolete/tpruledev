@@ -25,19 +25,6 @@ class Object(ObjectUtilities.GameObject):
 
     def __str__(self):
         return "Category Game Object - " + self.name
-        
-
-def deleteSaveFile(name):
-    """\
-    Deletes the save file for a Component that has been deleted.
-    """
-    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Category', name + '.xml')
-    if os.path.exists(filename):
-        os.remove(filename)
-    else:
-        #persistence file was never created
-        pass
 
 def GetName():
     return 'Category'

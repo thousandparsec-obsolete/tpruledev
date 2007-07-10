@@ -49,18 +49,6 @@ class Object(ObjectUtilities.GameObject):
             self.category = new_name
             self.node.SetModified(True)  
     
-def deleteSaveFile(name):
-    """\
-    Deletes the save file for a Component that has been deleted.
-    """
-    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Property', name + '.xml')
-    if os.path.exists(filename):
-        os.remove(filename)
-    else:
-        #no persistence file has yet been created
-        pass
-    
 
 def GetName():
     return 'Property'
