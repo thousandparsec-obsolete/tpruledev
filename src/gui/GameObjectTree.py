@@ -19,7 +19,8 @@ class GameObjectTree(wx.TreeCtrl):
         self.odb = odb
         odb.addODBListener(self)
              
-    def RemoveObject(self, type, name):
+    def SelectObject(self, name):
+        self.SelectItem(self.object_ids[name])
         pass
         
     def handleODBEvent(self, event):

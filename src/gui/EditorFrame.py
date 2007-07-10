@@ -128,6 +128,8 @@ class Frame(wx.Frame):
                                       200)
                                       
         self.object_database.loadObjectNodes()
+        if ConfigManager.config.has_option("Current Project", "last_item"):
+            self.tree.SelectObject(ConfigManager.config.get("Current Project", "last_item"))
         self.content_panel.Layout()
         
     def cleanupCurrentProject(self):
@@ -297,10 +299,14 @@ class Frame(wx.Frame):
             
     def OnClosing(self, event):
         #we want to save config information now
-        print "Writing out default options:"
         ConfigManager.WriteConfigData("tpconf", ["Global", "Object Types"])
         if ConfigManager.config.has_option("Global", "current_project"):
-            print "Writing out project options"
+            sel_id = self.tree.GetSelection()
+            if sel_id.IsOk():
+                ConfigManager.config.set("Current Project", "last_item", self.tree.GetItemText(sel_id))
+            else:
+                ConfigManager.config.remove_option("Current Project", "last_item")
+            self.tree.GetItemText(self.tree.GetSelection())
             ConfigManager.WriteConfigData(ConfigManager.config.get("Global", "current_project"),
                                             "Current Project")
         self.Destroy()
