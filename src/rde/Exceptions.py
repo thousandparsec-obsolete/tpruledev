@@ -28,3 +28,9 @@ class DuplicateProjectError(Exception):
     Used to indicate that a project already exists in a location when trying
     to create or move another one at that location.
     """
+    
+class MalformedXmlError(Exception):
+    """\
+    Used to indicate that an XML file that we're trying to read is invalid -
+    i.e. missing tags.
+    """
