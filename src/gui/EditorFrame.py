@@ -217,10 +217,16 @@ class Frame(wx.Frame):
         self.CheckCurrentObjectForModifications()
         if self.object_database.pending_modifications:
             choice = wx.MessageBox("You have unsaved changes!\nYou cannot generate code without saving.",
-                caption="Confirm Quit", style = wx.OK)
+                caption="Unsaved Changes", style = wx.OK)
             return
         else:
-            self.object_database.GenerateCode()
+            try:
+                self.object_database.GenerateCode()
+                wx.MessageBox("Code generated successfully.",
+                                  caption = "Code Generation Complete", style=wx.OK)
+            except:
+                wx.MessageBox("Code generation failed! Previous code files likely corrupted in the process.",
+                                  caption = "Code Generation Error!", style=wx.OK)
         
             
     def OnSaveProject(self, event):
