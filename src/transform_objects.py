@@ -50,11 +50,13 @@ for comp_fname in os.listdir(comp_path):
     et.parse(fpath)
     if not et.getroot().get("version"):
         print "\tTransforming %s..." % comp_fname
+        category = ""
+        if et.find("category"): category = et.find("category").text.strip()
         root = Element("component",
                         {"version": "1.0",
                          "name": et.find("name").text.strip(),
                          "description": et.find("description").text.strip(),
-                         "category": et.find("category").text.strip()})
+                         "category": category})
         tpcl_req = SubElement(root, "tpcl_requirements")
         tpcl_req.text = et.find("tpcl_requirements").text.strip()
         root.append(Comment("propertylist"))
@@ -75,11 +77,13 @@ for prop_fname in os.listdir(prop_path):
     et.parse(fpath)
     if not et.getroot().get("version"):
         print "\tTransforming %s..." % prop_fname
+        category = ""
+        if et.find("category"): category = et.find("category").text.strip()
         root = Element("prop",
                         {"version": "1.0",
                          "name": et.find("name").text.strip(),
                          "description": et.find("description").text.strip(),
-                         "category": et.find("category").text.strip(),
+                         "category": category,
                          "rank": et.find("rank").text.strip(),
                          "display_text": et.find("display_text").text.strip()})
         tpcl_disp = SubElement(root, "tpcl_display")
