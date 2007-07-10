@@ -4,7 +4,7 @@ Game Object Utility classes and utility functions.
 import os
 print os.getcwd()
 
-import game_objects
+import game_objects, RDE
 import rde.Nodes
 
 def makeSentinelGetter(var_name):
@@ -75,6 +75,34 @@ class GameObject(object):
         updating the current edit panel view. Yet.
         """
         pass
+        
+    def SaveObject(self):
+        """\
+        Saves an object to its persistence file.
+        """  
+
+        #need some error checking here to check for non-existent codegen modules
+        xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
+        xml_module.GenerateCode(self, self.filename)
+        
+    def LoadObject(self):
+        """\
+        Loads an object from its persistence file
+        """  
+
+        #need some error checking here to check for non-existent codegen modules
+        if os.path.exists(self.filename):
+            xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
+            xml_module.ParseCode(self, self.filename)
+        else:
+            #no save file created yet, we're fine with defaults
+            pass
+        
+    def GetFilename(self):
+        return os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
+                                self.type, self.name + '.xml')
+    
+    filename = property(GetFilename)
         
 
 class ObjectNode(rde.Nodes.DatabaseNode):
@@ -199,7 +227,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         node.
         """
         if not self.object:
-            self.object = self.object_module.Object(self, self.name, load_immediate=True)
+            self.object = self.object_module.Object(self, self.name, load_immediate = True)
             
         return self.object
         

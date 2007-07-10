@@ -5,7 +5,7 @@ The XML I/O module for Component objects.
 from game_objects import Component
 from elementtree.ElementTree import ElementTree, Comment, SubElement, Element
 from rde.Exceptions import MalformedXmlError
-import XMLUtils
+import XmlUtils
 
 def GenerateCode(comp, save_location):
     """\
@@ -30,21 +30,20 @@ def GenerateCode(comp, save_location):
     et = ElementTree(root)
     et.write(save_location)
     
-def ParseCode(node, name, save_location):
+def ParseCode(comp, save_location):
     """\
     Returns the component serialized to the given XML file
     """
     et = ElementTree(file=save_location)
     root = et.getroot()
-    comp = Component(node, name)
     try:
         comp.description = root.get("description")
         comp.category = root.get("category")
         comp.tpcl_requirements = root.findtext("tpcl_requirements",
-                                    '(lambda (design) (cons #f \\"Default req func\\"))').strip()
+                                    Component.DEFAULT_TPCL_REQUIREMENTS).strip()
+        comp.properties = {}
         for prop in root.findall("property"):
             comp.properties[prop.get("name")] = prop.findtext("tpcl_cost", '(lambda (design) 0)').strip()
     except KeyError:
         raise MalformedXmlError()
-    return comp
     

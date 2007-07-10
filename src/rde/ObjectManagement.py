@@ -92,7 +92,7 @@ class ObjectDatabase(object):
             for node in self.objects[type]:
                 if node.modified:
                     print "\tSaving %s - %s" % (type, node.name)
-                    module.saveObject(node.getObject()) 
+                    node.getObject().SaveObject()
                     node.SetModified(False)
                     
     def GenerateCode(self):

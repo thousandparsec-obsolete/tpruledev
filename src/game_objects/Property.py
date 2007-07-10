@@ -10,57 +10,32 @@ import ObjectUtilities, RDE
 from ObjectUtilities import getXMLString, getXMLNum
 from gui import PropertyPanel
 import game_objects.Category
+
+DEFAULT_TPCL_DISPLAY = '(lambda (design) (cons #t \\"Default requires func\\"))'
+DEFAULT_TPCL_REQUIRES = '(lambda (design bits) (cons 0 \\"0\\"))'
     
 class Object(ObjectUtilities.GameObject):
-
     def __init__(self, node, name, category = "", prop_id = -1, rank = -1,
                  desc = '', disp_text = '', tpcl_disp = '', tpcl_req = '',
                  load_immediate=False):
 
         self.node = node
         self.name = name
-        self.filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Property', name + '.xml')
+        self.type = GetName()
+        
+        self.category = ""
+        self.rank = ""
+        self.description = ""
+        self.display_text = ""
+        self.tpcl_display = DEFAULT_TPCL_DISPLAY
+        self.tpcl_requires = DEFAULT_TPCL_REQUIRES
+
                  
         if (load_immediate):
-            self.loadFromFile()
-        else:
-            self.category = category
-            self.property_id = prop_id
-            self.rank = rank
-            self.description = desc
-            self.display_text = disp_text
-            self.tpcl_display = tpcl_disp
-            self.tpcl_requires = tpcl_req
-        
-        if self.node != None:
-            self.node.modified = False
+            self.LoadObject()
 
     def __str__(self):
         return "<Property Game Object - %s>" % self.name
-    
-    def loadFromFile(self):
-        try:
-            doc = xml.dom.minidom.parse(self.filename)
-            #there should only be one property node...but even so
-            root = doc.getElementsByTagName("property")[0]
-            self.name = getXMLString(root, "name")
-            self.rank = getXMLNum(root, "rank")
-            self.category = getXMLString(root, "category")
-            self.description = getXMLString(root, "description")
-            self.display_text = getXMLString(root, "display_text")
-            self.tpcl_display = getXMLString(root, "tpcl_display")
-            self.tpcl_requires = getXMLString(root, "tpcl_requires")
-        except IOError:
-            #file does not exist
-            # fill with default values
-            self.rank = -1
-            self.property_id = -1
-            self.category = ""
-            self.description = ""
-            self.display_text = ""
-            self.tpcl_display = ""
-            self.tpcl_requires = ""
             
     def OnObjectDeletion(self, object_type, object_name):
         if object_type == game_objects.Category.GetName() and \

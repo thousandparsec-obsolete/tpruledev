@@ -42,7 +42,7 @@ def generateInfoPanel(parent):
     border2 = wx.BoxSizer(wx.VERTICAL)
     border2.Add(border1, 1, wx.ALL | wx.EXPAND, 5)
     panel.SetSizer(border2)
-    return panel    
+    return panel
     
 def main():
     app = App(redirect=False)

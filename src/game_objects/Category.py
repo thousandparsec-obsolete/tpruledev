@@ -12,32 +12,19 @@ from gui import CategoryPanel
 
 class Object(ObjectUtilities.GameObject):
 
-    def __init__(self, node, name, desc = "Null", load_immediate = False):
+    def __init__(self, node, name, load_immediate = False):
                  
         self.node = node
         self.name = name
-        self.filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Category', name + '.xml')
+        self.type = GetName()
+                
+        self.description = ""
         
         if load_immediate:
-            self.loadFromFile()
-        else:
-            self.description = desc
+            self.LoadObject()            
 
     def __str__(self):
         return "Category Game Object - " + self.name
-            
-    def loadFromFile(self):
-        try:
-            doc = xml.dom.minidom.parse(self.filename)
-            #there should only be one property node...but even so
-            root = doc.getElementsByTagName("category")[0]
-            self.name = getXMLString(root, "name")
-            self.description = getXMLString(root, "description")
-        except IOError:
-            #file does not exist - we are creating this property for the first time
-            # fill with default values
-            self.description = ""
 
 def saveObject(cat):
     """\
@@ -45,13 +32,8 @@ def saveObject(cat):
     """  
     filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
                                                'Category', cat.name + '.xml')
-    ofile = open(filename, 'w')
-    ofile.write('<category>\n')
-    ofile.write('    <name>' + cat.name + '</name>\n')
-    ofile.write('    <description>' + cat.description + '</description>\n')
-    ofile.write('</category>\n')
-    ofile.flush()
-    ofile.close()
+    xml_module = __import__("codegen.Xml" + GetName(), globals(), locals(), [''])
+    xml_module.GenerateCode(cat, filename)
 
 def deleteSaveFile(name):
     """\
