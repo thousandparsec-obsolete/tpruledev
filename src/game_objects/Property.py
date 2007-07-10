@@ -47,28 +47,7 @@ class Object(ObjectUtilities.GameObject):
         if object_type == game_objects.Category.GetName() and \
                 self.category == object_name:
             self.category = new_name
-            self.node.SetModified(True)
-        
-
-def saveObject(prop):
-    """\
-    Saves a Property to its persistence file.
-    """
-    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Property', prop.name + '.xml')
-    ofile = open(filename, 'w')
-    ofile.write('<property>\n')
-    ofile.write('    <name>' + prop.name + '</name>\n')
-    ofile.write('    <category>' + prop.category + '</category>\n')
-    ofile.write('    <rank>' + str(prop.rank) + '</rank>\n')
-    ofile.write('    <display_text>' + prop.display_text + '</display_text>\n')
-    ofile.write('    <description>' + prop.description + '</description>\n')
-    ofile.write('    <tpcl_display><![CDATA[' + prop.tpcl_display + ']]></tpcl_display>\n')
-    ofile.write('    <tpcl_requires><![CDATA[' + prop.tpcl_requires + ']]></tpcl_requires>\n')
-    ofile.write('</property>\n')	
-    ofile.flush()
-    ofile.close()
-  
+            self.node.SetModified(True)  
     
 def deleteSaveFile(name):
     """\

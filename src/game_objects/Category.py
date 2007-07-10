@@ -25,15 +25,7 @@ class Object(ObjectUtilities.GameObject):
 
     def __str__(self):
         return "Category Game Object - " + self.name
-
-def saveObject(cat):
-    """\
-    Saves a Component to its persistence file.
-    """  
-    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Category', cat.name + '.xml')
-    xml_module = __import__("codegen.Xml" + GetName(), globals(), locals(), [''])
-    xml_module.GenerateCode(cat, filename)
+        
 
 def deleteSaveFile(name):
     """\

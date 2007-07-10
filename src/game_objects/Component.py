@@ -56,16 +56,6 @@ class Object(ObjectUtilities.GameObject):
             if self.category == object_name:
                 self.category = new_name
                 self.node.SetModified(True)
-                    
-
-def saveObject(comp):
-    """\
-    Saves a Component to its persistence file.
-    """  
-    filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
-                                               'Component', comp.name + '.xml')
-    import codegen.XmlComponent
-    codegen.XmlComponent.GenerateCode(comp, filename)
 
 def deleteSaveFile(name):
     """\
