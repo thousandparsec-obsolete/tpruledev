@@ -67,6 +67,12 @@ class Object(ObjectUtilities.GameObject):
                 self.category == object_name:
             self.category = ""
             self.node.SetModified(True)
+            
+    def OnObjectRename(self, object_type, object_name, new_name):
+        if object_type == game_objects.Category.GetName() and \
+                self.category == object_name:
+            self.category = new_name
+            self.node.SetModified(True)
         
 
 def saveObject(prop):

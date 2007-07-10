@@ -65,6 +65,17 @@ class GameObject(object):
         updating the current edit panel view. Yet.
         """
         pass
+        
+    def OnObjectRename(self, object_type, object_name, new_name):
+        """\
+        Adjusts any associations that the object has with the given
+        object that is being renamed. Since we can rename only the object
+        that is currently selected and the renaming process occurs
+        before a new object is selected we don't have to worry about
+        updating the current edit panel view. Yet.
+        """
+        pass
+        
 
 class ObjectNode(rde.Nodes.DatabaseNode):
     """

@@ -75,6 +75,19 @@ class Object(ObjectUtilities.GameObject):
             if self.category == object_name:
                 self.category = ""
                 self.node.SetModified(True)
+                
+    def OnObjectRename(self, object_type, object_name, new_name):
+        if object_type == game_objects.Property.GetName():
+            try:
+                self.properties[new_name] = self.properties.pop(object_name)
+                self.node.SetModified(True)
+            except KeyError:
+                #we weren't associated with that property, that's fine
+                pass
+        elif object_type == game_objects.Category.GetName():
+            if self.category == object_name:
+                self.category = new_name
+                self.node.SetModified(True)
                     
 
 def saveObject(comp):
@@ -83,22 +96,8 @@ def saveObject(comp):
     """  
     filename = os.path.join(RDE.GlobalConfig.config.get('Current Project', 'persistence_directory'),
                                                'Component', comp.name + '.xml')
-    ofile = open(filename, 'w')
-    ofile.write('<component>\n')
-    ofile.write('    <name>' + comp.name + '</name>\n')
-    ofile.write('    <category>' + comp.category + '</category>\n')
-    ofile.write('    <description>' + comp.description + '</description>\n')
-    ofile.write('    <tpcl_requirements><![CDATA[' + comp.tpcl_requirements + ']]></tpcl_requirements>\n')
-    ofile.write('\n')
-    ofile.write('    <!--propertylist:-->\n')
-    for prop, cost_func in comp.properties.iteritems():
-        ofile.write('    <property>\n')
-        ofile.write('        <name>' + prop + '</name>\n')
-        ofile.write('        <tpcl_cost><![CDATA[' + cost_func + ']]></tpcl_cost>\n')
-        ofile.write('    </property>\n')
-    ofile.write('</component>\n')
-    ofile.flush()
-    ofile.close()
+    import codegen.XmlComponent
+    codegen.XmlComponent.GenerateCode(comp, filename)
 
 def deleteSaveFile(name):
     """\
