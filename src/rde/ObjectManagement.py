@@ -44,6 +44,7 @@ class ObjectDatabase(object):
     
     highlighted = []
     emphasized = []
+    modified = []
     pending_modifications = False
     
     def __init__(self):
@@ -231,7 +232,37 @@ class ObjectDatabase(object):
             except ValueError:
                 #don't care that it wasn't there
                 pass
-            self.sendODBEvent(ODBUnEmphasize([obj_names])) 
+            self.sendODBEvent(ODBUnEmphasize([obj_names]))
+            
+    def MarkModified(self, obj_names):
+        #todo: this can be so much more elegant
+        if isinstance(obj_names, list):
+            for name in obj_names:
+                if not name in self.modified:
+                    self.modified.append(name)
+            self.sendODBEvent(ODBMarkModified(obj_names))
+        else:
+            if not obj_names in self.modified:
+                self.modified.append(obj_names)
+            self.sendODBEvent(ODBMarkModified([obj_names]))
+        
+    def UnmarkModified(self, obj_names):
+        #todo: this can be so much more elegant
+        if isinstance(obj_names, list):
+            for name in obj_names:
+                try:
+                    self.modified.remove(name)
+                except ValueError:
+                    #don't care that it wasn't there
+                    pass
+            self.sendODBEvent(ODBUnmarkModified(obj_names))
+        else:
+            try:
+                self.modified.remove(obj_names)
+            except ValueError:
+                #don't care that it wasn't there
+                pass
+            self.sendODBEvent(ODBUnmarkModified([obj_names]))
     
     def getObjectTypes(self):
         return self.object_modules.keys()
@@ -278,7 +309,7 @@ class ODBEvent(object):
     UNEMPHASIZE = 9
     UNINIT = 10
     MARKMODIFIED = 11
-    MARKUNMODIFIED = 12
+    UNMARKMODIFIED = 12
 
 class ODBInitialize(ODBEvent):
     type = ODBEvent.INIT
@@ -336,13 +367,13 @@ class ODBUninitialize(ODBEvent):
     type = ODBEvent.UNINIT
     
 class ODBMarkModified(ODBEvent):
-    type = ODBEvent.EMPHASIZE
+    type = ODBEvent.MARKMODIFIED
     
     def __init__(self, names):
         self.names = names
     
 class ODBUnmarkModified(ODBEvent):
-    type = ODBEvent.UNEMPHASIZE
+    type = ODBEvent.UNMARKMODIFIED
     
     def __init__(self, names):
         self.names = names

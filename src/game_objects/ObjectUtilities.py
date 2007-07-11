@@ -166,9 +166,9 @@ class ObjectNode(rde.Nodes.DatabaseNode):
     def SetModified(self, b):
         if b and not self.modified:
             self.object_database.pending_modifications = True
-            self.object_database.Highlight(self.name, "RED")
+            self.object_database.MarkModified(self.name)
         elif not b and self.modified:
-            self.object_database.UnHighlight(self.name)
+            self.object_database.UnmarkModified(self.name)
         self.modified = b
     
     def addListener(self, listener):

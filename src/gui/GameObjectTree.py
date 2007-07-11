@@ -64,15 +64,13 @@ class GameObjectTree(wx.TreeCtrl):
         #todo: error handling
         for obj_name in event.names:
             id = self.object_ids[obj_name]
-            #self.SetItemBackgroundColour(id, event.color)
-            self.SetItemImage(id, self.modimg_idx)
+            self.SetItemBackgroundColour(id, event.color)
         self.Refresh()
     
     def HandleUnHighlight(self, event):
         for obj_name in event.names:
             id = self.object_ids[obj_name]
-            #self.SetItemBackgroundColour(id, 'WHITE')
-            self.SetItemImage(id, self.noimg_idx)
+            self.SetItemBackgroundColour(id, 'WHITE')
         self.Refresh()
     
     def HandleClear(self, event):
@@ -106,6 +104,24 @@ class GameObjectTree(wx.TreeCtrl):
             id = self.object_ids[obj_name]
             self.SetItemTextColour(id, 'BLACK')
             self.SetItemBold(id, False)
+        self.Refresh()
+        
+    def HandleMarkModified(self, event):
+        """\
+        puts an exlamation mark next to the given objects in the tree
+        objects is a hash with keys that are the object types
+        and values of object names to highlight
+        """
+        #todo: error handling
+        for obj_name in event.names:
+            id = self.object_ids[obj_name]
+            self.SetItemImage(id, self.modimg_idx)
+        self.Refresh()
+    
+    def HandleUnmarkModified(self, event):
+        for obj_name in event.names:
+            id = self.object_ids[obj_name]
+            self.SetItemImage(id, self.noimg_idx)
         self.Refresh()
         
     def HandleUnInit(self, event):
@@ -189,4 +205,6 @@ class GameObjectTree(wx.TreeCtrl):
                  ObjectManagement.ODBEvent.CLEAR_MARKERS: HandleClear,
                  ObjectManagement.ODBEvent.EMPHASIZE: HandleEmphasize,
                  ObjectManagement.ODBEvent.UNEMPHASIZE: HandleUnEmphasize,
-                 ObjectManagement.ODBEvent.UNINIT: HandleUnInit}
+                 ObjectManagement.ODBEvent.UNINIT: HandleUnInit,
+                 ObjectManagement.ODBEvent.MARKMODIFIED: HandleMarkModified,
+                 ObjectManagement.ODBEvent.UNMARKMODIFIED: HandleUnmarkModified}
