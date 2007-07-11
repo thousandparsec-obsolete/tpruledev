@@ -82,7 +82,6 @@ def AddToProjectHistory(proj_info):
     projects.
     """
     global project_history
-    print "Inserting %s into project history: %s" % (proj_info, project_history)
     last_idx = -1
     try:
         last_idx = project_history.index(proj_info)        
@@ -92,7 +91,6 @@ def AddToProjectHistory(proj_info):
     if last_idx > -1 or len(project_history) >= NUM_STORED_PROJECTS:
         project_history.pop(last_idx)
     project_history.insert(0, proj_info)
-    print "Result - project history: %s" % project_history
 
 def GetProjectHistory():
     """\

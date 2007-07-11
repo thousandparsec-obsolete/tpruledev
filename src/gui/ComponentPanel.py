@@ -59,6 +59,7 @@ class Panel(ObjectPanel.Panel):
             if self.object.category == catnode.name:
                 catidx = idx
         self.cat_choice.Select(catidx)
+        self.cat_choice.Bind(wx.EVT_CHOICE, self.CreateChoiceMonitor(self.object.category))
         
         #create the property list        
         self.prop_sel = -1

@@ -32,6 +32,7 @@ class Panel(ObjectPanel.Panel):
         self.object.node.visible = True
         self.name_field.SetLabel(str(self.object.name))
         self.desc_field.SetValue(str(self.object.description))
+        self.BindEditWatchers([self.desc_field])
         self.loaded = True
         
         self.Show()
@@ -41,7 +42,7 @@ class Panel(ObjectPanel.Panel):
         print "Checking Category %s for modifications" % self.object.name
         if self.loaded:
             mod = False
-            #print "\description: %s <> %s" % (self.category.description, self.desc_field.GetValue())
+            #print "\description: %s <> %s" % (self.object.description, self.desc_field.GetValue())
             if self.object.description != self.desc_field.GetValue():
                 mod = True
                 self.object.description = self.desc_field.GetValue()
