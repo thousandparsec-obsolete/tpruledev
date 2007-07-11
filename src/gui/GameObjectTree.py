@@ -20,8 +20,12 @@ class GameObjectTree(wx.TreeCtrl):
         odb.addODBListener(self)
              
     def SelectObject(self, name):
-        self.SelectItem(self.object_ids[name])
-        pass
+        try:
+            self.SelectItem(self.object_ids[name])
+            return True
+        except KeyError:
+            #no such object
+            return False
         
     def handleODBEvent(self, event):
         self.eventDict[event.type](self, event)
@@ -38,13 +42,13 @@ class GameObjectTree(wx.TreeCtrl):
             new_id = self.PrependItem(type_id, event.node.name)
         else:
             preceding_id = self.object_ids[event.preceding]
-            obj_id = self.GetItemParent(preceding_id)
             new_id = self.InsertItem(type_id, preceding_id, event.node.name)
 
         #make sure we give the new object some PyData and add it to the
         # treeid hash for objects
         self.object_ids[event.node.name] = new_id
         self.SetPyData(new_id, event.node)
+        if not self.IsExpanded(type_id): self.Expand(type_id)
         self.Refresh()
     
     def HandleRemove(self, event):
