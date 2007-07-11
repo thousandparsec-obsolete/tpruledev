@@ -176,7 +176,7 @@ class Frame(wx.Frame):
             self.Bind(wx.EVT_MENU, GenCreateNewObjHandler(type, self), id)
             
         new_object_item = edit_menu.AppendMenu(-1, 'Create New Object', new_obj_menu, 'Add an object to the project')
-        del_object_item = edit_menu.Append(-1, 'Delete Object\Ctrl-d', 'Deletes the currently selected object')
+        del_object_item = edit_menu.Append(-1, 'Delete Object\tCtrl-d', 'Deletes the currently selected object')
         self.Bind(wx.EVT_MENU, self.OnDeleteObject, del_object_item)
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
         gen_code_item = edit_menu.Append(-1, 'Generate Code', 'Generates C++ code for the project')
@@ -337,7 +337,6 @@ class Frame(wx.Frame):
                 ConfigManager.config.set("Current Project", "last_item", self.tree.GetItemText(sel_id))
             else:
                 ConfigManager.config.remove_option("Current Project", "last_item")
-            self.tree.GetItemText(self.tree.GetSelection())
             ConfigManager.WriteProjectConfig(ConfigManager.config.get("Global", "current_project"))
         
     def OnQuit(self, event):
