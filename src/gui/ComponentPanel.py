@@ -111,11 +111,14 @@ class Panel(ObjectPanel.Panel):
         choice_diag.ShowModal()
         if len(choice_diag.GetSelections()) > 0:
             print "Selection OK"
+            prop_names = []
             for i in choice_diag.GetSelections():
                 print "\t" + loose_props[i]
+                prop_names.append(loose_props[i])
                 self.object.properties[loose_props[i]] = "(lambda (design) #)"
                 self.prop_list.Append(loose_props[i])
             self.object.node.SetModified(True)
+            self.object.node.object_database.Emphasize(prop_names, "BLUE")
         else:
             #cancelled
             print "CANCELED!"
@@ -127,12 +130,15 @@ class Panel(ObjectPanel.Panel):
         #remove the selected properties
         if self.prop_list.GetSelections() != []:
             ridx = []
+            prop_names = []
             for idx in self.prop_list.GetSelections():
                 prop_name = self.prop_list.GetString(idx)
+                prop_names.append(prop_name)
                 del self.object.properties[prop_name]
                 ridx.insert(0, idx)
             for i in ridx:
                 self.prop_list.Delete(i)
+            self.object.node.object_database.UnEmphasize(prop_names)
             self.tpcl_cost_stc.SetText("")
             self.object.node.SetModified(True)            
     
