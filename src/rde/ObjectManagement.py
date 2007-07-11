@@ -277,6 +277,8 @@ class ODBEvent(object):
     EMPHASIZE = 8
     UNEMPHASIZE = 9
     UNINIT = 10
+    MARKMODIFIED = 11
+    MARKUNMODIFIED = 12
 
 class ODBInitialize(ODBEvent):
     type = ODBEvent.INIT
@@ -330,6 +332,17 @@ class ODBUnEmphasize(ODBEvent):
     def __init__(self, names):
         self.names = names
         
-class ODBClearMarkers(ODBEvent):
+class ODBUninitialize(ODBEvent):
     type = ODBEvent.UNINIT
     
+class ODBMarkModified(ODBEvent):
+    type = ODBEvent.EMPHASIZE
+    
+    def __init__(self, names):
+        self.names = names
+    
+class ODBUnmarkModified(ODBEvent):
+    type = ODBEvent.UNEMPHASIZE
+    
+    def __init__(self, names):
+        self.names = names

@@ -3,5 +3,6 @@ types = Property, Component, Category
 
 [Global]
 current_project = C:\Documents and Settings\James\My Documents\Programming\Python\tpruledev\Minisec\tprde.cfg
+project_history = [('Minisec', '../Minisec/tprde.cfg')]
 tprde_dir = ./
 

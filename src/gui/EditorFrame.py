@@ -51,7 +51,7 @@ class Frame(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, pos, size)
             
         #import configuration settings, will build on this as is necessary
-        ConfigManager.LoadFromFP(open(os.path.join(sys.path[0], 'tpconf')))
+        ConfigManager.LoadRDEConfig('tpconf')
         
         #check to see if there's a current project that we can load
         self.initGUI()
@@ -104,7 +104,9 @@ class Frame(wx.Frame):
         
         #read in the project info
         ConfigManager.config.set("Global", "current_project", project_file)
-        ConfigManager.config.read(project_file)
+        ConfigManager.LoadProjectConfig(project_file)
+        ConfigManager.AddToProjectHistory((ConfigManager.config.get('Current Project', 'project_name'),
+                                          ConfigManager.config.get('Current Project', 'project_file')))
         self.SetTitle("TP-RDE: " + ConfigManager.config.get('Current Project', 'project_name'))
         
         #initialize odbase and gui components
@@ -148,6 +150,8 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnNewProject, new_proj_item)
         open_proj_item = file_menu.Append(-1, 'Open Project\tCtrl-o', 'Open an existing TP Project')
         self.Bind(wx.EVT_MENU, self.OnOpenProject, open_proj_item)
+        recent_project_menu = wx.Menu()
+        file_menu.AppendMenu(-1, 'Open Recent...', recent_project_menu, 'Open a recently edited project')
         save_proj_item = file_menu.Append(-1, 'Save Project\tCtrl-s', 'Save the current TP Project')
         self.Bind(wx.EVT_MENU, self.OnSaveProject, save_proj_item)
         file_menu.AppendSeparator()
@@ -299,7 +303,7 @@ class Frame(wx.Frame):
             
     def OnClosing(self, event):
         #we want to save config information now
-        ConfigManager.WriteConfigData("tpconf", ["Global", "Object Types"])
+        ConfigManager.WriteRDEConfig("tpconf")
         if ConfigManager.config.has_option("Global", "current_project"):
             sel_id = self.tree.GetSelection()
             if sel_id.IsOk():
@@ -307,8 +311,8 @@ class Frame(wx.Frame):
             else:
                 ConfigManager.config.remove_option("Current Project", "last_item")
             self.tree.GetItemText(self.tree.GetSelection())
-            ConfigManager.WriteConfigData(ConfigManager.config.get("Global", "current_project"),
-                                            "Current Project")
+            ConfigManager.WriteProjectConfig(ConfigManager.config.get("Global", "current_project"))
+        print "Project History:", ConfigManager.GetProjectHistory()
         self.Destroy()
         event.Skip()
         

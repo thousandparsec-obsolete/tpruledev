@@ -4,10 +4,11 @@ a Property object
 """
 
 import wx
+import ObjectPanel
 import gui.TextCtrl, gui.XrcUtilities
 from wx.xrc import XRCCTRL
 
-class Panel(wx.Panel):
+class Panel(ObjectPanel.Panel):
     """
     A wx.Panel for displaying and editing Categories
     """
@@ -27,31 +28,31 @@ class Panel(wx.Panel):
         self.loaded = False
         
     def LoadObject(self, category):
-        self.category = category
-        self.category.node.visible = True
-        self.name_field.SetLabel(str(self.category.name))
-        self.desc_field.SetValue(str(self.category.description))
+        self.object = category
+        self.object.node.visible = True
+        self.name_field.SetLabel(str(self.object.name))
+        self.desc_field.SetValue(str(self.object.description))
         self.loaded = True
         
         self.Show()
         return self
     
     def CheckForModification(self):
-        print "Checking Category %s for modifications" % self.category.name
+        print "Checking Category %s for modifications" % self.object.name
         if self.loaded:
             mod = False
             #print "\description: %s <> %s" % (self.category.description, self.desc_field.GetValue())
-            if self.category.description != self.desc_field.GetValue():
+            if self.object.description != self.desc_field.GetValue():
                 mod = True
-                self.category.description = self.desc_field.GetValue()
+                self.object.description = self.desc_field.GetValue()
             
             if mod:
-                self.category.node.SetModified(True)
+                self.object.node.SetModified(True)
         
     def cleanup(self):
         self.CheckForModification()
-        self.category.node.visible = False
+        self.object.node.visible = False
         self.Hide()
-        self.category.node.clearObject()
-        self.category = None
+        self.object.node.clearObject()
+        self.object = None
         self.loaded = False
