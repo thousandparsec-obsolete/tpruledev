@@ -2,7 +2,7 @@
 types = Property, Component, Category
 
 [Global]
-current_project = ../Minisec/tprde.cfg
-project_history = [('Minisec', '../Minisec/tprde.cfg'), ('MTSec', '../MTSec/tprde.cfg')]
+current_project = ../RFTS/tprde.cfg
+project_history = [('RFTS', '../RFTS/tprde.cfg'), ('Minisec', '../Minisec/tprde.cfg'), ('MTSec', '../MTSec/tprde.cfg')]
 tprde_dir = ./
 

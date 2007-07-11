@@ -1,0 +1,3 @@
+<property category="Ships" description="The offensive strength of a ship" display_text="Attack" name="Attack" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
+	(let ((n (apply + bits)))
+		(cons n (number-&gt;string n))))</tpcl_display><tpcl_requires>(lambda (design) (cons #t \"\"))</tpcl_requires></property>
