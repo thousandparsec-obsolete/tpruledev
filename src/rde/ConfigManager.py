@@ -15,6 +15,7 @@ def LoadRDEConfig(file_location):
     it to any data that has already been loaded
     """
     global config
+    global project_history
     if not config:
         config = ConfigParser()
     FILE = open(file_location, 'r')
@@ -38,6 +39,7 @@ def WriteRDEConfig(file_location):
     Writes out the RDE's configuration sections
     """
     global config
+    global project_history
     #insert updated last file list into the Config
     config.set("Global", "project_history", project_history.__repr__())
     #write out the file
@@ -79,24 +81,25 @@ def AddToProjectHistory(proj_info):
     entry if we are already at the maximum number of stored
     projects.
     """
+    global project_history
+    print "Inserting %s into project history: %s" % (proj_info, project_history)
     last_idx = -1
     try:
-        idx = project_history.index(proj_info)
+        last_idx = project_history.index(proj_info)        
     except ValueError:
         pass
         
-    if last_idx < 0:
-        if len(project_history) >= NUM_STORED_PROJECTS:
-            project_history.pop()
-        project_history.insert(0, proj_info)
-    else:
-        project_history.insert(0, project_history.pop(last_idx))        
+    if last_idx > -1 or len(project_history) >= NUM_STORED_PROJECTS:
+        project_history.pop(last_idx)
+    project_history.insert(0, proj_info)
+    print "Result - project history: %s" % project_history
 
 def GetProjectHistory():
     """\
     Returns the project history as a list of
     (project_name, project_config_location) tuples.
     """
+    global project_history
     return project_history
 
 def GetSection(section):

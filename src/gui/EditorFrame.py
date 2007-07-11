@@ -98,15 +98,19 @@ class Frame(wx.Frame):
         self.content_panel.Layout()
         
     def initProjectGUI(self, project_file):
+        self.SaveCurrentProjectConfig()
         self.clearGUI()
         self.project_active = True
         self.curr_node_id = None
         
         #read in the project info
+        if ConfigManager.config.has_section("Current Project"):
+            ConfigManager.config.remove_section("Current Project")
         ConfigManager.config.set("Global", "current_project", project_file)
         ConfigManager.LoadProjectConfig(project_file)
         ConfigManager.AddToProjectHistory((ConfigManager.config.get('Current Project', 'project_name'),
                                           ConfigManager.config.get('Current Project', 'project_file')))
+        self.UpdateRecentProjectMenu()
         self.SetTitle("TP-RDE: " + ConfigManager.config.get('Current Project', 'project_name'))
         
         #initialize odbase and gui components
@@ -150,8 +154,9 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnNewProject, new_proj_item)
         open_proj_item = file_menu.Append(-1, 'Open Project\tCtrl-o', 'Open an existing TP Project')
         self.Bind(wx.EVT_MENU, self.OnOpenProject, open_proj_item)
-        recent_project_menu = wx.Menu()
-        file_menu.AppendMenu(-1, 'Open Recent...', recent_project_menu, 'Open a recently edited project')
+        self.recent_project_menu = wx.Menu()
+        self.UpdateRecentProjectMenu()
+        file_menu.AppendMenu(-1, 'Open Recent...', self.recent_project_menu, 'Open a recently edited project')
         save_proj_item = file_menu.Append(-1, 'Save Project\tCtrl-s', 'Save the current TP Project')
         self.Bind(wx.EVT_MENU, self.OnSaveProject, save_proj_item)
         file_menu.AppendSeparator()
@@ -183,6 +188,19 @@ class Frame(wx.Frame):
         
         return menubar
         
+    def UpdateRecentProjectMenu(self):
+        for mi in self.recent_project_menu.GetMenuItems():
+            self.recent_project_menu.Remove(mi.GetId())
+        project_history = ConfigManager.GetProjectHistory()
+        if  project_history != []:
+            for name, proj_file in project_history:
+                mitem = self.recent_project_menu.Append(-1, name, proj_file)
+                self.Bind(wx.EVT_MENU, self.OnOpenRecentProject, mitem)
+    
+    def OnOpenRecentProject(self, event):
+        item = self.GetMenuBar().FindItemById(event.GetId())
+        self.initProjectGUI(item.GetHelp())        
+                    
     def CheckCurrentObjectForModifications(self):
         self.edit_panel.CheckForModification()
     
@@ -304,7 +322,16 @@ class Frame(wx.Frame):
     def OnClosing(self, event):
         #we want to save config information now
         ConfigManager.WriteRDEConfig("tpconf")
-        if ConfigManager.config.has_option("Global", "current_project"):
+        self.SaveCurrentProjectConfig()
+        self.Destroy()
+        event.Skip()
+    
+    def SaveCurrentProjectConfig(self):
+        """\
+        Save the current project's configuration (things such as the
+        currently viewed object and the like
+        """
+        if self.project_active:
             sel_id = self.tree.GetSelection()
             if sel_id.IsOk():
                 ConfigManager.config.set("Current Project", "last_item", self.tree.GetItemText(sel_id))
@@ -312,9 +339,6 @@ class Frame(wx.Frame):
                 ConfigManager.config.remove_option("Current Project", "last_item")
             self.tree.GetItemText(self.tree.GetSelection())
             ConfigManager.WriteProjectConfig(ConfigManager.config.get("Global", "current_project"))
-        print "Project History:", ConfigManager.GetProjectHistory()
-        self.Destroy()
-        event.Skip()
         
     def OnQuit(self, event):
         self.CheckCurrentObjectForModifications()
