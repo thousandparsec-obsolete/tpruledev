@@ -39,6 +39,7 @@ def generateConfigFile(project_dir, name):
     CONF_FILE.write('project_name:	' + name + '\n')
     CONF_FILE.write('project_directory:	' + project_dir + '\n')
     CONF_FILE.write('persistence_directory: %(project_directory)s' + os.sep + 'persistence\n')
+    CONF_FILE.write('project_file: %(project_directory)s/tprde.cfg' + os.sep + 'persistence\n')
     CONF_FILE.flush()
     CONF_FILE.close()
     
