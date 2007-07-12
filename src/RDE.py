@@ -6,7 +6,7 @@ Thousand Parsec Ruleset Developement Environment launcher script.
 
 import wx, ConfigParser
 import gui.EditorFrame
-import sys  
+import sys
 
 class GlobalConfig(object):
     config = None

@@ -1,4 +1,4 @@
-import re, os
+os
 from rde import ConfigManager
 from game_objects import Category
 from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary
