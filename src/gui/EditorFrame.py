@@ -179,12 +179,10 @@ class Frame(wx.Frame):
         del_object_item = edit_menu.Append(-1, 'Delete Object\tCtrl-d', 'Deletes the currently selected object')
         self.Bind(wx.EVT_MENU, self.OnDeleteObject, del_object_item)
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
+        self.Bind(wx.EVT_MENU, self.OnRenameObject, ren_object_item)
         gen_code_item = edit_menu.Append(-1, 'Generate Code', 'Generates C++ code for the project')
         self.Bind(wx.EVT_MENU, self.OnGenCode, gen_code_item)
         menubar.Append(edit_menu, 'Edit')
-        
-        #disable unused menu items      
-        ren_object_item.Enable(False)
         
         return menubar
         
@@ -272,7 +270,32 @@ class Frame(wx.Frame):
             #todo: actually delete the project
             wx.MessageBox("Deletion confirmed...uhm...not actually doing anything yet...", caption="Deletion confirmed",
                 style=wx.OK)
-            
+    
+    def OnRenameObject(self, event):
+        if not self.project_active:
+            wx.MessageBox("You must have an open porject to rename an object!",
+                    caption="Invalid State", style=wx.OK)
+            return
+        try:
+            data = self.tree.GetPyData(self.tree.GetSelection())
+            if isinstance(data, game_objects.ObjectUtilities.ObjectNode):
+                #get the new name
+                new_name = wx.GetTextFromUser('Enter the new name:', 'Input New Name')
+                if new_name == '':
+                    #cancel
+                    pass
+                else:
+                    self.object_database.RenameObject(data.object_module.GetName(), data.name, new_name.encode('ascii'))
+            else:
+                #tell the user he needs to select an object
+                wx.MessageBox("Your selection was invalid! You must\nselect and object to rename.",
+                    caption="Invalid Selection", style=wx.OK)
+                    
+        except wx._core.PyAssertionError:
+            #there was no selection
+            wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
+                caption="Invalid Selection", style=wx.OK)
+    
     def OnDeleteObject(self, event):
         if not self.project_active:
             wx.MessageBox("You must have an open porject to delete an object!",

@@ -14,9 +14,14 @@ class GameObject(object):
     that are necessary for every game object such as the
     ObjectNode which contains this GameObject and the
     name property.
-    """    
-    def __init__(self, node):
+    """
+    
+    renamed = False
+    
+    def __init__(self, node, name):
         self.node = node
+        self.name = name
+        self.renamed = False
         
     def OnObjectDeletion(self, object_type, object_name):
         """\
@@ -41,7 +46,11 @@ class GameObject(object):
     def SaveObject(self):
         """\
         Saves an object to its persistence file.
-        """  
+        """
+        
+        #check if we renamed
+        if self.renamed:
+            self.DeleteSaveFile(self.old_filename)
 
         #need some error checking here to check for non-existent codegen modules
         xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
@@ -60,12 +69,13 @@ class GameObject(object):
             #no save file created yet, we're fine with defaults
             pass
             
-    def DeleteSaveFile(self):
+    def DeleteSaveFile(self, fname=None):
         """\
         Deletes an objects XML save file
         """
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
+        if not fname: fname = self.filename
+        if os.path.exists(fname):
+            os.remove(fname)
         else:
             #no file in existence, guess we just created
             # this object and never saved it, no biggie
@@ -73,9 +83,13 @@ class GameObject(object):
         
     def GetFilename(self):
         return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
-                                self.type, self.name + '.xml')
-    
+                                self.type, self.name + '.xml')    
     filename = property(GetFilename)
+    
+    def GetOldFilename(self):
+        return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
+                                self.type, self.old_name + '.xml')    
+    old_filename = property(GetOldFilename)
         
 
 class ObjectNode(rde.Nodes.DatabaseNode):
@@ -150,6 +164,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
     
     name=""
     modified=False
+    renamed=False
     highlighted=False
     highlight_color=""
     listeners=[]
@@ -212,3 +227,14 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         print "Clearing ", self.name
         if not self.modified and not self.visible and self.object:
             del self.object
+            
+    def RenameNode(self, new_name):
+        self.getObject()
+        if not self.renamed:
+            self.old_name = self.name
+            self.renamed = True
+            self.object.old_name = self.object.name
+            self.object.renamed = True
+        self.SetModified(True)
+        self.name = new_name
+        self.object.name = new_name

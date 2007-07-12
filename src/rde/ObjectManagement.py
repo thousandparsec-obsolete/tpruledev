@@ -96,6 +96,28 @@ class ObjectDatabase(object):
                     node.getObject().SaveObject()
                     node.SetModified(False)
                     
+    def RenameObject(self, obj_type, name, new_name):
+        if not self.ObjectExists(obj_type, name):
+            raise NoSuchObjectError(name)
+        
+        #delete the object and remove it from the list
+        print "Renaming %s to %s" % (name, new_name)
+        obj_node = self.GetObjectNode(name, obj_type)
+        print "\tnode: %s" % obj_node
+        self.objects[obj_type].remove(name)
+        obj_node.RenameNode(new_name)
+        
+        #now we have to call the OnObjectDeletion method of all other game objects
+        for type, objects in self.objects.iteritems():
+            for node in objects:
+                node.getObject().OnObjectRename(obj_type, name, new_name)
+                node.clearObject()
+        #remove the reference to the old name
+        self.sendODBEvent(ODBRemove(name))
+        #add the same node with the new name
+        self.Add(obj_type, new_name, obj_node)
+        
+                    
     def GenerateCode(self):
         """\
         Generates C++ code for the objects.
@@ -106,7 +128,13 @@ class ObjectDatabase(object):
             print "Generating code for objects of type: %s" % type
             generator.GenerateCode(self)       
 
-    def Add(self, obj_type, name):
+    def Add(self, obj_type, name, node=None):
+        """\
+        Adds an object to the database. Will create a new
+        node if node is None, or will use the provided node
+        otherwise.
+        """
+        print "Adding object %s, node: %s" % (name, node)
         #check for duplicate object
         # also raise error if no such object type
         if self.ObjectExists(obj_type, name):
@@ -114,12 +142,9 @@ class ObjectDatabase(object):
                 
         #find out where we need to put it and stick it in there
         idx = bisect.bisect(self.objects[obj_type], name)
-        print "Adding object " + name
-        print "Object list: ", [o.__str__() for o in self.objects[obj_type]]
-        print "Index of " + name + ": ", idx
-        node = game_objects.ObjectUtilities.ObjectNode(self, name, self.object_modules[obj_type])
+        if not node:
+            node = game_objects.ObjectUtilities.ObjectNode(self, name, self.object_modules[obj_type])
         self.objects[obj_type].insert(idx, node)
-        print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
         
         #let our listeners know we added a new object and let them
         # know the parent in terms of alphabetical order
@@ -130,16 +155,15 @@ class ObjectDatabase(object):
             self.sendODBEvent(ODBAdd(node, obj_type, self.objects[obj_type][idx-1].name))
             
         node.SetModified(True)
+        self.MarkModified(node)
 
     def Remove(self, obj_type, name):
         if not self.ObjectExists(obj_type, name):
             raise NoSuchObjectError(name)
-            
-        print "Removing an object"
-        print "Object List Before: ", [o.__str__() for o in self.objects[obj_type]]
-        self.GetObjectNode(obj_type, name).getObject(load_imm=False).DeleteSaveFile()
+        
+        #delete the object and remove it from the list
+        self.GetObjectNode(name, obj_type).getObject(load_imm=False).DeleteSaveFile()
         self.objects[obj_type].remove(name)
-        print "New Object List: ", [o.__str__() for o in self.objects[obj_type]]
         
         #now we have to call the OnObjectDeletion method of all other game objects
         for type, objects in self.objects.iteritems():
@@ -147,12 +171,19 @@ class ObjectDatabase(object):
                 node.getObject().OnObjectDeletion(obj_type, name)
                 node.clearObject()
                 
-        self.sendODBEvent(ODBRemove(name))           
+        self.sendODBEvent(ODBRemove(name))
            
-    def GetObjectNode(self, type, name):
-        for node in self.objects[type]:
-            if node == name:
-                return node
+    def GetObjectNode(self, name, type=None):
+        if type:
+            for node in self.objects[type]:
+                if node == name:
+                    return node
+        else:
+            for nodelist in self.objects.values():
+                for node in nodelist:
+                    if node == name:
+                        return node
+        raise NoSuchObjectError
     
     def GetType(self, obj_name):
         """\

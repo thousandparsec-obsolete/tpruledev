@@ -34,6 +34,7 @@ class GameObjectTree(wx.TreeCtrl):
         self.InitializeTree()
     
     def HandleAdd(self, event):
+        print "GOT adding %s" % event.node.name
         type_id = self.type_ids[event.obj_type]
         new_id = None
         
