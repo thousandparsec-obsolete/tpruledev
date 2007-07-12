@@ -66,7 +66,7 @@ class %(CLASS_NAME)s {
     #generate the code
     for cat_node in object_database.getObjectsOfType(NAME):
         cat = cat_node.getObject()
-        func_name = "init%s%s()" % (cat.name.replace('-', ''), NAME)
+        func_name = "init%s%s()" % (ReplaceInvalidCharacters(cat.name), NAME)
         func_calls.append("%s;" % func_name)
         
         #write to header file

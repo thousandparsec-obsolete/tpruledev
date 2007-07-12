@@ -18,3 +18,13 @@ class ExpressionDictionary(dict):
                 return eval(key,self)
             except Exception, e:
                 raise InterpolationEvaluationException(key, e)
+                
+def ReplaceInvalidCharacters(name):
+    name = name.replace('-', '_')
+    return name.replace(' ', '_')
+
+import re
+tpcl_regex = re.compile('\s*\r?\n\s*')
+def FormatTpclCode(code):
+    global tpcl_regex
+    return " ".join(tpcl_regex.split(comp.tpcl_requirements))

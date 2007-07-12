@@ -1,6 +1,7 @@
 import re, os
 from game_objects import Component
-from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary
+from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary,\
+                         ReplaceInvalidCharacters, FormatTpclCode
 from rde import ConfigManager
 
 def GenerateCode(object_database):
@@ -65,7 +66,7 @@ class %(CLASS_NAME)s {
     #generate the code
     for comp_node in object_database.getObjectsOfType(NAME):
         comp = comp_node.getObject()
-        func_name = "init%s%s()" % (comp.name.replace('-', ''), NAME)
+        func_name = "init%s%s()" % (ReplaceInvalidCharacters(comp.name), NAME)
         func_calls.append("%s;" % func_name)
         
         #write to header file
@@ -84,16 +85,16 @@ void %(CLASS_NAME)s::%(func_name)s {
   comp->setCategoryId(ds->getCategoryByName("%(comp.category)s"));
   comp->setName("%(comp.name)s");
   comp->setDescription("%(comp.description)s");
-  comp->setTpclRequirementsFunction("%(" ".join(regex.split(comp.tpcl_requirements)))s");
+  comp->setTpclRequirementsFunction("%(FormatTpclCode(comp.tpcl_requirements))s");
 """ % ExpressionDictionary(vars()))
 
         #now the properties...
-        for name, cost_func in comp.properties.iteritems():
+        for propname, cost_func in comp.properties.iteritems():
             #NOTE:
             # we here replace hyphens with underscores in the names of properties
             # since hyphens are not valid in variable names in C++
             CFILE.write('  propertylist[ds->getPropertyByName("%s")] = "%s";\n' % \
-                (name.replace('-', '_'), " ".join(regex.split(cost_func))))
+                (propname, FormatTpclCode(cost_func)))
                 
         #set our propertylist and get out of here
         CFILE.write("""\

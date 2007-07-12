@@ -1,7 +1,8 @@
 import re, os
 from rde import ConfigManager
 from game_objects import Property
-from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary
+from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary,
+                         FormatTpclCode, ReplaceInvalidCharacters
 
 def GenerateCode(object_database):
     """\
@@ -68,7 +69,7 @@ class %(CLASS_NAME)s {
         #NOTE:
         # we here replace hyphens with underscores in the names of properties
         # since hyphens are not valid in variable names in C++
-        func_name = "init%s%s()" % (prop.name.replace('-', '_'), NAME)
+        func_name = "init%s%s()" % (ReplaceInvalidCharacters(prop.name), NAME)
         func_calls.append("%s;" % func_name)
         
         #write to header file
@@ -88,8 +89,8 @@ void %(CLASS_NAME)s::%(func_name)s {
   prop->setName("%(prop.name)s");
   prop->setDisplayName("%(prop.display_text)s");
   prop->setDescription("%(prop.description)s");
-  prop->setTpclDisplayFunction("%(" ".join(regex.split(prop.tpcl_display)))s");
-  prop->setTpclRequirementsFunction("%(" ".join(regex.split(prop.tpcl_requires)))s");
+  prop->setTpclDisplayFunction("%(FormatTpclCode(prop.tpcl_display))s");
+  prop->setTpclRequirementsFunction("%(FormatTpclCode(prop.tpcl_requires))s");
   ds->addProperty(prop);
   return;
 }
