@@ -33,6 +33,7 @@
 # 2004-08-23 fl   take advantage of post-2.1 expat features
 # 2005-02-01 fl   added iterparse implementation
 # 2005-03-02 fl   fixed iterparse support for pre-2.2 versions
+# 2007-07-13 jg   added opotion to write file with smart indentation
 #
 # Copyright (c) 1999-2005 by Fredrik Lundh.  All rights reserved.
 #
@@ -106,7 +107,7 @@ __all__ = [
 # structure, and convert it from and to XML.
 ##
 
-import string, sys, re
+import string, sys, re, os
 
 class _SimpleElementPath:
     # emulate pre-1.2 find/findtext/findall behaviour
@@ -649,7 +650,7 @@ class ElementTree:
     # @param file A file name, or a file object opened for writing.
     # @param encoding Optional output encoding (default is US-ASCII).
 
-    def write(self, file, encoding="us-ascii"):
+    def write(self, file, encoding="us-ascii", indent=False):
         assert self._root is not None
         if not hasattr(file, "write"):
             file = open(file, "wb")
@@ -657,15 +658,20 @@ class ElementTree:
             encoding = "us-ascii"
         elif encoding != "utf-8" and encoding != "us-ascii":
             file.write("<?xml version='1.0' encoding='%s'?>\n" % encoding)
-        self._write(file, self._root, encoding, {})
+        self._write(file, self._root, encoding, {}, indent)
 
-    def _write(self, file, node, encoding, namespaces):
+    def _write(self, file, node, encoding, namespaces, pretty_print=False, height=0):
         # write XML to file
+        indent = ""
+        linesep = ""
+        if pretty_print:
+            indent = height*"   "            
+            linesep = os.linesep
         tag = node.tag
         if tag is Comment:
-            file.write("<!-- %s -->" % _escape_cdata(node.text, encoding))
+            file.write(indent + "<!-- %s -->%s" % (_escape_cdata(node.text, encoding), linesep))
         elif tag is ProcessingInstruction:
-            file.write("<?%s?>" % _escape_cdata(node.text, encoding))
+            file.write(indent + "<?%s?>%s" % (_escape_cdata(node.text, encoding), linesep))
         else:
             items = node.items()
             xmlns_items = [] # new namespaces in this scope
@@ -675,7 +681,7 @@ class ElementTree:
                     if xmlns: xmlns_items.append(xmlns)
             except TypeError:
                 _raise_serialization_error(tag)
-            file.write("<" + _encode(tag, encoding))
+            file.write(indent + "<" + _encode(tag, encoding))
             if items or xmlns_items:
                 items.sort() # lexical order
                 for k, v in items:
@@ -691,20 +697,22 @@ class ElementTree:
                             if xmlns: xmlns_items.append(xmlns)
                     except TypeError:
                         _raise_serialization_error(v)
-                    file.write(" %s=\"%s\"" % (_encode(k, encoding),
+                    file.write(linesep + indent + "   %s=\"%s\"" % (_encode(k, encoding),
                                                _escape_attrib(v, encoding)))
                 for k, v in xmlns_items:
-                    file.write(" %s=\"%s\"" % (_encode(k, encoding),
+                    file.write(linesep + indent + "   %s=\"%s\"" % (_encode(k, encoding),
                                                _escape_attrib(v, encoding)))
             if node.text or len(node):
                 file.write(">")
                 if node.text:
                     file.write(_escape_cdata(node.text, encoding))
+                else:
+                    file.write(linesep)
                 for n in node:
-                    self._write(file, n, encoding, namespaces)
-                file.write("</" + _encode(tag, encoding) + ">")
+                    self._write(file, n, encoding, namespaces, pretty_print, height+1)
+                file.write(indent + "</" + _encode(tag, encoding) + ">" + linesep)
             else:
-                file.write(" />")
+                file.write(" />" + linesep)
             for k, v in xmlns_items:
                 del namespaces[v]
         if node.tail:

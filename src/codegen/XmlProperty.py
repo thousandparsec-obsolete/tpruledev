@@ -25,7 +25,7 @@ def GenerateCode(prop, save_location):
     tpcl_requires_elem = SubElement(root, "tpcl_requires")
     tpcl_requires_elem.text = prop.tpcl_requires
     et = ElementTree(root)
-    et.write(save_location)
+    et.write(save_location, indent=True)
     
 def ParseCode(prop, save_location):
     """\

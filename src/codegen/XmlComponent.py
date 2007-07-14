@@ -28,7 +28,7 @@ def GenerateCode(comp, save_location):
         tpcl_cost_elem = SubElement(propelem, "tpcl_cost")
         tpcl_cost_elem.text = tpcl_cost
     et = ElementTree(root)
-    et.write(save_location)
+    et.write(save_location, indent=True)
     
 def ParseCode(comp, save_location):
     """\

@@ -16,7 +16,7 @@ def GenerateCode(prop, save_location):
                     {"name": prop.name,
                      "description": prop.description})
     et = ElementTree(root)
-    et.write(save_location)
+    et.write(save_location, indent=True)
     
 def ParseCode(cat, save_location):
     """\
