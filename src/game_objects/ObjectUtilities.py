@@ -55,6 +55,8 @@ class GameObject(object):
         #need some error checking here to check for non-existent codegen modules
         xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
         xml_module.GenerateCode(self, self.filename)
+        self.renamed = False
+        self.old_name = None
         
     def LoadObject(self):
         """\
