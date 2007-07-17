@@ -30,7 +30,7 @@ class Panel(ObjectPanel.Panel):
         self.cat_choice = XRCCTRL(self, "cat_choice")
         self.prop_list = XRCCTRL(self, "prop_list")
         self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
-        self.tpcl_cost_stc.Bind(wx.EVT_KEY_UP, self.OnCostEdit)
+        self.tpcl_cost_stc.Bind(wx.EVT_KEY_DOWN, self.OnCostEdit)
         self.tpcl_cost_stc.Enable(False)
         add_button = XRCCTRL(self, "add_button")
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        

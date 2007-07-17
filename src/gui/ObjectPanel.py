@@ -31,4 +31,4 @@ class Panel(wx.Panel):
         event to check for changes being made to it.
         """
         for w in widgets:
-            w.Bind(wx.EVT_KEY_UP, self.OnTextEdit)
+            w.Bind(wx.EVT_KEY_DOWN, self.OnTextEdit)
