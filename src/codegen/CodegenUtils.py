@@ -27,4 +27,4 @@ import re
 tpcl_regex = re.compile('\s*\r?\n\s*')
 def FormatTpclCode(code):
     global tpcl_regex
-    return " ".join(tpcl_regex.split(comp.tpcl_requirements))
+    return " ".join(tpcl_regex.split(code))
