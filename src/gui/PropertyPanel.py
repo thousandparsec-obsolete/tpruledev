@@ -34,9 +34,10 @@ class Panel(ObjectPanel.Panel):
                                 self.tpcl_disp_stc, self.tpcl_req_stc])
         self.loaded = False
         
-    def LoadObject(self, prop):
-        self.object = prop
-        self.object.node.visible = True
+    def LoadObject(self, node):
+        self.node = node
+        self.object = node.GetObject()
+        self.node.visible = True
         
         self.name_field.SetLabel(str(self.object.name))
         self.rank_field.SetValue(str(self.object.rank))
@@ -49,7 +50,7 @@ class Panel(ObjectPanel.Panel):
         self.cat_choice.Clear()
         self.cat_choice.Append("")
         catidx = 0
-        for catnode in self.object.node.object_database.getObjectsOfType('Category'):
+        for catnode in self.node.object_database.getObjectsOfType('Category'):
             idx = self.cat_choice.Append(catnode.name)                
             if self.object.category == catnode.name:
                 catidx = idx
@@ -97,7 +98,7 @@ class Panel(ObjectPanel.Panel):
                 self.object.tpcl_display = self.tpcl_disp_stc.GetText()
             
             if mod:
-                self.object.node.SetModified(True)
+                self.node.SetModified(True)
             
     def Destroy(self):
         self.Hide()
@@ -107,8 +108,8 @@ class Panel(ObjectPanel.Panel):
         
     def cleanup(self):
         self.CheckForModification()
-        self.object.node.visible = False
+        self.node.visible = False
         self.Hide()
-        self.object.node.clearObject()
+        self.node.ClearObject()
         self.object = None
         self.loaded = False

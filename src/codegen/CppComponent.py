@@ -65,7 +65,7 @@ class %(CLASS_NAME)s {
     
     #generate the code
     for comp_node in object_database.getObjectsOfType(NAME):
-        comp = comp_node.getObject()
+        comp = comp_node.GetObject()
         func_name = "init%s%s()" % (ReplaceInvalidCharacters(comp.name), NAME)
         func_calls.append("%s;" % func_name)
         
@@ -105,7 +105,7 @@ void %(CLASS_NAME)s::%(func_name)s {
 
 """)
         CFILE.flush()
-        comp_node.clearObject()
+        comp_node.ClearObject()
     
     HFILE.write('};\n#endif\n')
     HFILE.flush()

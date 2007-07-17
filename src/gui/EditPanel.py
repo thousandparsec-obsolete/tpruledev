@@ -40,7 +40,7 @@ class EditPanel(wx.Panel):
                 panel_module = __import__("gui." + type + "Panel", globals(), locals(), [''])
                 self.edit_panels[type] = panel_module.Panel(self)
             #now fill the panel and set it as our content panel
-            self.SetContentPanel(self.edit_panels[type].LoadObject(self.node.getObject()))
+            self.SetContentPanel(self.edit_panels[type].LoadObject(self.node))
         else:
             self.SetContentPanel(wx.Panel(self))
             

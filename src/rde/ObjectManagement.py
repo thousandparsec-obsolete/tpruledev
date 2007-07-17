@@ -96,8 +96,7 @@ class ObjectDatabase(object):
             for node in self.objects[type]:
                 if node.modified:
                     print "\tSaving %s - %s" % (type, node.name)
-                    node.getObject().SaveObject()
-                    node.SetModified(False)
+                    node.SaveObject()
                     
     def RenameObject(self, obj_type, name, new_name):
         if not self.ObjectExists(obj_type, name):
@@ -113,8 +112,8 @@ class ObjectDatabase(object):
         #now we have to call the OnObjectDeletion method of all other game objects
         for type, objects in self.objects.iteritems():
             for node in objects:
-                node.getObject().OnObjectRename(obj_type, name, new_name)
-                node.clearObject()
+                node.GetObject().OnObjectRename(obj_type, name, new_name)
+                node.ClearObject()
         #remove the reference to the old name
         self.sendODBEvent(ODBRemove(name))
         #add the same node with the new name
@@ -165,14 +164,14 @@ class ObjectDatabase(object):
             raise NoSuchObjectError(name)
         
         #delete the object and remove it from the list
-        self.GetObjectNode(name, obj_type).getObject(load_imm=False).DeleteSaveFile()
+        self.GetObjectNode(name, obj_type).DeleteSaveFile()
         self.objects[obj_type].remove(name)
         
         #now we have to call the OnObjectDeletion method of all other game objects
         for type, objects in self.objects.iteritems():
             for node in objects:
-                node.getObject().OnObjectDeletion(obj_type, name)
-                node.clearObject()
+                node.GetObject().OnObjectDeletion(obj_type, name)
+                node.ClearObject()
                 
         self.sendODBEvent(ODBRemove(name))
            

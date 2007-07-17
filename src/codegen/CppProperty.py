@@ -65,7 +65,7 @@ class %(CLASS_NAME)s {
     
     #generate the code
     for prop_node in object_database.getObjectsOfType(NAME):
-        prop = prop_node.getObject()
+        prop = prop_node.GetObject()
         #NOTE:
         # we here replace hyphens with underscores in the names of properties
         # since hyphens are not valid in variable names in C++
@@ -97,7 +97,7 @@ void %(CLASS_NAME)s::%(func_name)s {
 
 """ % ExpressionDictionary(vars()))
         CFILE.flush()
-        prop_node.clearObject()
+        prop_node.ClearObject()
     
     HFILE.write("""\
 };

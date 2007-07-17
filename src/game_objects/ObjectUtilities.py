@@ -10,10 +10,10 @@ from rde import ConfigManager
     
 class GameObject(object):
     """
-    The base game object class. Defines a few variables
-    that are necessary for every game object such as the
-    ObjectNode which contains this GameObject and the
-    name property.
+    The base game object class. Handles all of the operations on
+    the objects that require manipulation of the data that composes
+    the object. We will load these as necessary and unload them
+    when we no longer need them and there are no pending modifications.
     """
     
     renamed = False
@@ -43,20 +43,6 @@ class GameObject(object):
         """
         pass
         
-    def SaveObject(self):
-        """\
-        Saves an object to its persistence file.
-        """
-        
-        #check if we renamed
-        if self.renamed:
-            self.DeleteSaveFile(self.old_filename)
-
-        #need some error checking here to check for non-existent codegen modules
-        xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
-        xml_module.GenerateCode(self, self.filename)
-        self.renamed = False
-        self.old_name = None
         
     def LoadObject(self):
         """\
@@ -70,28 +56,6 @@ class GameObject(object):
         else:
             #no save file created yet, we're fine with defaults
             pass
-            
-    def DeleteSaveFile(self, fname=None):
-        """\
-        Deletes an objects XML save file
-        """
-        if not fname: fname = self.filename
-        if os.path.exists(fname):
-            os.remove(fname)
-        else:
-            #no file in existence, guess we just created
-            # this object and never saved it, no biggie
-            pass
-        
-    def GetFilename(self):
-        return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
-                                self.type, self.name + '.xml')    
-    filename = property(GetFilename)
-    
-    def GetOldFilename(self):
-        return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
-                                self.type, self.old_name + '.xml')    
-    old_filename = property(GetOldFilename)
         
 
 class ObjectNode(rde.Nodes.DatabaseNode):
@@ -165,22 +129,27 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         return self.name
     
     name=""
-    modified=False
-    renamed=False
+    visible=False #if we're being used we're visible - so don't delete our object!
+    modified=False #if we're modified don't delete our object!
+    renamed=False #if we're renamed we need to handle some special cases on saves and deletes
+    contains_error=False #if we've got an error we can't generate code
     highlighted=False
     highlight_color=""
     listeners=[]
     object_module=None
     object_database=None
     object=None
-    visible=False
     
     def __init__(self, odb, name, module):
         self.name = name
         self.object_module = module
+        self.type = module.GetName()
         self.object_database = odb
         
     def SetModified(self, b):
+        #If we're changing the modified state then we need
+        # to alert the object manager to this change so
+        # that we can be marked accordingly
         if b and not self.modified:
             self.object_database.pending_modifications = True
             self.object_database.MarkModified(self.name)
@@ -211,17 +180,18 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         for l in self.listeners:
             l.handleObjectEvent(event)
             
-    def getObject(self, load_imm=True):
+    def GetObject(self):
         """
         Gets the game object object associated with this
         node.
         """
         if not self.object:
-            self.object = self.object_module.Object(self, self.name, load_immediate = load_imm)
+            self.object = self.object_module.Object(self, self.name)
+            self.FillObject(self.object)
             
         return self.object
         
-    def clearObject(self):
+    def ClearObject(self):
         """
         Clears a loaded game object if no modifications have been
         made
@@ -231,12 +201,71 @@ class ObjectNode(rde.Nodes.DatabaseNode):
             del self.object
             
     def RenameNode(self, new_name):
-        self.getObject()
         if not self.renamed:
             self.old_name = self.name
             self.renamed = True
-            self.object.old_name = self.object.name
-            self.object.renamed = True
+        if self.object:
+            self.object.name = new_name
         self.SetModified(True)
         self.name = new_name
-        self.object.name = new_name
+        
+    def SaveObject(self):
+        """\
+        Saves an object to its persistence file.
+        
+        If we were renamed then we also need to delete our old
+        persistence file.
+        """
+        
+        #check if we renamed
+        if self.renamed:
+            #if we renamed then we need to delete our old file name
+            self.DeleteSaveFile(self.old_filename)
+
+        #need some error checking here to check for non-existent codegen modules
+        if self.modified:
+            xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
+            xml_module.GenerateCode(self.GetObject(), self.filename)
+            self.renamed = False
+            self.old_name = None
+            self.SetModified(False)
+            self.ClearObject()
+        
+    def FillObject(self, object):
+        """\
+        Fills an object with the data from its persistence file
+        """  
+
+        #need some error checking here to check for non-existent codegen modules
+        if os.path.exists(self.filename):
+            xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
+            xml_module.ParseCode(object, self.filename)
+        else:
+            #no save file created yet, we're fine with defaults
+            pass
+            
+    def DeleteSaveFile(self, fname=None):
+        """\
+        Deletes an objects XML save file
+        """
+        
+        #default to the filename based on the current name
+        if not fname:
+            fname = self.filename
+        if os.path.exists(fname):
+            os.remove(fname)
+        else:
+            #no file in existence, guess we just created
+            # this object and never saved it, no biggie
+            pass
+        
+    def GetFilename(self):
+        return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
+                                self.type, self.name + '.xml')    
+    filename = property(GetFilename)
+    
+    def GetOldFilename(self):
+        return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
+                                self.type, self.old_name + '.xml')    
+    old_filename = property(GetOldFilename)
+    

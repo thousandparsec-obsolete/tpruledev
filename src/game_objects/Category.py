@@ -11,16 +11,13 @@ from gui import CategoryPanel
 
 class Object(ObjectUtilities.GameObject):
 
-    def __init__(self, node, name, load_immediate = False):
+    def __init__(self, node, name):
                  
         self.node = node
         self.name = name
         self.type = GetName()
                 
-        self.description = ""
-        
-        if load_immediate:
-            self.LoadObject()            
+        self.description = ""          
 
     def __str__(self):
         return "Category Game Object - " + self.name

@@ -27,9 +27,10 @@ class Panel(ObjectPanel.Panel):
         self.desc_field = XRCCTRL(self, "desc_field")
         self.loaded = False
         
-    def LoadObject(self, category):
-        self.object = category
-        self.object.node.visible = True
+    def LoadObject(self, node):
+        self.node = node
+        self.object = node.GetObject()
+        self.node.visible = True
         self.name_field.SetLabel(str(self.object.name))
         self.desc_field.SetValue(str(self.object.description))
         self.BindEditWatchers([self.desc_field])
@@ -48,12 +49,12 @@ class Panel(ObjectPanel.Panel):
                 self.object.description = self.desc_field.GetValue()
             
             if mod:
-                self.object.node.SetModified(True)
+                self.node.SetModified(True)
         
     def cleanup(self):
         self.CheckForModification()
-        self.object.node.visible = False
+        self.node.visible = False
         self.Hide()
-        self.object.node.clearObject()
+        self.node.ClearObject()
         self.object = None
         self.loaded = False

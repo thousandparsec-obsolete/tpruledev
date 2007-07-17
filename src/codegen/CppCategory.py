@@ -65,7 +65,7 @@ class %(CLASS_NAME)s {
     
     #generate the code
     for cat_node in object_database.getObjectsOfType(NAME):
-        cat = cat_node.getObject()
+        cat = cat_node.GetObject()
         func_name = "init%s%s()" % (ReplaceInvalidCharacters(cat.name), NAME)
         func_calls.append("%s;" % func_name)
         
@@ -89,7 +89,7 @@ void %(CLASS_NAME)s::%(func_name)s {
 
 """ % ExpressionDictionary(vars()))
         CFILE.flush()
-        cat_node.clearObject()
+        cat_node.ClearObject()
     
     HFILE.write('};\n#endif\n')
     HFILE.flush()

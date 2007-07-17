@@ -40,9 +40,10 @@ class Panel(ObjectPanel.Panel):
         self.BindEditWatchers([self.desc_field, self.tpcl_req_stc])
         self.loaded = False
         
-    def LoadObject(self, comp):
-        self.object = comp
-        self.object.node.visible = True
+    def LoadObject(self, node):
+        self.node = node
+        self.object = node.GetObject()
+        self.node.visible = True
         
         self.name_field.SetLabel(str(self.object.name))
         self.desc_field.SetValue(str(self.object.description))
@@ -54,7 +55,7 @@ class Panel(ObjectPanel.Panel):
         self.cat_choice.Clear()
         self.cat_choice.Append("")
         catidx = 0
-        for catnode in self.object.node.object_database.getObjectsOfType('Category'):
+        for catnode in self.node.object_database.getObjectsOfType('Category'):
             idx = self.cat_choice.Append(catnode.name)                
             if self.object.category == catnode.name:
                 catidx = idx
@@ -66,7 +67,7 @@ class Panel(ObjectPanel.Panel):
         self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
         prop_names = [pname for pname in self.object.properties.keys()]
         self.prop_list.Set(prop_names)
-        self.object.node.object_database.Emphasize(prop_names, "BLUE")
+        self.node.object_database.Emphasize(prop_names, "BLUE")
         self.loaded = True
         
         self.Show()
@@ -99,13 +100,13 @@ class Panel(ObjectPanel.Panel):
             if self.IsEditEvent(event):
                 self.object.properties[self.prop_list.GetString(idx)] = \
                         self.tpcl_cost_stc.GetText()
-                self.object.node.SetModified(True)
+                self.node.SetModified(True)
             event.Skip()
         
     def OnAddProperty(self, event):
         print "On Add Property"
         loose_props = filter(lambda x: not x in self.object.properties.keys(),
-                             [n.name for n in self.object.node.object_database.getObjectsOfType('Property')])
+                             [n.name for n in self.node.object_database.getObjectsOfType('Property')])
         choice_diag = wx.MultiChoiceDialog(self, "Choose the Properties to add...",
                                             "Add Properties...", loose_props)
         choice_diag.ShowModal()
@@ -117,8 +118,8 @@ class Panel(ObjectPanel.Panel):
                 prop_names.append(loose_props[i])
                 self.object.properties[loose_props[i]] = "(lambda (design) #)"
                 self.prop_list.Append(loose_props[i])
-            self.object.node.SetModified(True)
-            self.object.node.object_database.Emphasize(prop_names, "BLUE")
+            self.node.SetModified(True)
+            self.node.object_database.Emphasize(prop_names, "BLUE")
         else:
             #cancelled
             print "CANCELED!"
@@ -138,9 +139,9 @@ class Panel(ObjectPanel.Panel):
                 ridx.insert(0, idx)
             for i in ridx:
                 self.prop_list.Delete(i)
-            self.object.node.object_database.UnEmphasize(prop_names)
+            self.node.object_database.UnEmphasize(prop_names)
             self.tpcl_cost_stc.SetText("")
-            self.object.node.SetModified(True)            
+            self.node.SetModified(True)            
     
     def CheckForModification(self):
         #print "Checking for modification..."
@@ -163,7 +164,7 @@ class Panel(ObjectPanel.Panel):
                 self.object.tpcl_requirements = self.tpcl_req_stc.GetText()
             
             if mod:
-                self.object.node.SetModified(True)
+                self.node.SetModified(True)
     
     def Destroy(self):
         self.Hide()
@@ -174,10 +175,10 @@ class Panel(ObjectPanel.Panel):
     def cleanup(self):
         print "Cleaning up Component Panel"
         self.CheckForModification()
-        self.object.node.object_database.UnEmphasize(
+        self.node.object_database.UnEmphasize(
             [self.prop_list.GetString(i) for i in range(0, self.prop_list.GetCount())])
-        self.object.node.visible = False
+        self.node.visible = False
         self.Hide()
-        self.object.node.clearObject()
+        self.node.ClearObject()
         self.object = None
         self.loaded = False
