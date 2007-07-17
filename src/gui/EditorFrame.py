@@ -184,6 +184,12 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnGenCode, gen_code_item)
         menubar.Append(edit_menu, 'Edit')
         
+        #create and append the Project menu
+        project_menu = wx.Menu()
+        validate_item = project_menu.Append(-1, 'Validate Project', 'Checks each object in the project for errors...')
+        self.Bind(wx.EVT_MENU, self.OnValidateProject, validate_item)
+        menubar.Append(project_menu, 'Project')
+        
         return menubar
         
     def UpdateRecentProjectMenu(self):
@@ -323,6 +329,17 @@ class Frame(wx.Frame):
             #there was no selection
             wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
                 caption="Invalid Selection", style=wx.OK)
+                
+    def OnValidateProject(self, event):
+        """\
+        Checks all of the game objects for errors.
+        """
+        if self.object_database.ValidateAllObjects():
+            wx.MessageBox("No errors were found in your project.",
+                caption="Project Valid", style=wx.OK)
+        else:
+            wx.MessageBox("Errors were found in your project!",
+                caption="Project Invalid", style=wx.OK)
     
     def OnTreeSelecting(self, event):
         """\

@@ -9,20 +9,20 @@ from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from gui import ComponentPanel
 import game_objects.Category, game_objects.Property
+import tpcl, tpcl.ComponentTpcl
 
 DEFAULT_TPCL_REQUIREMENTS = '(lambda (design) (cons #f \\"Default req func\\"))'
     
 class Object(ObjectUtilities.GameObject):        
 
     def __init__(self, node, name):                 
-        self.node = node
-        self.name = name
+        ObjectUtilities.GameObject.__init__(self, node, name)
         self.type = GetName()
         
         self.properties = {}
         self.category = ""
         self.description = ""
-        self.tpcl_requirements = DEFAULT_TPCL_REQUIREMENTS       
+        self.tpcl_requirements = DEFAULT_TPCL_REQUIREMENTS
 
     def __str__(self):
         return "Component Game Object - " + self.name
@@ -52,6 +52,30 @@ class Object(ObjectUtilities.GameObject):
             if self.category == object_name:
                 self.category = new_name
                 self.node.SetModified(True)
+                
+    def CheckForErrors(self):
+        err = False
+        if self.description == "":
+            self.errors['description'] = "Description needs to be non-null!"
+            err = True
+        if self.category == "":
+            self.errors['category'] = "A category must be selected"
+            err = True
+        
+        #check the tpcl requirements function
+        if not tpcl.ComponentTpcl.TpclCodeIsValid(self):
+            err = True
+                
+        #eventually we will want to check the TPCL Cost functions
+        # for each associated property
+        #for propname, tpcl_cost in self.properties:
+        
+        self.node.has_errors = err
+        if err:
+            print "Errors in Component " + self.name
+            for attr, error in self.errors.iteritems():
+                print "\t%s - %s" % (attr, error)
+        return err
 
 def GetName():
     return 'Component'

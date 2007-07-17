@@ -98,6 +98,16 @@ class ObjectDatabase(object):
                     print "\tSaving %s - %s" % (type, node.name)
                     node.SaveObject()
                     
+    def ValidateAllObjects(self):
+        """\
+        Loops through all objects and checks it for errors.
+        """
+        print "Validating project!"
+        for type, module in self.object_modules.iteritems():
+            for node in self.objects[type]:
+                node.GetObject().CheckForErrors()
+                node.ClearObject()
+                    
     def RenameObject(self, obj_type, name, new_name):
         if not self.ObjectExists(obj_type, name):
             raise NoSuchObjectError(name)

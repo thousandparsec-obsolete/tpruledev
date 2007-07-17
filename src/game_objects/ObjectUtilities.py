@@ -16,13 +16,10 @@ class GameObject(object):
     when we no longer need them and there are no pending modifications.
     """
     
-    #dictionary to store associations between attributes and errors
-    errors = {}
-    
     def __init__(self, node, name):
         self.node = node
         self.name = name
-        self.renamed = False
+        self.errors = {}
         
     def OnObjectDeletion(self, object_type, object_name):
         """\
@@ -141,6 +138,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         self.object_module = module
         self.type = module.GetName()
         self.object_database = odb
+        self.__error = False
         
     def SetModified(self, b):
         #If we're changing the modified state then we need
@@ -256,14 +254,14 @@ class ObjectNode(rde.Nodes.DatabaseNode):
             pass
             
     def GetError(self):
-        return self.__error
+        if not "_ObjectNode__error" in self.__dict__:
+            self._ObjectNode__error = False
+        return __error
         
     def SetError(self, b):
         """\
         Marks this object as having an error - highlights it in red.
         """
-        if self.__error == None:
-            self.__error = False
         if b and not self.__error:
             #we're setting there error where there was none before
             # highlight ourselves in red!
@@ -274,7 +272,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
             self.__error = b
             self.object_database.Unhighlight(self.name)
             
-    has_errors = property(self.GetError, self.SetError)
+    has_errors = property(GetError, SetError)
         
     def GetFilename(self):
         return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
