@@ -16,7 +16,8 @@ class GameObject(object):
     when we no longer need them and there are no pending modifications.
     """
     
-    renamed = False
+    #dictionary to store associations between attributes and errors
+    errors = {}
     
     def __init__(self, node, name):
         self.node = node
@@ -43,19 +44,14 @@ class GameObject(object):
         """
         pass
         
-        
-    def LoadObject(self):
+    def CheckForErrors(self):
         """\
-        Loads an object from its persistence file
-        """  
-
-        #need some error checking here to check for non-existent codegen modules
-        if os.path.exists(self.filename):
-            xml_module = __import__("codegen.Xml" + self.type, globals(), locals(), [''])
-            xml_module.ParseCode(self, self.filename)
-        else:
-            #no save file created yet, we're fine with defaults
-            pass
+        Checks the object for errors and modifies the node based
+        on its findings.
+        
+        Returns True or False depending on its findings.
+        """
+        return False
         
 
 class ObjectNode(rde.Nodes.DatabaseNode):
@@ -258,6 +254,27 @@ class ObjectNode(rde.Nodes.DatabaseNode):
             #no file in existence, guess we just created
             # this object and never saved it, no biggie
             pass
+            
+    def GetError(self):
+        return self.__error
+        
+    def SetError(self, b):
+        """\
+        Marks this object as having an error - highlights it in red.
+        """
+        if self.__error == None:
+            self.__error = False
+        if b and not self.__error:
+            #we're setting there error where there was none before
+            # highlight ourselves in red!
+            self.__error = b
+            self.object_database.Highlight(self.name, "RED")
+        elif not b and self.__error:
+            #we're clearing an existing error
+            self.__error = b
+            self.object_database.Unhighlight(self.name)
+            
+    has_errors = property(self.GetError, self.SetError)
         
     def GetFilename(self):
         return os.path.join(ConfigManager.config.get('Current Project', 'persistence_directory'),
