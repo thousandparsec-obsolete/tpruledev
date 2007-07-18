@@ -1,18 +1,19 @@
 <component
-	category="Ships"
-	description="Guns and armour for a ship"
-	name="Battle3"
-	version="1.0">
-	<tpcl_requirements>(lambda (design)
+   category="Ships"
+   description="Guns and armour for a ship"
+   name="Battle3"
+   version="1.0">
+   <tpcl_requirements>(lambda (design)
 	(if (= (designType._num-components design) 1)
-		(cons #t \"\")
-		(cons #f \"This is a complete component, nothing else can be included\")))</tpcl_requirements>
-	
-	<!-- properties -->
-	<property name="Armour">
-		<tpcl_cost>(lambda (design) 15)</tpcl_cost>
-	</property>
-	<property name="Attack">
-		<tpcl_cost>(lambda (design) 15)</tpcl_cost>
-	</property>
+		(cons #t "")
+		(cons #f "This is a complete component, nothing else can be included")))   </tpcl_requirements>
+   <!-- properties -->
+   <property
+      name="Armour">
+      <tpcl_cost>(lambda (design) 15)      </tpcl_cost>
+   </property>
+   <property
+      name="Attack">
+      <tpcl_cost>(lambda (design) 15)      </tpcl_cost>
+   </property>
 </component>

@@ -1,3 +1,12 @@
-<prop category="Ships" description="The number of HP to do to the fired at ship when RSP wins" display_text="Weapon Strength at Win" name="WeaponWin" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
+<property
+   category="Ships"
+   description="The number of HP to do to the fired at ship when RSP wins"
+   display_text="Weapon Strength at Win"
+   name="WeaponWin"
+   rank="0"
+   version="1.0">
+   <tpcl_display>(lambda (design bits)
 	(let ((n (apply + bits)))
-		(cons n (string-append (number-&gt;string n) \" HP\")) ) )</tpcl_display><tpcl_requires>(lambda (design) (cons #t \"\"))</tpcl_requires></prop>
+		(cons n (string-append (number-&gt;string n) " HP")) ) )   </tpcl_display>
+   <tpcl_requires>(lambda (design) (cons #t ""))   </tpcl_requires>
+</property>

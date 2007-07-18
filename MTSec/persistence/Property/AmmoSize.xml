@@ -1,4 +1,13 @@
-<prop category="" description="The relative size of a unit of the explosive used in the weapons of the ship" display_text="Explosive Density" name="AmmoSize" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
+<property
+   category="Electronic"
+   description="The relative size of a unit of the explosive used in the weapons of the ship."
+   display_text="Explosive Density"
+   name="AmmoSize"
+   rank="0"
+   version="1.0">
+   <tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (number-&gt;string n))))</tpcl_display><tpcl_requires>(lambda (design)
-   (cons #t ""))</tpcl_requires></prop>
+      (cons n (number-&gt;string n))))   </tpcl_display>
+   <tpcl_requires>(lambda (design)
+   (cons #t ""))   </tpcl_requires>
+</property>

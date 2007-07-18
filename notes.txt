@@ -1,5 +1,4 @@
 Todo:
-Include Rename functionality
 Need to ensure that all the properties that a component affects and the component itself all share a category?
 Check validity of objects on loading and highlight those that are incomplete
 ----------------------------------------
@@ -14,6 +13,7 @@ Get the object manipulation methods to accept lists as well as atoms
 Alert the user when they are going to quit with unsaved changes
 
 Complete:
+Include Rename functionality
 Allow Components to add and remove Property associations
 Make a panel to default to on start that describes the RDE
 Allow for saving!
@@ -22,10 +22,8 @@ Handle deletions of existing objects better...if we delete a Property we're goin
 
 ----------------------------------------------------
 
-On renaming objects:
-Remove the node
-Rename the node
-Add the node again
+On renaming:
+NEED TO CLEAR RENAMED FLAG AND OLD NAME WHEN SAVING AN OBJECT!
 
 On loading objects:
 Need to have consistent representation of numerical values, are they strings or numbers? Meh.
