@@ -270,7 +270,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         elif not b and self.__error:
             #we're clearing an existing error
             self.__error = b
-            self.object_database.Unhighlight(self.name)
+            self.object_database.UnHighlight(self.name)
             
     has_errors = property(GetError, SetError)
         

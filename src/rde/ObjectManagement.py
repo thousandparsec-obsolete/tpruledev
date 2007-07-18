@@ -103,10 +103,13 @@ class ObjectDatabase(object):
         Loops through all objects and checks it for errors.
         """
         print "Validating project!"
+        valid = True
         for type, module in self.object_modules.iteritems():
             for node in self.objects[type]:
-                node.GetObject().CheckForErrors()
+                if node.GetObject().CheckForErrors():
+                    valid = False
                 node.ClearObject()
+        return valid
                     
     def RenameObject(self, obj_type, name, new_name):
         if not self.ObjectExists(obj_type, name):
