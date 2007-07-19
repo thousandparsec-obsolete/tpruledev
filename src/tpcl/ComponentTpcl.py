@@ -22,16 +22,18 @@ def TpclCodeIsValid(comp):
     interp._env = new_env
     #actually check the code
     #check the tpcl requirements function
+    valid = True
     if not tpcl.TpclSyntaxIsValid(comp.tpcl_requirements):
         comp.errors['tpcl_requirements'] = "Syntax error"
-        return False
+        valid = False
     else:
         try:
             interp.eval(scheme.parse("(%s design)" % comp.tpcl_requirements))
         except SchemeError, e:
             comp.errors['tpcl_requirements'] = e.message
-            return False
-    return True
+            valid = False
+    interp._env = old_env
+    return valid
     
 def GetComponentEnv(object_database):
     global COMP_ENV

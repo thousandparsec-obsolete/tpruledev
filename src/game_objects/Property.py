@@ -9,7 +9,7 @@ from xml.dom.minidom import Node
 import ObjectUtilities, RDE
 from gui import PropertyPanel
 import game_objects.Category
-import tpcl
+import tpcl, tpcl.PropertyTpcl
 
 DEFAULT_TPCL_DISPLAY = '(lambda (design) (cons #t \\"Default requires func\\"))'
 DEFAULT_TPCL_REQUIRES = '(lambda (design bits) (cons 0 \\"0\\"))'
@@ -58,14 +58,8 @@ class Object(ObjectUtilities.GameObject):
             self.errors['display_text'] = "Display text must be non-null"
             err = True
         
-        #check the tpcl display function
-        if not tpcl.TpclSyntaxIsValid(self.tpcl_display):
-            self.errors['tpcl_display'] = "Syntax error"
-            err = True
-            
-        #check the tpcl requires function
-        if not tpcl.TpclSyntaxIsValid(self.tpcl_requires):
-            self.errors['tpcl_requires'] = "Syntax error"
+        #check the tpcl functions
+        if not tpcl.PropertyTpcl.TpclCodeIsValid(self):
             err = True
         
         self.node.has_errors = err
