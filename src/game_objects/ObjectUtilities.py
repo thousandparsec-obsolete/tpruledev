@@ -191,7 +191,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         made
         """
         print "Clearing ", self.name
-        if not self.modified and not self.visible and self.object:
+        if not self.modified and not self.visible and not self.has_errors and self.object:
             del self.object
             
     def RenameNode(self, new_name):
@@ -254,9 +254,7 @@ class ObjectNode(rde.Nodes.DatabaseNode):
             pass
             
     def GetError(self):
-        if not "_ObjectNode__error" in self.__dict__:
-            self._ObjectNode__error = False
-        return __error
+        return self.__error
         
     def SetError(self, b):
         """\
