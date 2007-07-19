@@ -190,6 +190,9 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnValidateProject, validate_item)
         menubar.Append(project_menu, 'Project')
         
+        #disabled items
+        menubar.Enable(gen_code_item.GetId(), False)
+        
         return menubar
         
     def UpdateRecentProjectMenu(self):
