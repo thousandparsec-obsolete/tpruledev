@@ -42,6 +42,7 @@ class Object(ObjectUtilities.GameObject):
             self.node.SetModified(True)
             
     def CheckForErrors(self):
+        self.errors = {}
         err = False
         if self.description == "":
             self.errors['description'] = "Description needs to be non-null!"

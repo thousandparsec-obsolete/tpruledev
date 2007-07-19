@@ -21,8 +21,9 @@ class Object(ObjectUtilities.GameObject):
         return "Category Game Object - " + self.name
         
     def CheckForErrors(self):
+        self.errors = {}
         if self.description == "":
-            self.errors[self.description] = "Description needs to be non-null!"
+            self.errors['description'] = "Description needs to be non-null!"
             self.node.has_errors = True
             return True
         return False
