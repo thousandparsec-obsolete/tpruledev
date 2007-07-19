@@ -21,6 +21,7 @@ class Panel(ObjectPanel.Panel):
         res.LoadOnPanel(pre, parent, "ComponentPanel")
         self.PostCreate(pre)
         
+        ObjectPanel.Panel.Setup(self)
         self.OnCreate()
         
     def OnCreate(self):
@@ -36,18 +37,35 @@ class Panel(ObjectPanel.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        
         remove_button = XRCCTRL(self, "remove_button")
         self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
+        
+        self.desc_field.Bind(wx.EVT_TEXT, self.CreateAttributeMonitor('description'))
+        self.tpcl_req_stc.Bind(wx.stc.EVT_STC_CHANGE, self.CreateAttributeMonitor('tpcl_requirements'))
+        self.cat_choice.Bind(wx.EVT_CHOICE, self.CreateAttributeMonitor('category'))
 
-        self.BindEditWatchers([self.desc_field, self.tpcl_req_stc])
+        #self.BindEditWatchers([self.desc_field, self.tpcl_req_stc])
         self.loaded = False
         
     def LoadObject(self, node):
+        print "ComponentPanel loading %s" % node.name
+        #VERY IMPORTANT TO MARK OURSELVES AS LOADING HERE
+        # THIS WAY WE AVOID PROGRAMMATIC CHANGES BEING MARKED AS USER CHANGES
+        self.loading = True
         self.node = node
         self.object = node.GetObject()
+        print "\tErrors:", self.object.errors
         self.node.visible = True
         
         self.name_field.SetLabel(str(self.object.name))
         self.desc_field.SetValue(str(self.object.description))
+        if self.object.errors.has_key('description'):
+            print "Error in description!"
+            self.SetErrorLabel('description', self.object.errors['description'])
+            
         self.tpcl_req_stc.SetText(self.object.tpcl_requirements)
+        if self.object.errors.has_key('tpcl_requirements'):
+            print "Error in tpcl_requirements!"
+            self.SetErrorLabel('tpcl_requirements', self.object.errors['tpcl_requirements'])
+            
         self.tpcl_cost_stc.SetText("")
         self.tpcl_cost_stc.Enable(False)
         
@@ -60,7 +78,9 @@ class Panel(ObjectPanel.Panel):
             if self.object.category == catnode.name:
                 catidx = idx
         self.cat_choice.Select(catidx)
-        self.cat_choice.Bind(wx.EVT_CHOICE, self.CreateChoiceMonitor(self.object.category))
+        if self.object.errors.has_key('category'):
+            print "Error in category!"
+            self.SetErrorLabel('category', self.object.errors['category'])
         
         #create the property list        
         self.prop_sel = -1
@@ -70,8 +90,9 @@ class Panel(ObjectPanel.Panel):
         self.node.object_database.Emphasize(prop_names, "BLUE")
         self.loaded = True
         
+        self.loading = False
         self.Show()
-        return self        
+        return self
         
     def OnDClickProperty(self, event):
         """\
@@ -175,6 +196,7 @@ class Panel(ObjectPanel.Panel):
     def cleanup(self):
         print "Cleaning up Component Panel"
         self.CheckForModification()
+        self.CleanupErrorLabels()
         self.node.object_database.UnEmphasize(
             [self.prop_list.GetString(i) for i in range(0, self.prop_list.GetCount())])
         self.node.visible = False
