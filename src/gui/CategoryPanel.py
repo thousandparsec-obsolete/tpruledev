@@ -48,21 +48,8 @@ class Panel(ObjectPanel.Panel):
         self.loading = False
         self.Show()
         return self
-    
-    def CheckForModification(self):
-        print "Checking Category %s for modifications" % self.object.name
-        if self.loaded:
-            mod = False
-            #print "\description: %s <> %s" % (self.object.description, self.desc_field.GetValue())
-            if self.object.description != self.desc_field.GetValue():
-                mod = True
-                self.object.description = self.desc_field.GetValue()
-            
-            if mod:
-                self.node.SetModified(True)
         
     def cleanup(self):
-        self.CheckForModification()
         self.node.visible = False
         self.Hide()
         self.node.ClearObject()

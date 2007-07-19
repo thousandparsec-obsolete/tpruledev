@@ -204,9 +204,6 @@ class Frame(wx.Frame):
     def OnOpenRecentProject(self, event):
         item = self.GetMenuBar().FindItemById(event.GetId())
         self.initProjectGUI(item.GetHelp())        
-                    
-    def CheckCurrentObjectForModifications(self):
-        self.edit_panel.CheckForModification()
     
     def OnNewProject(self, event):
         #get project name
@@ -244,7 +241,6 @@ class Frame(wx.Frame):
             return
             
     def OnGenCode(self, event):
-        self.CheckCurrentObjectForModifications()
         if self.object_database.pending_modifications:
             choice = wx.MessageBox("You have unsaved changes!\nYou cannot generate code without saving.",
                 caption="Unsaved Changes", style = wx.OK)
@@ -265,7 +261,6 @@ class Frame(wx.Frame):
         print "OnProjectSave"
         node = self.tree.GetPyData(self.tree.GetSelection())
         print "\topen object: %s" % node.name
-        self.CheckCurrentObjectForModifications()
         self.object_database.SaveObjects()
             
     def OnDeleteProject(self, event):
@@ -380,7 +375,6 @@ class Frame(wx.Frame):
             ConfigManager.WriteProjectConfig(ConfigManager.config.get("Global", "current_project"))
         
     def OnQuit(self, event):
-        self.CheckCurrentObjectForModifications()
         if self.object_database.pending_modifications:
             choice = wx.MessageBox("You have unsaved changes!\nAre you sure you want to quit?",
                 caption="Confirm Quit", style = wx.YES_NO)

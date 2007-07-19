@@ -43,7 +43,7 @@ class Panel(wx.Panel):
                 
                 if edit:
                     attr = getattr(self.object, attribute_name)
-                    print "old value: %s, new value: %s" % (attr, value)
+                    #todo: probably don't need this check here...but it's good to have anyway
                     if value != attr:
                         print "\tChange detected and saved"
                         self.node.SetModified(True)

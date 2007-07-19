@@ -18,9 +18,6 @@ class EditPanel(wx.Panel):
         self.content_panel = panel
         self.sizer.Add(panel, 1, wx.EXPAND | wx.ALL, 5)
         self.Layout()
-        
-    def CheckForModification(self):
-        if hasattr(self.content_panel, "CheckForModification"): self.content_panel.CheckForModification()
     
     def node_get(self):
         return self.__node

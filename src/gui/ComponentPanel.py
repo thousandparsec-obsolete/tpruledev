@@ -31,15 +31,18 @@ class Panel(ObjectPanel.Panel):
         self.cat_choice = XRCCTRL(self, "cat_choice")
         self.prop_list = XRCCTRL(self, "prop_list")
         self.tpcl_cost_stc = XRCCTRL(self, "tpcl_cost_stc")
-        self.tpcl_cost_stc.Bind(wx.EVT_KEY_DOWN, self.OnCostEdit)
         self.tpcl_cost_stc.Enable(False)
         add_button = XRCCTRL(self, "add_button")
         self.Bind(wx.EVT_BUTTON, self.OnAddProperty, add_button)        
         remove_button = XRCCTRL(self, "remove_button")
         self.Bind(wx.EVT_BUTTON, self.OnRemoveProperty, remove_button)
         
+        #bind event handlers
         self.desc_field.Bind(wx.EVT_TEXT, self.CreateAttributeMonitor('description'))
         self.tpcl_req_stc.Bind(wx.stc.EVT_STC_CHANGE, self.CreateAttributeMonitor('tpcl_requirements'))
+        self.tpcl_cost_stc.Bind(wx.stc.EVT_STC_CHANGE, self.OnCostEdit)
+        self.filling_tpcl_cost = False
+        self.Bind(wx.EVT_LISTBOX, self.OnPropListSelect, self.prop_list)
         self.cat_choice.Bind(wx.EVT_CHOICE, self.CreateAttributeMonitor('category'))
 
         #self.BindEditWatchers([self.desc_field, self.tpcl_req_stc])
@@ -84,7 +87,6 @@ class Panel(ObjectPanel.Panel):
         
         #create the property list        
         self.prop_sel = -1
-        self.Bind(wx.EVT_LISTBOX, self.OnListBoxSelect, self.prop_list)
         prop_names = [pname for pname in self.object.properties.keys()]
         self.prop_list.Set(prop_names)
         self.node.object_database.Emphasize(prop_names, "BLUE")
@@ -100,13 +102,15 @@ class Panel(ObjectPanel.Panel):
         """
         pass
         
-    def OnListBoxSelect(self, event):
+    def OnPropListSelect(self, event):
         sel_idx = self.prop_list.GetSelection()
         if sel_idx != wx.NOT_FOUND:
             self.tpcl_cost_stc.Enable(True)
             self.prop_sel = sel_idx
+            self.filling_tpcl_cost = True
             self.tpcl_cost_stc.SetText(self.object.properties[
                                             self.prop_list.GetString(sel_idx)])
+            self.filling_tpcl_cost = False
     
     def OnCostEdit(self, event):
         """\
@@ -114,15 +118,13 @@ class Panel(ObjectPanel.Panel):
         """
         print "Handling a cost edit event!"
         idx = self.prop_list.GetSelection()
-        if idx == wx.NOT_FOUND:
+        if idx == wx.NOT_FOUND or self.filling_tpcl_cost:
             pass
         else:
-            if event.GetKeyCode() == wx.WXK_CONTROL: print "THIS IS THE CONTROL KEY!"
-            if self.IsEditEvent(event):
-                self.object.properties[self.prop_list.GetString(idx)] = \
-                        self.tpcl_cost_stc.GetText()
-                self.node.SetModified(True)
-            event.Skip()
+            self.object.properties[self.prop_list.GetString(idx)] = \
+                    self.tpcl_cost_stc.GetText()
+            self.node.SetModified(True)
+        event.Skip()
         
     def OnAddProperty(self, event):
         print "On Add Property"
@@ -162,30 +164,7 @@ class Panel(ObjectPanel.Panel):
                 self.prop_list.Delete(i)
             self.node.object_database.UnEmphasize(prop_names)
             self.tpcl_cost_stc.SetText("")
-            self.node.SetModified(True)            
-    
-    def CheckForModification(self):
-        #print "Checking for modification..."
-        if self.loaded:
-            mod = False
-            
-            #print "\category_id: %s <> %s" % (self.object.category_id, self.catid_field.GetValue())
-            if self.object.category != self.cat_choice.GetStringSelection():
-                mod = True
-                self.object.category = self.cat_choice.GetStringSelection()
-            
-            #print "\description: %s <> %s" % (self.object.description, self.desc_field.GetValue())
-            if self.object.description != self.desc_field.GetValue():
-                mod = True
-                self.object.description = self.desc_field.GetValue()
-                
-            #print "\tpcl_requirements: %s <> %s" % (self.object.tpcl_requirements, self.tpcl_req_stc.GetText())
-            if self.object.tpcl_requirements != self.tpcl_req_stc.GetText():
-                mod = True
-                self.object.tpcl_requirements = self.tpcl_req_stc.GetText()
-            
-            if mod:
-                self.node.SetModified(True)
+            self.node.SetModified(True)
     
     def Destroy(self):
         self.Hide()
@@ -195,7 +174,6 @@ class Panel(ObjectPanel.Panel):
         
     def cleanup(self):
         print "Cleaning up Component Panel"
-        self.CheckForModification()
         self.CleanupErrorLabels()
         self.node.object_database.UnEmphasize(
             [self.prop_list.GetString(i) for i in range(0, self.prop_list.GetCount())])
