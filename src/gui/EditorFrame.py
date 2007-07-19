@@ -335,6 +335,7 @@ class Frame(wx.Frame):
         else:
             wx.MessageBox("Errors were found in your project!",
                 caption="Project Invalid", style=wx.OK)
+        self.edit_panel.ReloadPanel()
     
     def OnTreeSelecting(self, event):
         """\

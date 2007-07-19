@@ -18,6 +18,9 @@ class EditPanel(wx.Panel):
         self.content_panel = panel
         self.sizer.Add(panel, 1, wx.EXPAND | wx.ALL, 5)
         self.Layout()
+        
+    def ReloadPanel(self):
+        self.node = self.node
     
     def node_get(self):
         return self.__node
