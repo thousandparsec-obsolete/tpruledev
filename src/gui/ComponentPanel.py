@@ -73,6 +73,9 @@ class Panel(ObjectPanel.Panel):
         self.tpcl_cost_stc.SetText("")
         self.filling_tpcl_cost = False
         self.tpcl_cost_stc.Enable(False)
+        if self.object.errors.has_key('properties'):
+            print "Error in properties!"
+            self.SetErrorLabel('properties', self.object.errors['properties'])
         
         #fill the category choice box        
         self.cat_choice.Clear()

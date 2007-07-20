@@ -32,6 +32,24 @@ def TpclCodeIsValid(comp):
         except SchemeError, e:
             comp.errors['tpcl_requirements'] = e.message
             valid = False
+    
+    #check the tpcl cost functions
+    cost_msg = "Cost Function Errors:"
+    err_in_cost = False
+    for prop_name, cost_func in comp.properties.iteritems():
+        if not tpcl.TpclSyntaxIsValid(cost_func):
+            cost_msg = cost_msg + "\n   %s - Syntax error" % prop_name
+            err_in_cost = True
+        else:
+            try:
+                interp.eval(scheme.parse("(%s design)" % cost_func))
+            except SchemeError, e:
+                cost_msg = cost_msg + "\n   %s - %s" % (prop_name, e.message)
+                err_in_cost = True
+    if err_in_cost:
+        comp.errors['properties'] = cost_msg
+        valid = False
+        
     interp._env = old_env
     return valid
     
