@@ -68,8 +68,10 @@ class Panel(ObjectPanel.Panel):
         if self.object.errors.has_key('tpcl_requirements'):
             print "Error in tpcl_requirements!"
             self.SetErrorLabel('tpcl_requirements', self.object.errors['tpcl_requirements'])
-            
+        
+        self.filling_tpcl_cost = True
         self.tpcl_cost_stc.SetText("")
+        self.filling_tpcl_cost = False
         self.tpcl_cost_stc.Enable(False)
         
         #fill the category choice box        

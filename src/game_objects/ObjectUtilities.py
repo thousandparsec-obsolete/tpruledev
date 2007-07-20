@@ -2,7 +2,7 @@
 Game Object Utility classes and utility functions.
 """
 import os
-print os.getcwd()
+import copy
 
 import game_objects, RDE
 import rde.Nodes
@@ -30,7 +30,7 @@ class GameObject(object):
         for attr, value in obj.__dict__.iteritems():
             #copy everything except for the node and the name
             if attr != 'node' and attr != 'name':
-                self.__setattr__(attr, value)
+                self.__setattr__(attr, copy.deepcopy(value))
         
     def OnObjectDeletion(self, object_type, object_name):
         """\
