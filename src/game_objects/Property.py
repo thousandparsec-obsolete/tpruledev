@@ -11,8 +11,8 @@ from gui import PropertyPanel
 import game_objects.Category
 import tpcl, tpcl.PropertyTpcl
 
-DEFAULT_TPCL_DISPLAY = '(lambda (design) (cons #t \\"Default requires func\\"))'
-DEFAULT_TPCL_REQUIRES = '(lambda (design bits) (cons 0 \\"0\\"))'
+DEFAULT_TPCL_DISPLAY = '(lambda (design bits) (cons 0 "Default display function"))'
+DEFAULT_TPCL_REQUIRES = '(lambda (design) (cons #f "Default requires func"))'
     
 class Object(ObjectUtilities.GameObject):
     def __init__(self, node, name):

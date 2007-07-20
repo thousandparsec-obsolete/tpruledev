@@ -11,7 +11,7 @@ from gui import ComponentPanel
 import game_objects.Category, game_objects.Property
 import tpcl, tpcl.ComponentTpcl
 
-DEFAULT_TPCL_REQUIREMENTS = '(lambda (design) (cons #f \\"Default req func\\"))'
+DEFAULT_TPCL_REQUIREMENTS = '(lambda (design) (cons #f "Default req func"))'
     
 class Object(ObjectUtilities.GameObject):        
 
