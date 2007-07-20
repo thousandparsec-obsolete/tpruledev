@@ -22,6 +22,9 @@ class ExpressionDictionary(dict):
 def ReplaceInvalidCharacters(name):
     name = name.replace('-', '_')
     return name.replace(' ', '_')
+    
+def EscapeQuotes(text):
+    return text.replace('"', '\\"')
 
 import re
 tpcl_regex = re.compile('\s*\r?\n\s*')

@@ -1,7 +1,7 @@
-import re, os
+import os
 from game_objects import Component
 from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary,\
-                         ReplaceInvalidCharacters, FormatTpclCode
+                         ReplaceInvalidCharacters, FormatTpclCode, EscapeQuotes
 from rde import ConfigManager
 
 def GenerateCode(object_database):
@@ -74,8 +74,7 @@ class %(CLASS_NAME)s {
         HFILE.flush()
         
         #write to cpp file
-        #regex to handle newline stuffs...we write the TPCL code on one line
-        regex = re.compile('\s*\r?\n\s*')
+        FORMATTED_TPCL_REQUIREMENTS = EscapeQuotes(FormatTpclCode(comp.tpcl_requirements))
         CFILE.write("""
 void %(CLASS_NAME)s::%(func_name)s {
   std::map<unsigned int, std::string> propertylist;
@@ -85,7 +84,7 @@ void %(CLASS_NAME)s::%(func_name)s {
   comp->setCategoryId(ds->getCategoryByName("%(comp.category)s"));
   comp->setName("%(comp.name)s");
   comp->setDescription("%(comp.description)s");
-  comp->setTpclRequirementsFunction("%(FormatTpclCode(comp.tpcl_requirements))s");
+  comp->setTpclRequirementsFunction("%(FORMATTED_TPCL_REQUIREMENTS)s");
 """ % ExpressionDictionary(vars()))
 
         #now the properties...
@@ -94,7 +93,7 @@ void %(CLASS_NAME)s::%(func_name)s {
             # we here replace hyphens with underscores in the names of properties
             # since hyphens are not valid in variable names in C++
             CFILE.write('  propertylist[ds->getPropertyByName("%s")] = "%s";\n' % \
-                (propname, FormatTpclCode(cost_func)))
+                (propname, EscapeQuotes(FormatTpclCode(cost_func))))
                 
         #set our propertylist and get out of here
         CFILE.write("""\

@@ -1,8 +1,8 @@
-import re, os
+import os
 from rde import ConfigManager
 from game_objects import Property
-from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary,
-                         FormatTpclCode, ReplaceInvalidCharacters
+from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary,\
+                         FormatTpclCode, ReplaceInvalidCharacters, EscapeQuotes
 
 def GenerateCode(object_database):
     """\
@@ -77,8 +77,8 @@ class %(CLASS_NAME)s {
         HFILE.flush()
         
         #write to cpp file
-        #regex to handle newline stuffs...we write the TPCL code on one line
-        regex = re.compile('\s*\r?\n\s*')
+        FORMATTED_TPCL_DISPLAY = EscapeQuotes(FormatTpclCode(prop.tpcl_display))
+        FORMATTED_TPCL_REQUIRES = EscapeQuotes(FormatTpclCode(prop.tpcl_requires))
         CFILE.write("""\
 void %(CLASS_NAME)s::%(func_name)s {
   Property* prop = new Property();
@@ -89,8 +89,8 @@ void %(CLASS_NAME)s::%(func_name)s {
   prop->setName("%(prop.name)s");
   prop->setDisplayName("%(prop.display_text)s");
   prop->setDescription("%(prop.description)s");
-  prop->setTpclDisplayFunction("%(FormatTpclCode(prop.tpcl_display))s");
-  prop->setTpclRequirementsFunction("%(FormatTpclCode(prop.tpcl_requires))s");
+  prop->setTpclDisplayFunction("%(FORMATTED_TPCL_DISPLAY)s");
+  prop->setTpclRequirementsFunction("%(FORMATTED_TPCL_REQUIRES)s");
   ds->addProperty(prop);
   return;
 }

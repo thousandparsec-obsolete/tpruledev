@@ -1,7 +1,7 @@
-os
+import os
 from rde import ConfigManager
 from game_objects import Category
-from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary
+from CodegenUtils import InterpolationEvaluationException, ExpressionDictionary, ReplaceInvalidCharacters
 
 def GenerateCode(object_database):
     """\
@@ -74,8 +74,6 @@ class %(CLASS_NAME)s {
         HFILE.flush()
         
         #write to cpp file
-        #regex to handle newline stuffs...we write the TPCL code on one line
-        regex = re.compile('\s*\r?\n\s*')
         CFILE.write("""\
 void %(CLASS_NAME)s::%(func_name)s {
   Category* cat = new Category();

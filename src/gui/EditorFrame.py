@@ -180,18 +180,18 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnDeleteObject, del_object_item)
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
         self.Bind(wx.EVT_MENU, self.OnRenameObject, ren_object_item)
-        gen_code_item = edit_menu.Append(-1, 'Generate Code', 'Generates C++ code for the project')
-        self.Bind(wx.EVT_MENU, self.OnGenCode, gen_code_item)
         menubar.Append(edit_menu, 'Edit')
         
         #create and append the Project menu
         project_menu = wx.Menu()
         validate_item = project_menu.Append(-1, 'Validate Project', 'Checks each object in the project for errors...')
         self.Bind(wx.EVT_MENU, self.OnValidateProject, validate_item)
+        gen_code_item = project_menu.Append(-1, 'Generate Code', 'Generates C++ code for the project')
+        self.Bind(wx.EVT_MENU, self.OnGenCode, gen_code_item)
         menubar.Append(project_menu, 'Project')
         
         #disabled items
-        menubar.Enable(gen_code_item.GetId(), False)
+        #menubar.Enable(gen_code_item.GetId(), False)
         
         return menubar
         
@@ -253,13 +253,14 @@ class Frame(wx.Frame):
                 caption="Errors Present", style = wx.OK)
             return
         else:
-            try:
-                self.object_database.GenerateCode()
-                wx.MessageBox("Code generated successfully.",
+            #try:
+            self.object_database.GenerateCode()
+            wx.MessageBox("Code generated successfully.",
                                   caption = "Code Generation Complete", style=wx.OK)
-            except:
-                wx.MessageBox("Code generation failed! Previous code files likely corrupted in the process.",
-                                  caption = "Code Generation Error!", style=wx.OK)
+            #except Exception, e:
+            #    print "Code Generation Error:", e.message
+            #    wx.MessageBox("Code generation failed! Previous code files likely corrupted in the process.",
+            #                      caption = "Code Generation Error!", style=wx.OK)
         
             
     def OnSaveProject(self, event):
