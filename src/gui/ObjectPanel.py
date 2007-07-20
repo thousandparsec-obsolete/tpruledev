@@ -19,25 +19,20 @@ class Panel(wx.Panel):
         object data and the node is notified of the modification
         """
         def AttributeMonitor(event):
-            print "In AttributeMonitor"
             if not self.loading:
-                print "\tEventType:", event.GetEventType()
                 obj = event.GetEventObject()
                 value = ""
                 edit = False
                 if event.GetEventType() == wx.wxEVT_COMMAND_TEXT_UPDATED:
                     #this is a text field and we have had our text modified
-                    print "\tText field event"
                     value = obj.GetValue()
                     edit = True
                 elif event.GetEventType() == wx.stc.wxEVT_STC_CHANGE:
                     #stc event
-                    print "\tSTC event"
                     value = obj.GetText()
                     edit = True
                 elif event.GetEventType() == wx.wxEVT_COMMAND_CHOICE_SELECTED:
                     #choice box
-                    print "\tChoice event"
                     value = obj.GetStringSelection()
                     edit = True
                 
@@ -45,9 +40,8 @@ class Panel(wx.Panel):
                     attr = getattr(self.object, attribute_name)
                     #todo: probably don't need this check here...but it's good to have anyway
                     if value != attr:
-                        print "\tChange detected and saved"
                         self.node.SetModified(True)
-                        setattr(self.object, attribute_name, value)
+                        setattr(self.object, attribute_name, value.encode('ascii'))
             event.Skip()
         return AttributeMonitor
             
