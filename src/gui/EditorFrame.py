@@ -248,6 +248,10 @@ class Frame(wx.Frame):
             choice = wx.MessageBox("You have unsaved changes!\nYou cannot generate code without saving.",
                 caption="Unsaved Changes", style = wx.OK)
             return
+        elif not self.object_database.ValidateAllObjects():
+            choice = wx.MessageBox("You have errors in your code!\nYou cannot generate code when errors are present!",
+                caption="Errors Present", style = wx.OK)
+            return
         else:
             try:
                 self.object_database.GenerateCode()
