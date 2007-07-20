@@ -39,23 +39,9 @@ def TpclSyntaxIsValid(tpcl_code):
     
     This will be improved in the future.
     """
-    test_code = """(lambda (design) 
-	(if (= (designType._num-components design) 1) 
-		(cons #t \\"\\") 
-		(cons #f \\"This is a complete component, nothing else can be included\\")))"""
-    if tpcl_code == test_code:
-        print "FOUND TEST CODE MATCH!"
-    else:
-	    print "len(tpcl_code) = %d, len(test_code) = %d" % (len(tpcl_code), len(test_code))
-	    if len(tpcl_code) == 160:
-	        print "tpcl_code\ttest_code:"
-	        for i in range(len(test_code)):
-	            print "%d: %s\t%s" % (i, tpcl_code[i], test_code[i])
     try:
         scheme.parse(tpcl_code)
         return True
     except scheme.parser.ParserError, e:
-        print e, e.args
-        print "Invalid Scheme syntax: <%s> [-] <%s>" % (tpcl_code, e.message)
         return False
     
