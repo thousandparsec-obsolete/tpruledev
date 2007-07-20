@@ -21,6 +21,17 @@ class GameObject(object):
         self.name = name
         self.errors = {}
         
+    def CopyConstructor(self, obj):
+        """\
+        Copy constructor. Copies all attributes from the object
+        except those that we depend on in some way, like the
+        node and the name.
+        """
+        for attr, value in obj.__dict__.iteritems():
+            #copy everything except for the node and the name
+            if attr != 'node' and attr != 'name':
+                self.__setattr__(attr, value)
+        
     def OnObjectDeletion(self, object_type, object_name):
         """\
         Removes any associations that the object has with the given
@@ -140,6 +151,9 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         self.object_database = odb
         self.__error = False
         
+    def CopyObject(self, object):
+        self.object = self.object_module.Object(self, self.name, object)
+        
     def SetModified(self, b):
         #If we're changing the modified state then we need
         # to alert the object manager to this change so
@@ -178,6 +192,9 @@ class ObjectNode(rde.Nodes.DatabaseNode):
         """
         Gets the game object object associated with this
         node.
+        
+        If obj is not None then we will copy the object
+        represented by obj into this object.
         """
         if not self.object:
             self.object = self.object_module.Object(self, self.name)

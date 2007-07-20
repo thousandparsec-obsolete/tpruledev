@@ -15,16 +15,19 @@ DEFAULT_TPCL_DISPLAY = '(lambda (design bits) (cons 0 "Default display function"
 DEFAULT_TPCL_REQUIRES = '(lambda (design) (cons #f "Default requires func"))'
     
 class Object(ObjectUtilities.GameObject):
-    def __init__(self, node, name):
+    def __init__(self, node, name, prop = None):
         ObjectUtilities.GameObject.__init__(self, node, name)
         self.type = GetName()
         
-        self.category = ""
-        self.rank = ""
-        self.description = ""
-        self.display_text = ""
-        self.tpcl_display = DEFAULT_TPCL_DISPLAY
-        self.tpcl_requires = DEFAULT_TPCL_REQUIRES
+        if prop:
+            ObjectUtilities.GameObject.CopyConstructor(self, prop)
+        else:
+            self.category = ""
+            self.rank = ""
+            self.description = ""
+            self.display_text = ""
+            self.tpcl_display = DEFAULT_TPCL_DISPLAY
+            self.tpcl_requires = DEFAULT_TPCL_REQUIRES
 
     def __str__(self):
         return "<Property Game Object - %s>" % self.name

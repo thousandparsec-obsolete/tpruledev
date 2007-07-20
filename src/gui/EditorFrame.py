@@ -178,6 +178,8 @@ class Frame(wx.Frame):
         new_object_item = edit_menu.AppendMenu(-1, 'Create New Object', new_obj_menu, 'Add an object to the project')
         del_object_item = edit_menu.Append(-1, 'Delete Object\tCtrl-d', 'Deletes the currently selected object')
         self.Bind(wx.EVT_MENU, self.OnDeleteObject, del_object_item)
+        duplicate_object_item = edit_menu.Append(-1, 'Duplicate Object', 'Duplicates the current object into a new object, copying over the data')
+        self.Bind(wx.EVT_MENU, self.OnDuplicateObject, duplicate_object_item)
         ren_object_item = edit_menu.Append(-1, 'Rename Object', 'Renames the currently object')
         self.Bind(wx.EVT_MENU, self.OnRenameObject, ren_object_item)
         menubar.Append(edit_menu, 'Edit')
@@ -254,13 +256,14 @@ class Frame(wx.Frame):
             return
         else:
             #try:
-            self.object_database.GenerateCode()
-            wx.MessageBox("Code generated successfully.",
+            try:
+                self.object_database.GenerateCode()
+                wx.MessageBox("Code generated successfully.",
                                   caption = "Code Generation Complete", style=wx.OK)
-            #except Exception, e:
-            #    print "Code Generation Error:", e.message
-            #    wx.MessageBox("Code generation failed! Previous code files likely corrupted in the process.",
-            #                      caption = "Code Generation Error!", style=wx.OK)
+            except Exception, e:
+                print "Code Generation Error:", e.message
+                wx.MessageBox("Code generation failed! Previous code files likely corrupted in the process.",
+                                  caption = "Code Generation Error!", style=wx.OK)
         
             
     def OnSaveProject(self, event):
@@ -328,6 +331,28 @@ class Frame(wx.Frame):
                 wx.MessageBox("Your selection was invalid! You must\nselect and object to delete.",
                     caption="Invalid Selection", style=wx.OK)
                     
+        except wx._core.PyAssertionError:
+            #there was no selection
+            wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",
+                caption="Invalid Selection", style=wx.OK)
+                
+    def OnDuplicateObject(self, event):
+        """\
+        Duplicates the currently selected object.
+        """
+        if not self.project_active:
+            wx.MessageBox("You must have an open porject to delete an object!",
+                    caption="Invalid State", style=wx.OK)
+            return
+        try:
+            node = self.tree.GetPyData(self.tree.GetSelection())
+            #get the new name
+            new_obj_name = wx.GetTextFromUser("Enter the new object's name:", 'Input Object Name')
+            if new_obj_name == '':
+                #cancel
+                pass
+            else:
+                self.object_database.DuplicateObject(node, new_obj_name.encode('ascii'))
         except wx._core.PyAssertionError:
             #there was no selection
             wx.MessageBox("Your selection was invalid!\nYou must select an object to delete.",

@@ -15,14 +15,17 @@ DEFAULT_TPCL_REQUIREMENTS = '(lambda (design) (cons #f "Default req func"))'
     
 class Object(ObjectUtilities.GameObject):        
 
-    def __init__(self, node, name):                 
+    def __init__(self, node, name, comp=None):                 
         ObjectUtilities.GameObject.__init__(self, node, name)
         self.type = GetName()
         
-        self.properties = {}
-        self.category = ""
-        self.description = ""
-        self.tpcl_requirements = DEFAULT_TPCL_REQUIREMENTS
+        if comp:
+            ObjectUtilities.GameObject.CopyConstructor(self, comp)
+        else:
+            self.properties = {}
+            self.category = ""
+            self.description = ""
+            self.tpcl_requirements = DEFAULT_TPCL_REQUIREMENTS
 
     def __str__(self):
         return "Component Game Object - " + self.name

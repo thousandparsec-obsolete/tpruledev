@@ -98,6 +98,14 @@ class ObjectDatabase(object):
                     print "\tSaving %s - %s" % (type, node.name)
                     node.SaveObject()
                     
+    def DuplicateObject(self, node, new_obj_name):
+        """\
+        Copies the data from the object given by the node into
+        a new object with name new_obj_name)
+        """
+        self.Add(node.object_module.GetName(), new_obj_name, obj=node.GetObject())
+        node.ClearObject()
+                    
     def ValidateAllObjects(self):
         """\
         Loops through all objects and checks it for errors.
@@ -143,11 +151,12 @@ class ObjectDatabase(object):
             print "Generating code for objects of type: %s" % type
             generator.GenerateCode(self)       
 
-    def Add(self, obj_type, name, node=None):
+    def Add(self, obj_type, name, node=None, obj=None):
         """\
         Adds an object to the database. Will create a new
         node if node is None, or will use the provided node
-        otherwise.
+        otherwise. If obj is not None then we will copy
+        the data from obj into the node's object.
         """
         print "Adding object %s, node: %s" % (name, node)
         #check for duplicate object
@@ -159,6 +168,8 @@ class ObjectDatabase(object):
         idx = bisect.bisect(self.objects[obj_type], name)
         if not node:
             node = game_objects.ObjectUtilities.ObjectNode(self, name, self.object_modules[obj_type])
+        if obj:
+            node.CopyObject(obj)
         self.objects[obj_type].insert(idx, node)
         
         #let our listeners know we added a new object and let them
