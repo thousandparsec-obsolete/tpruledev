@@ -3,6 +3,7 @@ ConfigManager for the RDE.
 """
 
 from ConfigParser import ConfigParser
+import os
 
 NUM_STORED_PROJECTS = 5
 
@@ -23,6 +24,10 @@ def LoadRDEConfig(file_location):
     #restore the project history
     if config.has_option('Global', 'project_history'):
         project_history = eval(config.get('Global', 'project_history'))
+    #check to make sure that every project listed is actually valid
+    for name, project_file in project_history:
+        if not os.path.exists(project_file):
+            project_history.remove((name, project_file))
     
 def LoadProjectConfig(file_location):
     """\
