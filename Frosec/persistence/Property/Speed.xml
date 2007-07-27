@@ -1,0 +1,14 @@
+<property
+   description="How fast a ship moves. "
+   display_text="Speed"
+   name="Speed"
+   rank="0"
+   version="1.1">
+   <tpcl_display>(lambda (design bits)
+	(let ((n (apply + bits)))
+		(cons n (string-append (number-&gt;string (/ n 1000000)) " mega-units")) ) )   </tpcl_display>
+   <tpcl_requires>(lambda (design) (cons #t ""))   </tpcl_requires>
+   <!-- categories -->
+   <category
+      name="Ships" />
+</property>

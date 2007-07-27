@@ -1,0 +1,14 @@
+<property
+   description="The number of turns to build a ship"
+   display_text="Build Time"
+   name="BuildTime"
+   rank="0"
+   version="1.1">
+   <tpcl_display>(lambda (design bits)
+	(let ((n (apply + bits)))
+		(cons n (string-append (number-&gt;string n) " turns")) ) )   </tpcl_display>
+   <tpcl_requires>(lambda (design) (cons #t ""))   </tpcl_requires>
+   <!-- categories -->
+   <category
+      name="Ships" />
+</property>
