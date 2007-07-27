@@ -160,9 +160,6 @@ class GameObjectTree(wx.TreeCtrl):
         il = wx.ImageList(6, 6)
         self.noimg_idx = il.Add(wx.BitmapFromImage(wx.Image('images/noimg.png', wx.BITMAP_TYPE_ANY)))
         self.modimg_idx = il.Add(wx.BitmapFromImage(wx.Image('images/modified.png', wx.BITMAP_TYPE_ANY)))
-        print "Tree ImageList Indexes:"
-        print "\tnoimg: ", self.noimg_idx
-        print "\tmodimg: ", self.modimg_idx
         self.AssignImageList(il)
     
     #the following methods allow the tree to have its objects

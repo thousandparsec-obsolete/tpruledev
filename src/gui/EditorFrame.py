@@ -14,6 +14,8 @@ from gui import GameObjectTree, EditPanel
 import game_objects.ObjectUtilities
 from rde.Exceptions import *
 
+import traceback
+
 SPLITTER_ID = 101
 
 def GenCreateNewObjHandler(type, frame):
@@ -49,6 +51,7 @@ class Frame(wx.Frame):
     def __init__(self, parent, id, title, pos=wx.DefaultPosition,
                  size=wx.DefaultSize):
         wx.Frame.__init__(self, parent, id, title, pos, size)
+        self.right_clicking = False
             
         #import configuration settings, will build on this as is necessary
         ConfigManager.LoadRDEConfig('tpconf')
@@ -72,6 +75,9 @@ class Frame(wx.Frame):
         stretcher = wx.BoxSizer(wx.VERTICAL)
         stretcher.Add(self.content_sizer, 1, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER, 0)
         self.content_panel.SetSizer(stretcher)
+        
+        self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightMouseDown)
+        self.Bind(wx.EVT_RIGHT_UP, self.OnRightMouseUp)
 
         #create handy interface elements
         self.CreateStatusBar()
@@ -125,8 +131,12 @@ class Frame(wx.Frame):
         
         self.tree = GameObjectTree.GameObjectTree(self.splitter, wx.ID_ANY)
         self.tree.SetObjectDatabase(self.object_database)
-        self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
-        self.tree.Bind(wx.EVT_TREE_SEL_CHANGING, self.OnTreeSelecting)
+        self.tree.Bind(wx.EVT_RIGHT_DOWN, self.OnRightMouseDown)
+        self.tree.Bind(wx.EVT_RIGHT_UP, self.OnRightMouseUp)
+        self.tree.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.OnTreeRightClick)
+        self.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
+        self.Bind(wx.EVT_TREE_SEL_CHANGING, self.OnTreeSelecting)
+        
         
         self.splitter.SetMinimumPaneSize(140)
         self.splitter.SplitVertically(self.tree,
@@ -370,16 +380,56 @@ class Frame(wx.Frame):
                 caption="Project Invalid", style=wx.OK)
         self.edit_panel.ReloadPanel()
     
+    def OnRightMouseDown(self, event):
+        print "Marking right mouse down as true"
+        self.right_clicking = True
+        event.Skip()
+        
+    def OnRightMouseUp(self, event):
+        print "Marking right mouse down as false"
+        self.right_clicking = False
+        event.Skip()
+    
+    def OnTreeRightClick(self, event):
+        """\
+        Respond to a right click by the user
+        We want to generate and display a popup context menu if
+        the user clicked on a game object in the game object tree.
+        """
+        print "Handling tree right click."
+        event.Skip()
+    
     def OnTreeSelecting(self, event):
         """\
         Called when the selection on the tree is changing. We only
         want to allow game objects to be selected.
         """
-        pydata = self.tree.GetPyData(event.GetItem())
-        if pydata == None or not isinstance(pydata, game_objects.ObjectUtilities.ObjectNode):
+        #print "*********************************************************"
+        #print "OnTreeSelecting: Where the hell are we being called from?"
+        #print "Stack:"
+        #traceback.print_stack(limit=15, file=sys.stdout)
+        #print "*********************************************************"
+        print "Handling Tree Selection change"
+        itemid = event.GetItem()
+        if self.right_clicking:
+            print "Vetoing selection change because we're right clicking"
             event.Veto()
+        elif itemid.IsOk():
+            pydata = self.tree.GetPyData(event.GetItem())
+            if pydata == None:
+                print "Vetoing selection change because there is no pydata"
+                event.Veto()
+            elif not isinstance(pydata, game_objects.ObjectUtilities.ObjectNode):
+                print "Vetoing selection change because the selection is not a game object"
+                print "Tried to select:", self.tree.GetItemText(itemid)
+                event.Veto()
+        else:
+            print "Vetoing selection change because item id is not ok"
+            event.Veto()
+        event.Skip()
     
     def OnTreeSelect(self, event):
+        print "OnTreeSelect"
         try:
             if event.GetItem().IsOk():
                 self.edit_panel.node = self.tree.GetPyData(event.GetItem())                
