@@ -271,7 +271,7 @@ class Frame(wx.Frame):
                 wx.MessageBox("Code generated successfully.",
                                   caption = "Code Generation Complete", style=wx.OK)
             except Exception, e:
-                print "Code Generation Error:", e.message
+                print "Code Generation Error:", e.args
                 wx.MessageBox("Code generation failed! Previous code files likely corrupted in the process.",
                                   caption = "Code Generation Error!", style=wx.OK)
         

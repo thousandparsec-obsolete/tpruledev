@@ -81,11 +81,14 @@ void %(CLASS_NAME)s::%(func_name)s {
   DesignStore *ds = Game::getGame()->getDesignStore();
   Component* comp = new Component();
 
-  comp->setCategoryId(ds->getCategoryByName("%(comp.category)s"));
   comp->setName("%(comp.name)s");
   comp->setDescription("%(comp.description)s");
   comp->setTpclRequirementsFunction("%(FORMATTED_TPCL_REQUIREMENTS)s");
 """ % ExpressionDictionary(vars()))
+
+        #now the categories
+        for catname in comp.categories:
+            CFILE.write('  comp->addCategoryId(ds->getCategoryByName("%s"));\n' % catname)
 
         #now the properties...
         for propname, cost_func in comp.properties.iteritems():

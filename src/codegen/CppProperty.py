@@ -84,18 +84,23 @@ void %(CLASS_NAME)s::%(func_name)s {
   Property* prop = new Property();
   DesignStore *ds = Game::getGame()->getDesignStore();
 
-  prop->setCategoryId(ds->getCategoryByName("%(prop.category)s"));
   prop->setRank(%(prop.rank)s);
   prop->setName("%(prop.name)s");
   prop->setDisplayName("%(prop.display_text)s");
   prop->setDescription("%(prop.description)s");
   prop->setTpclDisplayFunction("%(FORMATTED_TPCL_DISPLAY)s");
-  prop->setTpclRequirementsFunction("%(FORMATTED_TPCL_REQUIRES)s");
+  prop->setTpclRequirementsFunction("%(FORMATTED_TPCL_REQUIRES)s");""" % ExpressionDictionary(vars()))
+  
+        #now the categories
+        for catname in prop.categories:
+            CFILE.write('  prop->addCategoryId(ds->getCategoryByName("%s"));\n' % catname)            
+            
+        CFILE.write("""\
   ds->addProperty(prop);
   return;
 }
 
-""" % ExpressionDictionary(vars()))
+""")
         CFILE.flush()
         prop_node.ClearObject()
     
