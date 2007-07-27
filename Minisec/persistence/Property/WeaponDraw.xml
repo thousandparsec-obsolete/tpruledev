@@ -1,12 +1,14 @@
 <property
-   category="Ships"
    description="The number of HP to do to the fired at ship when RSP draws"
    display_text="Weapon Strength at Draw"
    name="WeaponDraw"
    rank="0"
-   version="1.0">
+   version="1.1">
    <tpcl_display>(lambda (design bits)
 	(let ((n (apply + bits)))
 		(cons n (string-append (number-&gt;string n) " HP")) ) )   </tpcl_display>
    <tpcl_requires>(lambda (design) (cons #t ""))   </tpcl_requires>
+   <!-- categories -->
+   <category
+      name="Ships" />
 </property>

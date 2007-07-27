@@ -37,7 +37,7 @@ class Panel(ObjectPanel.Panel):
         self.disp_field.Bind(wx.EVT_TEXT, self.CreateAttributeMonitor('display_text'))
         self.tpcl_disp_stc.Bind(wx.stc.EVT_STC_CHANGE, self.CreateAttributeMonitor('tpcl_display'))
         self.tpcl_req_stc.Bind(wx.stc.EVT_STC_CHANGE, self.CreateAttributeMonitor('tpcl_requires'))
-        self.cat_choice.Bind(wx.EVT_CHOICE, self.CreateAttributeMonitor('category'))
+        self.cat_choice.Bind(wx.EVT_CHECKLISTBOX, self.CreateAttributeMonitor('categories'))
         
         self.loaded = False
         
@@ -76,16 +76,13 @@ class Panel(ObjectPanel.Panel):
         
         #fill the category choice box
         self.cat_choice.Clear()
-        self.cat_choice.Append("")
-        catidx = 0
         for catnode in self.node.object_database.getObjectsOfType('Category'):
             idx = self.cat_choice.Append(catnode.name)                
-            if self.object.category == catnode.name:
-                catidx = idx
-        self.cat_choice.Select(catidx)
-        if self.object.errors.has_key('category'):
-            print "Error in category!"
-            self.SetErrorLabel('category', self.object.errors['category'])
+            if catnode.name in self.object.categories:
+                self.cat_choice.Check(idx)
+        if self.object.errors.has_key('categories'):
+            print "Error in categories!"
+            self.SetErrorLabel('categories', self.object.errors['categories'])
         
         self.loaded = True
         

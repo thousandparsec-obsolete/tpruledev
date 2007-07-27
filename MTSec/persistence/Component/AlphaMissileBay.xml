@@ -1,15 +1,17 @@
 <component
-   category=""
    description="Missle bays designed by Mr. Alpha Omega."
    name="AlphaMissileBay"
-   version="1.0">
+   version="1.1">
    <tpcl_requirements>(lambda (design)
    (if (= (designType.num-ammo design) 1)
       (if (&lt; (designType.AmmoSize design) 4)
          (cons #t "")
          (cons #f "Explosive is too large for alpha missiles"))
       (cons #f "Missiles can only handle one type of explosive")))   </tpcl_requirements>
-   <!-- properties -->
+   <!-- categories -->
+   <category
+      name="" />
+   <!-- propertylist -->
    <property
       name="MissileCost">
       <tpcl_cost>(lambda (design)

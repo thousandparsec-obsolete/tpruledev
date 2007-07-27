@@ -1,4 +1,29 @@
-<component category="" description="null" name="ScoutHull" version="1.0"><tpcl_requirements>(lambda (design)
+<component
+   description="null"
+   name="ScoutHull"
+   version="1.1">
+   <tpcl_requirements>(lambda (design)
    (if (= (designType._num-components design) 1)
       (cons #t "")
-      (cons #f "This is a complete component, nothing else can be included")))</tpcl_requirements><!-- propertylist --><property name="Speed"><tpcl_cost>(lambda (design) (* 100 1000000))</tpcl_cost></property><property name="BuildTime"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Colonise"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="Armor"><tpcl_cost>(lambda (design) 2)</tpcl_cost></property></component>
+      (cons #f "This is a complete component, nothing else can be included")))   </tpcl_requirements>
+   <!-- categories -->
+   <category
+      name="" />
+   <!-- propertylist -->
+   <property
+      name="Speed">
+      <tpcl_cost>(lambda (design) (* 100 1000000))      </tpcl_cost>
+   </property>
+   <property
+      name="BuildTime">
+      <tpcl_cost>(lambda (design) 1)      </tpcl_cost>
+   </property>
+   <property
+      name="Colonise">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+   <property
+      name="Armor">
+      <tpcl_cost>(lambda (design) 2)      </tpcl_cost>
+   </property>
+</component>

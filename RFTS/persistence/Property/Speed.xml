@@ -1,12 +1,14 @@
 <property
-   category="Ships"
    description="The number of units the ship can move each turn"
    display_text="Speed"
    name="Speed"
    rank="0"
-   version="1.0">
+   version="1.1">
    <tpcl_display>(lambda (design bits)
 	(let ((n (apply + bits)))
 		(cons n (string-append (number-&gt;string (/ n 1000)) " speedy units")) ) )   </tpcl_display>
    <tpcl_requires>(lambda (design) (cons #t ""))   </tpcl_requires>
+   <!-- categories -->
+   <category
+      name="Ships" />
 </property>

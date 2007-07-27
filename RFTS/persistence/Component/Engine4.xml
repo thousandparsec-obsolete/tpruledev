@@ -1,13 +1,15 @@
 <component
-   category="Ships"
    description="A ship engine, required if you want your ship to move!"
    name="Engine4"
-   version="1.0">
+   version="1.1">
    <tpcl_requirements>(lambda (design)
 	(if (= (designType._num-components design) 1)
 		(cons #t "")
 		(cons #f "This is a complete component, nothing else can be included")))   </tpcl_requirements>
-   <!-- properties -->
+   <!-- categories -->
+   <category
+      name="Ships" />
+   <!-- propertylist -->
    <property
       name="Speed">
       <tpcl_cost>(lambda (design) 300)      </tpcl_cost>

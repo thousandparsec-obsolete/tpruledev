@@ -22,8 +22,8 @@ Handle deletions of existing objects better...if we delete a Property we're goin
 
 ----------------------------------------------------
 
-On renaming:
-NEED TO CLEAR RENAMED FLAG AND OLD NAME WHEN SAVING AN OBJECT!
+On TreeCtrl context menu:
+Screw it. The EVT_TREE_SELECTION_CHANGING event occurs before any mouse events! What the bloody hell? We can't veto selections when we're right clicking that I can see. How utterly asinine. (Two days spent trying to work around this, so I'm a little bitter. I'll be posting to the wxpython mailing list, I suppose, but now on to bigger and better things)
 
 On loading objects:
 Need to have consistent representation of numerical values, are they strings or numbers? Meh.

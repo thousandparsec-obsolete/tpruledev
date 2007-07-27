@@ -1,4 +1,15 @@
-<prop category="" description="The relative size of a missile" display_text="MissileSize" name="MissileSize" rank="1" version="1.0"><tpcl_display>(lambda (design bits)
+<property
+   description="The relative size of a missile"
+   display_text="MissileSize"
+   name="MissileSize"
+   rank="1"
+   version="1.1">
+   <tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (number-&gt;string n))))</tpcl_display><tpcl_requires>(lambda (design)
-   (cons #t ""))</tpcl_requires></prop>
+      (cons n (number-&gt;string n))))   </tpcl_display>
+   <tpcl_requires>(lambda (design)
+   (cons #t ""))   </tpcl_requires>
+   <!-- categories -->
+   <category
+      name="" />
+</property>

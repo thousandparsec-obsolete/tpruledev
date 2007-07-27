@@ -17,13 +17,16 @@ def GenerateCode(prop, save_location):
                      "description": prop.description,
                      "rank": prop.rank,
                      "display_text": prop.display_text,
-                     "category": prop.category,
                      "version": XmlUtils.VERSION})
     #add the tpcl_requirements tag and its text
     tpcl_display_elem = SubElement(root, "tpcl_display")
     tpcl_display_elem.text = prop.tpcl_display
     tpcl_requires_elem = SubElement(root, "tpcl_requires")
     tpcl_requires_elem.text = prop.tpcl_requires
+    #add the categories
+    root.append(Comment("categories"))
+    for cat in prop.categories:
+        cat_elem = SubElement(root, "category", {'name': cat})
     et = ElementTree(root)
     et.write(save_location, indent=True)
     
@@ -33,11 +36,14 @@ def ParseCode(prop, save_location):
     """
     et = ElementTree(file=save_location)
     root = et.getroot()
+    XmlUtils.VerifyVersion(root)
     try:
         prop.description = root.get("description")
         prop.display_text = root.get("display_text")
         prop.rank = root.get("rank")
-        prop.category = root.get("category")
+        prop.categories = []
+        for cat in root.findall("category"):
+            prop.categories.append(cat.get("name"))
         prop.tpcl_display = root.findtext("tpcl_display",
                                     Property.DEFAULT_TPCL_DISPLAY).strip()
         prop.tpcl_requires = root.findtext("tpcl_requires",

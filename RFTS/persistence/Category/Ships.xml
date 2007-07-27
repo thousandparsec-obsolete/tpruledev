@@ -1,1 +1,4 @@
-<category description="The ship design &amp; component category" name="Ships" />
+<category
+   description="The ship design &amp; component category"
+   name="Ships"
+   version="1.1" />

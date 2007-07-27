@@ -39,10 +39,13 @@ class Object(ObjectUtilities.GameObject):
             self.node.SetModified(True)
             
     def OnObjectRename(self, object_type, object_name, new_name):
-        if object_type == game_objects.Category.GetName() and \
-                self.category == object_name:
-            self.category = new_name
-            self.node.SetModified(True)
+        if object_type == game_objects.Category.GetName():
+            try:
+                self.categories.remove(object_name)
+                self.node.SetModified(True)
+            except:
+                #we weren't in that category, no biggie
+                pass
             
     def CheckForErrors(self):
         self.errors = {}
@@ -50,8 +53,8 @@ class Object(ObjectUtilities.GameObject):
         if self.description == "":
             self.errors['description'] = "Description needs to be non-null!"
             err = True
-        if self.category == "":
-            self.errors['category'] = "A category must be selected"
+        if self.categories == []:
+            self.errors['categories'] = "A category must be selected"
             err = True
         #todo: check for positive integer rank!
         if self.rank == "":

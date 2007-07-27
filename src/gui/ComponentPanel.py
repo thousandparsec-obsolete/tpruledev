@@ -43,7 +43,7 @@ class Panel(ObjectPanel.Panel):
         self.tpcl_cost_stc.Bind(wx.stc.EVT_STC_CHANGE, self.OnCostEdit)
         self.filling_tpcl_cost = False
         self.Bind(wx.EVT_LISTBOX, self.OnPropListSelect, self.prop_list)
-        self.cat_choice.Bind(wx.EVT_CHOICE, self.CreateAttributeMonitor('category'))
+        self.cat_choice.Bind(wx.EVT_CHECKLISTBOX, self.CreateAttributeMonitor('categories'))
 
         #self.BindEditWatchers([self.desc_field, self.tpcl_req_stc])
         self.loaded = False
@@ -79,16 +79,13 @@ class Panel(ObjectPanel.Panel):
         
         #fill the category choice box        
         self.cat_choice.Clear()
-        self.cat_choice.Append("")
-        catidx = 0
         for catnode in self.node.object_database.getObjectsOfType('Category'):
             idx = self.cat_choice.Append(catnode.name)                
-            if self.object.category == catnode.name:
-                catidx = idx
-        self.cat_choice.Select(catidx)
-        if self.object.errors.has_key('category'):
-            print "Error in category!"
-            self.SetErrorLabel('category', self.object.errors['category'])
+            if catnode.name in self.object.categories:
+                self.cat_choice.Check(idx)
+        if self.object.errors.has_key('categories'):
+            print "Error in categories!"
+            self.SetErrorLabel('categories', self.object.errors['categories'])
         
         #create the property list        
         self.prop_sel = -1

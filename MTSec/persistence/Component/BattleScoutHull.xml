@@ -1,7 +1,48 @@
-<component category="" description="null" name="BattleScoutHull" version="1.0"><tpcl_requirements>(lambda (design)
+<component
+   description="null"
+   name="BattleScoutHull"
+   version="1.1">
+   <tpcl_requirements>(lambda (design)
   (if (= (designType.num-hulls design) 1)
      (if (&lt; (designType.num-baytypes design) 2)
         (cons #t "")
         (cons #f "A ship can only have one type of missile bay"))
-     (cons #f "A ship can only use one hull!")))</tpcl_requirements><!-- propertylist --><property name="Armor"><tpcl_cost>(lambda (design) 5)</tpcl_cost></property><property name="BuildTime"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Colonise"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="HitPoints"><tpcl_cost>(lambda (design) 100)</tpcl_cost></property><property name="num-ammo"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="num-hulls"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Speed"><tpcl_cost>(lambda (design) (* 75 1000000))</tpcl_cost></property><property name="Firepower"><tpcl_cost>(lambda (design)
-   (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design)));</tpcl_cost></property></component>
+     (cons #f "A ship can only use one hull!")))   </tpcl_requirements>
+   <!-- categories -->
+   <category
+      name="" />
+   <!-- propertylist -->
+   <property
+      name="Armor">
+      <tpcl_cost>(lambda (design) 5)      </tpcl_cost>
+   </property>
+   <property
+      name="BuildTime">
+      <tpcl_cost>(lambda (design) 1)      </tpcl_cost>
+   </property>
+   <property
+      name="Colonise">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+   <property
+      name="HitPoints">
+      <tpcl_cost>(lambda (design) 100)      </tpcl_cost>
+   </property>
+   <property
+      name="num-ammo">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+   <property
+      name="num-hulls">
+      <tpcl_cost>(lambda (design) 1)      </tpcl_cost>
+   </property>
+   <property
+      name="Speed">
+      <tpcl_cost>(lambda (design) (* 75 1000000))      </tpcl_cost>
+   </property>
+   <property
+      name="Firepower">
+      <tpcl_cost>(lambda (design)
+   (* (floor (/ 88 (designType.MissileSize design))) (designType.MissileFirepower design)));      </tpcl_cost>
+   </property>
+</component>

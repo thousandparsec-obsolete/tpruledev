@@ -23,7 +23,7 @@ class Object(ObjectUtilities.GameObject):
             ObjectUtilities.GameObject.CopyConstructor(self, comp)
         else:
             self.properties = {}
-            self.category = ""
+            self.categories = []
             self.description = ""
             self.tpcl_requirements = DEFAULT_TPCL_REQUIREMENTS
 
@@ -52,9 +52,12 @@ class Object(ObjectUtilities.GameObject):
                 #we weren't associated with that property, that's fine
                 pass
         elif object_type == game_objects.Category.GetName():
-            if self.category == object_name:
-                self.category = new_name
+            try:
+                self.categories.remove(object_name)
                 self.node.SetModified(True)
+            except:
+                #we weren't in that category, no biggie
+                pass
                 
     def CheckForErrors(self):
         self.errors = {}
@@ -62,8 +65,8 @@ class Object(ObjectUtilities.GameObject):
         if self.description == "":
             self.errors['description'] = "Description needs to be non-null!"
             err = True
-        if self.category == "":
-            self.errors['category'] = "A category must be selected"
+        if self.categories == []:
+            self.errors['categories'] = "A category must be selected"
             err = True
         
         #check the tpcl requirements function

@@ -1,4 +1,15 @@
-<prop category="" description="The number of hulls in the design" display_text="Number of hulls" name="num-hulls" rank="0" version="1.0"><tpcl_display>(lambda (design bits)
+<property
+   description="The number of hulls in the design"
+   display_text="Number of hulls"
+   name="num-hulls"
+   rank="0"
+   version="1.1">
+   <tpcl_display>(lambda (design bits)
    (let ((n (apply + bits)))
-      (cons n (string-append (number-&gt;string n) " hull"))))</tpcl_display><tpcl_requires>(lambda (design)
-   (cons #t ""))</tpcl_requires></prop>
+      (cons n (string-append (number-&gt;string n) " hull"))))   </tpcl_display>
+   <tpcl_requires>(lambda (design)
+   (cons #t ""))   </tpcl_requires>
+   <!-- categories -->
+   <category
+      name="" />
+</property>

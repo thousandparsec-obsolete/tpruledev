@@ -25,15 +25,22 @@ class Panel(wx.Panel):
                 edit = False
                 if event.GetEventType() == wx.wxEVT_COMMAND_TEXT_UPDATED:
                     #this is a text field and we have had our text modified
-                    value = obj.GetValue()
+                    value = obj.GetValue().encode('ascii')
                     edit = True
                 elif event.GetEventType() == wx.stc.wxEVT_STC_CHANGE:
                     #stc event
-                    value = obj.GetText()
+                    value = obj.GetText().encode('ascii')
                     edit = True
                 elif event.GetEventType() == wx.wxEVT_COMMAND_CHOICE_SELECTED:
                     #choice box
-                    value = obj.GetStringSelection()
+                    value = obj.GetStringSelection().encode('ascii')
+                    edit = True
+                elif event.GetEventType() == wx.wxEVT_COMMAND_CHECKLISTBOX_TOGGLED:
+                    #checklistbox
+                    value = []
+                    for i in range(obj.GetCount()):
+                        if obj.IsChecked(i):
+                            value.append(obj.GetString(i).encode('ascii'))
                     edit = True
                 
                 if edit:
@@ -41,7 +48,7 @@ class Panel(wx.Panel):
                     #todo: probably don't need this check here...but it's good to have anyway
                     if value != attr:
                         self.node.SetModified(True)
-                        setattr(self.object, attribute_name, value.encode('ascii'))
+                        setattr(self.object, attribute_name, value)
             event.Skip()
         return AttributeMonitor
             

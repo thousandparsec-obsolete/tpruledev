@@ -34,3 +34,9 @@ class MalformedXmlError(Exception):
     Used to indicate that an XML file that we're trying to read is invalid -
     i.e. missing tags.
     """
+    
+class XmlVersionError(Exception):
+    """\
+    Used to indicate that an XML file that we're trying to read is invalid -
+    i.e. missing tags.
+    """

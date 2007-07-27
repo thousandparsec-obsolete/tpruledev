@@ -14,7 +14,8 @@ def GenerateCode(prop, save_location):
     #make base tag and supply attributes as necessary
     root = Element(Category.GetName().lower(),
                     {"name": prop.name,
-                     "description": prop.description})
+                     "description": prop.description,
+                     "version": XmlUtils.VERSION})
     et = ElementTree(root)
     et.write(save_location, indent=True)
     
@@ -24,6 +25,7 @@ def ParseCode(cat, save_location):
     """
     et = ElementTree(file=save_location)
     root = et.getroot()
+    XmlUtils.VerifyVersion(root)
     try:
         cat.description = root.get("description")
     except KeyError:

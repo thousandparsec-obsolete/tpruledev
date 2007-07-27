@@ -1,4 +1,49 @@
-<component category="" description="null" name="AntiparticleExplosives" version="1.0"><tpcl_requirements>(lambda (design)
+<component
+   description="null"
+   name="AntiparticleExplosives"
+   version="1.1">
+   <tpcl_requirements>(lambda (design)
    (if (= (designType.num-ammo design) 1)
       (cons #t "")
-      (cons #f "This is a complete component, nothing else can be included")))</tpcl_requirements><!-- propertylist --><property name="Armor"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="BuildTime"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Colonise"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="num-ammo"><tpcl_cost>(lambda (design) 1)</tpcl_cost></property><property name="Speed"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property><property name="AmmoExplosiveness"><tpcl_cost>(lambda (design) 16)</tpcl_cost></property><property name="AmmoCost"><tpcl_cost>(lambda (design) 64)</tpcl_cost></property><property name="AmmoSize"><tpcl_cost>(lambda (design) 0.8)</tpcl_cost></property><property name="StartingHitPoints"><tpcl_cost>(lambda (design) 0)</tpcl_cost></property></component>
+      (cons #f "This is a complete component, nothing else can be included")))   </tpcl_requirements>
+   <!-- categories -->
+   <category
+      name="" />
+   <!-- propertylist -->
+   <property
+      name="Armor">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+   <property
+      name="BuildTime">
+      <tpcl_cost>(lambda (design) 1)      </tpcl_cost>
+   </property>
+   <property
+      name="Colonise">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+   <property
+      name="num-ammo">
+      <tpcl_cost>(lambda (design) 1)      </tpcl_cost>
+   </property>
+   <property
+      name="Speed">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+   <property
+      name="AmmoExplosiveness">
+      <tpcl_cost>(lambda (design) 16)      </tpcl_cost>
+   </property>
+   <property
+      name="AmmoCost">
+      <tpcl_cost>(lambda (design) 64)      </tpcl_cost>
+   </property>
+   <property
+      name="AmmoSize">
+      <tpcl_cost>(lambda (design) 0.8)      </tpcl_cost>
+   </property>
+   <property
+      name="StartingHitPoints">
+      <tpcl_cost>(lambda (design) 0)      </tpcl_cost>
+   </property>
+</component>
