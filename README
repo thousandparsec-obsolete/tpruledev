@@ -29,6 +29,9 @@ Noteworthy files and directories:
 	tpruledev/src/RDE.py 
 		- The application runner, when executed on its own will start
 		  the RDE 
+	tpruledev/src/TpclEditor.py 
+		- The TPCL Expression Editor stand-alone runner. Opens a TPCL Editor dialog
+		  window. Most useful for testing and debugging purposes.
 	tpruledev/src/WrapRDE.py 
 		- A script to wrap the RDE in PyCrust for quickly testing
 		  features and exploring the structure
