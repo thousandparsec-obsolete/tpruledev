@@ -35,6 +35,8 @@ keyword.kwlist = ["and", "begin", "call-with-current-continuation", "call-with-i
                   "substring", "symbol->string", "symbol?", "#t", "tan", "transcript-off", "transcript-on", "truncate", "values",
                   "vector", "vector->list", "vector-fill!", "vector-length", "vector-ref", "vector-set!", "with-input-from-file",
                   "with-output-to-file", "write", "write-char", "zero?"]
+                  
+keyword.expr_list = ['*EXPR*', '*TEST*', '*FUNC*', '*SYMBOL*', '*VAL*']
 
 
 if wx.Platform == '__WXMSW__':
@@ -100,6 +102,7 @@ class SchemeSTC(stc.StyledTextCtrl):
     
         self.SetLexer(stc.STC_LEX_LISP)
         self.SetKeyWords(0, " ".join(keyword.kwlist))
+        self.SetKeyWords(1, " ".join(keyword.expr_list))
 
         self.SetProperty("fold", "1")
         self.SetMargins(0,0)
@@ -110,8 +113,8 @@ class SchemeSTC(stc.StyledTextCtrl):
         #self.SetEOLMode(stc.STC_EOL_CRLF)
         #self.SetUseAntiAliasing(True)
         
-        self.SetEdgeMode(stc.STC_EDGE_BACKGROUND)
-        self.SetEdgeColumn(78)
+        #self.SetEdgeMode(stc.STC_EDGE_BACKGROUND)
+        #self.SetEdgeColumn(78)
 
         # Setup a margin to hold fold markers
         #self.SetFoldFlags(16)  ###  WHAT IS THIS VALUE?  WHAT ARE THE OTHER FLAGS?  DOES IT MATTER?
@@ -159,8 +162,10 @@ class SchemeSTC(stc.StyledTextCtrl):
         self.StyleSetSpec(stc.STC_LISP_STRING, "fore:#7F007F,face:%(helv)s,size:%(size)d" % faces)
         # Keyword
         self.StyleSetSpec(stc.STC_LISP_KEYWORD, "fore:#00007F,bold,size:%(size)d" % faces)
-        # KeywordKW?
-        self.StyleSetSpec(stc.STC_LISP_KEYWORD_KW, "fore:#00007F,bold,size:%(size)d" % faces)
+        # KeywordKW - The user defined keywords in keywordSet 1
+        # we're going to use these to highlight the TPCL editor keywords such as
+        # *EXPR*, *SYMBOL* and whatever else we need
+        self.StyleSetSpec(stc.STC_LISP_KEYWORD_KW, "fore:#FF0000,bold,size:%(size)d" % faces)
 
         # Special...
         self.StyleSetSpec(stc.STC_LISP_SPECIAL, "fore:#0000FF,bold,underline,size:%(size)d" % faces)
