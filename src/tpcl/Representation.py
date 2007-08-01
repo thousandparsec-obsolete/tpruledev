@@ -260,10 +260,10 @@ class TpclExpression(object):
         Inserts an expression at the given offset
         """
         if self.IsExpression(offset):
+            self.data[self.GetIndexOfElemAt(offset)] = expression
             self.offsets_ok = False
             self.length_ok = False
             self.string_ok = False
-            self.data[self.GetIndexOfElemAt(offset)] = expression
         else:
             raise ValueError('There is no expression at offset %d' % offset)
         
@@ -272,9 +272,10 @@ class TpclExpression(object):
         Removes the expression at the given offset
         """
         if self.IsExpression(offset):
+            index = self.GetIndexOfElemAt(offset)
+            self.data[index] = "*%s*" % self.template.GetElementValue(index)
             self.offsets_ok = False
             self.length_ok = False
             self.string_ok = False
-            self.data[self.GetIndexOfElemAt(offset)] = "*%s*" % self.template.GetElementValue(offset)
         else:
             raise ValueError('There is no expression at offset %d' % offset)
