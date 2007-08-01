@@ -111,9 +111,10 @@ class TpclExpression(object):
     An actual TPCL Expression composed of text and other expressions
     """
     
-    def __init__(self, block, offset=0):
+    def __init__(self, block, parent=None, offset=0):
         self.block = block
         self.template = block.template
+        self.parent = parent
         self._offset = offset
         
         #initialize our data
@@ -214,6 +215,17 @@ class TpclExpression(object):
             i += 1
         return i
         
+    def InvalidateState(self):
+        """\
+        Invalidate our state so that we recalculate everything.
+        """
+        #TODO: split this up, perhaps, to make things more efficient
+        self.offsets_ok = False
+        self.length_ok = False
+        self.string_ok = False
+        if self.parent:
+            self.parent.InvalidateState()
+        
     #############################################
     # The public interface that we use to
     # get info about this particular expression
@@ -224,7 +236,7 @@ class TpclExpression(object):
         Sets the base offset for this element.
         """
         self.offsets_ok = False
-        self._offset = 0
+        self._offset = offset
     
     def GetElemOffset(self, index):
         """\
@@ -260,10 +272,13 @@ class TpclExpression(object):
         Inserts an expression at the given offset
         """
         if self.IsExpression(offset):
-            self.data[self.GetIndexOfElemAt(offset)] = expression
-            self.offsets_ok = False
-            self.length_ok = False
-            self.string_ok = False
+            index = self.GetIndexOfElemAt(offset)
+            self.data[index] = expression
+            print "Setting offset of expression to %d" % self.GetAbsoluteElemOffset(index)
+            expression.SetOffset(self.GetAbsoluteElemOffset(index))
+            #need to start guarding against multiple parents
+            expression.parent = self
+            self.InvalidateState()
         else:
             raise ValueError('There is no expression at offset %d' % offset)
         
@@ -274,8 +289,6 @@ class TpclExpression(object):
         if self.IsExpression(offset):
             index = self.GetIndexOfElemAt(offset)
             self.data[index] = "*%s*" % self.template.GetElementValue(index)
-            self.offsets_ok = False
-            self.length_ok = False
-            self.string_ok = False
+            self.InvalidateState()
         else:
             raise ValueError('There is no expression at offset %d' % offset)
