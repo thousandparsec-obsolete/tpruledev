@@ -1,140 +1,136 @@
-<!--
-Note on interpretation:
-	We insert spaces between the elements inside of a code block.
-	So,
-		<code>
-			<text val="(+" />
-			<block type="VAL" />
-			<block type="VAL" />
-			<text val=")" />
-		</code>
-	should result in when evaluated:
-		(+ *VAL* *VAL* )
-	This saves us having to add lots of <text val=" " /> elements. 
+<blocks>
+	<!--type INITIAL_BLOCK-->
+	<type name="INITIAL_BLOCK">
+		<tpcl_block
+			name="Lambda Design"
+			description="A lambda function taking a design as its only argument."
+			display="(lambda (design) *EXPR*)">
+			<template>
+				<elem type="text" val="(lambda (design) " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+	</type>
 	
-
-<!--type INITIAL_BLOCK-->
-<tpcl_block
-	type="INITIAL_BLOCK"
-	name="Lambda Design"
-	description="A lambda function taking a design as its only argument."
-	display="(lambda (design) *EXPR*)"
-	<code>
-		<text val="(lambda (design)" />
-		<block type="EXPR" />
-		<text val ")" />
-	</code>
-</tpcl_block>
-
-<!--type BOOL-->
-<tpcl_block
-	type="BOOL"
-	name="&lt;"
-	description="The less-than comparison."
-	display="(&lt; *VAL* *VAL*)">
-	<code>
-		<text val="(&lt;" />
-		<block type="VAL" />
-		<block type="VAL" />
-		<text val=")" />
-	</code>
-</tpcl_block>
-
-<tpcl_block
-	type="BOOL"
-	name=">"
-	description="The greater-than comparison."
-	display="(> *VAL* *VAL*)">
-	<code>
-		<text val="(>" />
-		<block type="VAL" />
-		<block type="VAL" />
-		<text val=")" />
-	</code>
-</tpcl_block>
+	<!--type BOOL-->
+	<type name="BOOL">
+		<tpcl_block
+			name="&lt;"
+			description="The less-than comparison."
+			display="(&lt; *VAL* *VAL*)">
+			<template>
+				<elem type="text" val="(&lt; " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+		
+		<tpcl_block
+			name=">"
+			description="The greater-than comparison."
+			display="(> *VAL* *VAL*)">
+			<template>
+				<elem type="text" val="(> " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+			
+		<tpcl_block
+			name="="
+			description="The equal-to comparison."
+			display="(= *VAL* *VAL*)">
+			<template>
+				<elem type="text" val="(= " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+	</type>	
 	
-<tpcl_block
-	type="BOOL"
-	name="="
-	description="The equal-to comparison."
-	display="(= *VAL* *VAL*)">
-	<code>
-		<text val="(=" />
-		<block type="VAL" />
-		<block type="VAL" />
-		<text val=")" />
-	</code>
-</tpcl_block>
-
-
-<!--type PROC-->
-<tpcl_block
-	type="PROC"
-	name="let"
-	description="The let block - allows creating temporary variables."
-	display="(let ((*SYMBOL* *VAL*)) *EXPR*)
-	<code>
-		<text val="(let ((" />
-		<block type="SYMBOL" />
-		<block type="VAL" />
-		<text val="))" />
-		<block type="EXPR" />
-		<text val=")" />
-	</code>
-</tpcl_block>
-
-
-<!--type FUNC-->
-<tpcl_block
-	type="FUNC"
-	name="if"
-	description="The if flow-control structure"
-	display="(if *BOOL* *EXPR* *EXPR*)"
-	<code>
-		<text val="(if" />
-		<block type="BOOL" />
-		<block type="EXPR" />
-		<block type="EXPR" />
-		<text val=")" />
-</tpcl_block>
-
-<tpcl_block
-	type="FUNC"
-	name="+"
-	description="Adder."
-	display="(+ *VAL* *VAL*)"
-	<code>
-		<text val="(+"
-		<block type="VAL">
-		<block type="VAL">
-		<text val=")"
-	<code>
-</tpcl_block>
-
-
-<!--type SYMBOL-->
-<!--
-we don't define any symbols by default...
--->
-
-
-<!--type VAL-->
-<tpcl_block
-	type="VAL"
-	name="#t"
-	description="True constant."
-	display="#t"
-	<code>
-		<text val="#t" />
-	</code>
-</tpcl_block>
-
-<tpcl_block
-	type="VAL"
-	name="#f"
-	description="False constant."
-	display="#f"
-	<code>
-		<text val="#f" />
-	</code>
-</tpcl_block>
+	<!--type PROC-->
+	<type name="PROC">
+		<tpcl_block
+			name="let"
+			description="The let block - allows creating temporary variables."
+			display="(let ((*SYMBOL* *VAL*)) *EXPR*)">
+			<template>
+				<elem type="text" val="(let ((" />
+				<elem type="block" val="SYMBOL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=")) " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+	</type>
+	
+	<!--type FUNC-->
+	<type name="FUNC">
+		<tpcl_block
+			name="if"
+			description="The if flow-control structure"
+			display="(if *BOOL* *EXPR* *EXPR*)" >
+			<template>
+				<elem type="text" val="(if " />
+				<elem type="block" val="BOOL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=" " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+		
+		<tpcl_block
+			name="+"
+			description="Adder."
+			display="(+ *VAL* *VAL*)">
+			<template>
+				<elem type="text" val="(+ " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+	</type>
+	
+	
+	<!--type SYMBOL-->
+	<!--
+	we don't define any symbols by default...
+	we need to get these from our environment
+	and from user defined symbols
+	-->
+	
+	
+	<!--type VAL-->
+	<type name="VAL">
+		<tpcl_block
+			name="#t"
+			description="True constant."
+			display="#t">
+			<template>
+				<elem type="text" val="#t" />
+			</template>
+		</tpcl_block>
+		
+		<tpcl_block
+			name="#f"
+			description="False constant."
+			display="#f">
+			<template>
+				<elem type="text" val="#f" />
+			</template>
+		</tpcl_block>
+	</type>
+</blocks>

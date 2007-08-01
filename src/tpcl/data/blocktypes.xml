@@ -11,43 +11,45 @@ EXPR
 		FUNC
 		BOOL
 		SYMBOL
---->
+-->
 
-<tpcl_blocktype
-	name="INITIAL_BLOCK"
-	description="The first element used when starting to use the expression editor. This is typically the lambda function form." />
-
-<tpcl_blocktype
-	name='EXPR'
-	description='The broad class of expressions in the TPCL language.'>
-	<member name='VAL' />
-	<member name='PROC' />
-</tpcl_blocktype>
-
-<tpcl_blocktype
-	name='BOOL'
-	description='The class of expressions that return boolean values (the results of comparisons or other tests.' />
-
-<tpcl_blocktype
-	name='PROC'
-	description='The class of expressions which procedures - they can return a value or do nothing.' >
-	<member name='FUNC' />
-</tpcl_blocktype>
-
-<tpcl_blocktype
-	name='FUNC'
-	description='The class of expressions which are functions - they must return a value or do nothing.' >
-	<member name='BOOL' />
-</tpcl_blocktype>
-
-<tpcl_blocktype
-	name='SYMBOL'
-	description='A symbol that is bound within the current environment.'>
-</tpcl_blocktype>
-
-<tpcl_blocktype
-	name='VAL'
-	description='A definite value. Can either be a constant, literal or symbol.'>
-	<member name='SYMBOL' />
-	<member name='FUNC' />
-</tpcl_blocktype>
+<blocktypes>
+	<tpcl_blocktype
+		name="INITIAL_BLOCK"
+		description="The first element used when starting to use the expression editor. This is typically the lambda function form." />
+	
+	<tpcl_blocktype
+		name='EXPR'
+		description='The broad class of expressions in the TPCL language.'>
+		<member name='VAL' />
+		<member name='PROC' />
+	</tpcl_blocktype>
+	
+	<tpcl_blocktype
+		name='BOOL'
+		description='The class of expressions that return boolean values (the results of comparisons or other tests.' />
+	
+	<tpcl_blocktype
+		name='PROC'
+		description='The class of expressions which procedures - they can return a value or do nothing.' >
+		<member name='FUNC' />
+	</tpcl_blocktype>
+	
+	<tpcl_blocktype
+		name='FUNC'
+		description='The class of expressions which are functions - they must return a value or do nothing.' >
+		<member name='BOOL' />
+	</tpcl_blocktype>
+	
+	<tpcl_blocktype
+		name='SYMBOL'
+		description='A symbol that is bound within the current environment.'>
+	</tpcl_blocktype>
+	
+	<tpcl_blocktype
+		name='VAL'
+		description='A definite value. Can either be a constant, literal or symbol.'>
+		<member name='SYMBOL' />
+		<member name='FUNC' />
+	</tpcl_blocktype>
+</blocktypes>
