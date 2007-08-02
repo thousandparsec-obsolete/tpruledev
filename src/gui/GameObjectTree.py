@@ -1,5 +1,6 @@
-import wx
-from rde import ObjectManagement, Nodes
+import wx, sys
+if not "ObjectManagement" in sys.modules.keys():
+    from rde import ObjectManagement, Nodes
 
 class GameObjectTree(wx.TreeCtrl):
     """

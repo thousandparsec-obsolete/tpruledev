@@ -11,8 +11,8 @@ def LoadBlocktypes(filename=None):
     #good golly miss molly but this code is inefficient and not fun
     
     if not filename:
-        from rde.ConfigManager import ConfigManager
-        file = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
+        from rde import ConfigManager
+        filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
                             'tpcl', 'data', 'blocktypes.xml')
     et = ElementTree(file=filename)
     blocktypes = {}
@@ -39,8 +39,8 @@ def LoadBlocks(filename=None):
     """
     
     if not filename:
-        from rde.ConfigManager import ConfigManager
-        file = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
+        from rde import ConfigManager
+        filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
                             'tpcl', 'data', 'base_blocks.xml')
     et = ElementTree(file=filename)
     blocks = {}

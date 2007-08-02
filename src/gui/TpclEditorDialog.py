@@ -6,6 +6,7 @@ import wx
 import gui.XrcUtilities
 from wx.xrc import XRCCTRL
 from tpcl.data import Import
+from tpcl.Representation import *
 
 class Dialog(wx.Dialog):
     """
@@ -38,6 +39,10 @@ class Dialog(wx.Dialog):
         self.insert_butt = XRCCTRL(self, "insert_butt")
         
         #fill the cat choice box with all blocktypes
+        
+        #set the text of out code to a basic element
+        self.root_expression = TpclExpression(self.blocks["INITIAL_BLOCK"]["Lambda Design"])
+        self.code_stc.SetText(str(self.root_expression))
         
     def OnTypeChoice(self, event):
         """\
