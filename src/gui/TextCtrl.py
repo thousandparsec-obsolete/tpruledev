@@ -69,25 +69,6 @@ else:
 
 import wx.xrc as xrc
 
-class wxSchemeStcHandler(xrc.XmlResourceHandler):
-    def __init__(self):
-        xrc.XmlResourceHandler.__init__(self)
-        self.AddWindowStyles()
-        
-    def CanHandle(self, node):
-        return self.IsOfClass(node, "SchemeSTC")
-    
-    def DoCreateResource(self):
-        stc = SchemeSTC(
-            self.GetParentAsWindow(),
-            self.GetID(),
-            pos = self.GetPosition(),
-            size = self.GetSize(),
-            style=self.GetStyle()
-        )      
-        self.SetupWindow(stc)     # handles font, bg/fg color
-        return stc
-
 class SchemeSTC(stc.StyledTextCtrl):
     
     def __init__(self, parent, ID, text=None,
