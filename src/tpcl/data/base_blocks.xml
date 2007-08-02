@@ -102,6 +102,58 @@
 				<elem type="text" val=")" />
 			</template>
 		</tpcl_block>
+		
+		<tpcl_block
+			name="-"
+			description="Subtractor."
+			display="(- *VAL* *VAL*)">
+			<template>
+				<elem type="text" val="(- " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=" " />
+				<elem type="block" val="VAL" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+		
+		<tpcl_block
+			name="cons"
+			description="Cons"
+			display="(cons *EXPR* *EXPR*)">
+			<template>
+				<elem type="text" val="(cons " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=" " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+		
+		<tpcl_block
+			name="car"
+			description="Car"
+			display="(car *EXPR* *EXPR*)">
+			<template>
+				<elem type="text" val="(car " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=" " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
+		
+		<tpcl_block
+			name="cdr"
+			description="Cdr"
+			display="(cdr *EXPR* *EXPR*)">
+			<template>
+				<elem type="text" val="(cdr " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=" " />
+				<elem type="block" val="EXPR" />
+				<elem type="text" val=")" />
+			</template>
+		</tpcl_block>
 	</type>
 	
 	
