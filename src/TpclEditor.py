@@ -12,10 +12,15 @@ class App(wx.App):
         self.frame = wx.Frame(None, wx.ID_ANY, 'Editor Test', size=(480, 320))
         self.frame.Show()
         self.SetTopWindow(self.frame)
+        butt = wx.Button(self.frame, label="Show Editor")
+        self.Bind(wx.EVT_BUTTON, self.OnShowEditor, butt)
         ConfigManager.LoadRDEConfig('tpconf')
-        dialog = gui.TpclEditorDialog.Dialog(None)
-        dialog.ShowModal()
+        
         return True
+        
+    def OnShowEditor(self, event):
+        dialog = gui.TpclEditorDialog.MyDialog(self.frame)
+        dialog.ShowModal()
         
 def main():
     app = App(redirect=False)

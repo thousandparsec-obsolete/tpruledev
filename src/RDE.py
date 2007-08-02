@@ -16,7 +16,6 @@ class App(wx.App):
         self.frame = gui.EditorFrame.Frame(None, wx.ID_ANY, 'Splitter Test', size=(800,600))
         self.frame.Show()
         self.SetTopWindow(self.frame)
-        GlobalConfig.config = ConfigParser.ConfigParser()
         return True
         
 def generateEditPanel(parent):

@@ -110,6 +110,9 @@ class TpclExpression(object):
     """\
     An actual TPCL Expression composed of text and other expressions
     """
+    TEXT = 0
+    EXPANSION_POINT = 1
+    EXPRESSION = 2
     
     def __init__(self, block, parent=None, offset=0):
         self.block = block
@@ -141,7 +144,7 @@ class TpclExpression(object):
         #format ourselves nicely here
         #make sure we add spaces between elements.
         if not self.string_ok:
-            self.GenerateString()
+            self.RecalculateString()
         return self._string
         
     def __len__(self):
@@ -150,7 +153,7 @@ class TpclExpression(object):
         expression so that we have an idea of the length
         """
         if not self.length_ok:
-            self.CalculateLength()        
+            self.RecalculateLength()        
         return self._length
         
     #######################################
@@ -159,7 +162,7 @@ class TpclExpression(object):
     # length and the offsets of elements
     #######################################
         
-    def CalculateLength(self):
+    def RecalculateLength(self):
         """\
         Calculates the length of the expression,
         accounting for the spaces between elements.
@@ -188,7 +191,7 @@ class TpclExpression(object):
             #pass along the absolute offset to the element
             # if it's an expression
             if hasattr(self.data[i], 'SetOffset'):
-                self.data[i].SetOffset(offset = self._offset)
+                self.data[i].SetOffset(offset + self._offset)
             
         self.offsets_ok = True
         
@@ -198,7 +201,7 @@ class TpclExpression(object):
         """
         return len(self.data[index])
         
-    def GenerateString(self):
+    def RecalculateString(self):
         self._string = ""
         for i in range(len(self.data)):
             self._string += self.data[i].__str__()
@@ -206,11 +209,12 @@ class TpclExpression(object):
         
     def GetIndexOfElemAt(self, offset):
         """\
-        Gets the index of the element whose text is the given offset
+        Gets the index of the element whose text is the given absolute offset
         """
         i = 0
         if offset < self._offset or self._offset + len(self) - 1 < offset:
-            raise ValueError('Offset not in this expression.')
+            raise ValueError('Offset %d not in this expression [%d, %d].' % \
+                                (offset, self._offset, self._offset + len(self) - 1))
         while i < len(self.data) - 1 and offset >= self.GetAbsoluteElemOffset(i+1):
             i += 1
         return i
@@ -225,19 +229,7 @@ class TpclExpression(object):
         self.string_ok = False
         if self.parent:
             self.parent.InvalidateState()
-        
-    #############################################
-    # The public interface that we use to
-    # get info about this particular expression
-    #############################################
-    
-    def SetOffset(self, offset):
-        """\
-        Sets the base offset for this element.
-        """
-        self.offsets_ok = False
-        self._offset = offset
-    
+            
     def GetElemOffset(self, index):
         """\
         Gets the offset of start of the element at that
@@ -254,31 +246,89 @@ class TpclExpression(object):
         """
         return self.GetElemOffset(index) + self._offset
         
+    def ElemIsExpression(self, index):
+        """\
+        Returns with a bool indicating whether or not
+        the element at the given offset is an expression or block
+        """
+        return not self.template.IsText(index)
+        
+    def IsExpansionPoint(self, offset):
+        """
+        Returns tuple indicating that the offset is an expansion
+        point or not and if it is the parent expression that contains
+        that expansion point
+        
+            retval: (bool b, TpclExpression p)
+            where b indicates if the text at offset is an
+            expansion point. p is the parent of 
+        """
+        type = GetBlockType(offset)
+        if type == self.TEXT:
+            return (False, None)
+        elif type == self.EXPANSION_POINT:
+            return (True, self)
+        else:
+            return self.data[self.GetIndexOfElemAt(offset)].IsExpansionPoint(offset)
+            
+    def GetParentOfElemAt(self, offset):
+        """\
+        Returns the parent of the element at the offset.
+        """
+        type = self.GetBlockType(offset)
+        if type == self.TEXT:
+            return self.parent
+        elif type ==self.EXPANSION_POINT:
+            return self
+        else:
+            return self.data[self.GetIndexOfElemAt(offset)].GetParentOfElemAt(offset)
+        
+    #############################################
+    # The public interface that we use to
+    # get info about this particular expression
+    #############################################
+    
+    def SetOffset(self, offset):
+        """\
+        Sets the base offset for this element.
+        """
+        print "Setting offset to - %d" % offset
+        self.offsets_ok = False
+        self._offset = offset
+        
     def IsExpression(self, offset):
         """\
         Returns with a bool indicating whether or not the
         text at the given (absolute) offset is part of an expression
         """
-        return not self.template.IsText(self.GetIndexOfElemAt(offset))
+        return self.ElemIsExpression(self.GetIndexOfElemAt(offset))
         
     def GetBlockType(self, offset):
-        if IsExpression(offset):
-            return self.template.GetElemValue(self.GetIndexOfElemAt(offset))
+        index = self.GetIndexOfElemAt(offset)
+        if self.template.IsText(index):
+            return self.TEXT
+        elif hasattr(self.data[index], "GetBlockType"):
+            return self.EXPRESSION
         else:
-            raise ValueError('There is no expression at offset %d' % offset)
+            return self.EXPANSION_POINT
         
     def InsertExpression(self, offset, expression):
         """\
         Inserts an expression at the given offset
         """
-        if self.IsExpression(offset):
+        if not self.offsets_ok:
+            self.RecalculateOffsets()
+            
+        type = self.GetBlockType(offset)
+        if  type == self.EXPANSION_POINT:
             index = self.GetIndexOfElemAt(offset)
             self.data[index] = expression
-            print "Setting offset of expression to %d" % self.GetAbsoluteElemOffset(index)
             expression.SetOffset(self.GetAbsoluteElemOffset(index))
-            #need to start guarding against multiple parents
+            #todo: need to start guarding against multiple parents
             expression.parent = self
             self.InvalidateState()
+        elif type == self.EXPRESSION:
+            self.data[self.GetIndexOfElemAt(offset)].InsertExpression(offset, expression)
         else:
             raise ValueError('There is no expression at offset %d' % offset)
         
@@ -286,9 +336,16 @@ class TpclExpression(object):
         """\
         Removes the expression at the given offset
         """
-        if self.IsExpression(offset):
-            index = self.GetIndexOfElemAt(offset)
-            self.data[index] = "*%s*" % self.template.GetElementValue(index)
-            self.InvalidateState()
+        if not self.offsets_ok:
+            self.RecalculateOffsets()
+            
+        parent = self.GetParentOfElemAt(offset)
+        if  parent != None:
+            if parent == self:
+                index = self.GetIndexOfElemAt(offset)
+                self.data[index] = "*%s*" % self.template.GetElementValue(index)
+                self.InvalidateState()    
+            else:
+                parent.RemoveExpression(offset)            
         else:
-            raise ValueError('There is no expression at offset %d' % offset)
+            raise ValueError("You can't remove the top level expression!")
