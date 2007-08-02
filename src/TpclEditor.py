@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """\
 Runs the TPCL Expression Editor on its own for 
 testing purposes.
