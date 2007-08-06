@@ -57,7 +57,64 @@ def LoadBlocks(filename=None):
             for elem in temp.findall('elem'):
                 if elem.get('type') == "text":
                     template.AppendTextElement(elem.get('val'))
+                elif elem.get('type') == "eol":
+                    template.AppendEolElement()
+                elif elem.get('type') == "indent":
+                    template.AppendIndentElement()
                 else:
                     template.AppendBlockElement(elem.get('val'))
             blocks[type][name] = (tpcl_block)
     return blocks
+    
+def LoadBlockIntoTree(tree, filename=None):
+    """\
+    Bloody mess to only be used during testing.
+    
+    Manually fills a tree with the blocks, setting
+    PyData to the TpclBlock objects for each block
+    that we load.
+    """
+    
+    if not filename:
+        from rde import ConfigManager
+        filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
+                            'tpcl', 'data', 'tpcl_base.xml')
+    et = ElementTree(file=filename)
+    blocks = {}
+    root = tree.AddRoot("Root")
+    for cat_elem in et.findall('category'):
+        ReadCategory(cat_elem, tree)
+
+def ReadCategory(element, tree, parent_id=None):
+    cid = 0
+    if parent_id:
+        cid = tree.AppendItem(parent_id, element.get('name'))
+    else:
+        cid = tree.AppendItem(tree.GetRootItem(), element.get('name'))
+        
+    for cat_elem in element.findall('category'):
+        ReadCategory(cat_elem, tree, cid)
+        
+    for expr_elem in element.findall('expression'):
+        ReadExpression(expr_elem, tree, cid)
+
+def ReadExpression(expr_elem, tree, cat_id):
+    name = expr_elem.get('name')
+    expr_id = tree.AppendItem(cat_id, name)
+    description = expr_elem.get('description')
+    display = expr_elem.get('display')
+    tpcl_block = TpclBlock(name, type, description, display)
+    template = tpcl_block.template
+    temp = expr_elem.find('template')
+    if not temp:
+        raise ValueError("Expression %s has no template!" % name)
+    for elem in temp.findall('elem'):
+        if elem.get('type') == "text":
+            template.AppendTextElement(elem.get('val'))
+        elif elem.get('type') == "eol":
+            template.AppendEolElement()
+        elif elem.get('type') == "indent":
+            template.AppendIndentElement()
+        else:
+            template.AppendBlockElement(elem.get('val'))
+    tree.SetPyData(expr_id, tpcl_block)

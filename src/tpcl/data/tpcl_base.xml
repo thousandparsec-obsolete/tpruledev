@@ -1,0 +1,216 @@
+<blocks>
+	<category name="Built-In">
+		<category
+			name="Variable References"
+			description="References to all variables in the current environment."/>
+		
+		<category
+			name="Literal Expression"
+			description="Values that are interpreted literally such as strings, numbers, boolean values and quote escaped expressions.">
+			<expression
+				name="String Literal"
+				description="A string with some definite value."
+				display="String">
+				<template>
+					<elem type="text" val=""/>
+				</template>
+			</expression>
+			<expression
+				name="Numerical Literal"
+				description="A number."
+				display="#">
+				<template>
+					<elem type="text" val=""/>
+				</template>
+			</expression>
+			<expression
+				name="Boolean"
+				description="True or false."
+				display="#f/#t">
+				<template>
+					<elem type="text" val=""/>
+				</template>
+			</expression>
+			<expression
+				name="Quote Escaped Expression"
+				description="A quote escaped TPCL Expression. For advanced coders only."
+				display="'*TEXT*">
+				<template>
+					<elem type="text" val=""/>
+				</template>
+			</expression>
+		</category>
+		
+		<category name="Procedure Calls">
+			<category name="String Functions"/>
+			<category name="Numerical Functions">
+				<expression
+					name="+"
+					description="Adder."
+					display="(+ *VAL* *VAL*)">
+					<template>
+						<elem type="text" val="(+ " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="-"
+					description="Subtractor."
+					display="(- *VAL* *VAL*)">
+					<template>
+						<elem type="text" val="(- " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+			</category>
+			
+			<category name="List Operators">
+				<expression
+					name="cons"
+					description="Cons operation"
+					display="(cons *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(cons " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="car"
+					description="Car operation"
+					display="(car *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(car " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="cdr"
+					description="Cdr operation"
+					display="(cdr *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(cdr " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+			</category>
+			
+			<category name="Comparison Operators">
+				<expression
+					name="&lt;"
+					description="The less-than comparison."
+					display="(&lt; *VAL* *VAL*)">
+					<template>
+						<elem type="text" val="(&lt; " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name=">"
+					description="The greater-than comparison."
+					display="(> *VAL* *VAL*)">
+					<template>
+						<elem type="text" val="(> " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="="
+					description="The equal-to comparison."
+					display="(= *VAL* *VAL*)">
+					<template>
+						<elem type="text" val="(= " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+			</category>
+			
+			<category name="Flow Control">
+				<expression
+					name="if"
+					description="The if flow-control structure"
+					display="(if *BOOL*\n\t*EXPR*\n\t*EXPR*)" >
+					<template>
+						<elem type="text" val="(if " />
+						<elem type="block" val="BOOL" />
+						<elem type="eol" />
+						<elem type="indent" />
+						<elem type="block" val="EXPR" />
+						<elem type="eol" />
+						<elem type="indent" />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+			</category>
+			
+			<category name="Miscelaneous Operators">
+				<expression
+					name="let"
+					description="The let block - allows creating temporary variables."
+					display="(let ((*SYMBOL* *VAL*))\n\t*EXPR*)">
+					<template>
+						<elem type="text" val="(let ((" />
+						<elem type="block" val="SYMBOL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val="))" />
+						<elem type="eol" />
+						elem type="indent" />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+			</category>
+		</category>
+		
+		<category name="Procedure Definitions">
+			<expression2 name="TPCL Requirements Function"/>
+			<expression 
+				name="TPCL Requires Function"
+				description="A lambda function taking a design as its only argument."
+				display="(lambda (design)\n\t*EXPR*)">
+				<template>
+					<elem type="text" val="(lambda (design) " />
+					<elem type="eol" />
+					<elem type="indent" />
+					<elem type="block" val="EXPR" />
+					<elem type="text" val=")" />
+				</template>
+			</expression>
+			<expression2 name="TPCL Display Function"/>
+			<expression2 name="TPCL Cost Function"/>
+		</category>
+	</category>
+	
+	<category name="User Defined">
+	</category>		
+</blocks>

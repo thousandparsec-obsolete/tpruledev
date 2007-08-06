@@ -39,11 +39,7 @@ class MyDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnInsert, self.insert_butt)
         
         #fill the block_tree
-        root = self.block_tree.AddRoot("Root")
-        for category in self.blocks.keys():
-            cat_id = self.block_tree.AppendItem(root, category)
-            for expr in self.blocks[category].keys():
-                self.block_tree.AppendItem(cat_id, expr)
+        Import.LoadBlockIntoTree(self.block_tree)
         
         #set the text of out code to a basic element
         self.root_expression = TpclExpression(self.blocks["INITIAL_BLOCK"]["Lambda Design"])
@@ -100,9 +96,9 @@ class MyDialog(wx.Dialog):
         pos = self.code_stc.GetCurrentPos()
         sel_id = self.block_tree.GetSelection()
         if sel_id.IsOk():
-            block_name = self.block_tree.GetItemText(sel_id)
-            cat_name = self.block_tree.GetItemText(self.block_tree.GetItemParent(sel_id))
-            expression = TpclExpression(self.blocks[cat_name][block_name])
-            self.root_expression.InsertExpression(pos, expression)
-            self.code_stc.SetText(str(self.root_expression))
+            block = self.block_tree.GetPyData(sel_id)
+            if block:
+                expression = TpclExpression(block)
+                self.root_expression.InsertExpression(pos, expression)
+                self.code_stc.SetText(str(self.root_expression))
         event.Skip()

@@ -53,7 +53,7 @@ class TpclBlock(object):
         self.description = description
         self.display = display
         self.template = TpclTemplate()
-    
+        
     
 class TpclTemplate(object):
     """\
@@ -65,9 +65,14 @@ class TpclTemplate(object):
     """
     TEXT = 0
     BLOCK = 1
+    INDENT = 2
+    EOL = 3
     
     def __init__(self):
         self.template = []
+        
+    def __len__(self):
+        return len(self.template)
         
     def AppendTextElement(self, text):
         self.template.append((self.TEXT, text))
@@ -80,9 +85,22 @@ class TpclTemplate(object):
         
     def InsertBlockElement(self, index, block):
         self.template.insert(index, (self.BLOCK, block))
+        
+    def AppendEolElement(self):
+        self.template.append((self.EOL, "\n"))
+        
+    def InsertEolElement(self, index):
+        self.template.insert(index, (self.EOL, "\n"))
+        
+    def AppendIndentElement(self):
+        self.template.append((self.INDENT, "\t"))
+        
+    def InsertIndentElement(self, index, block):
+        self.template.insert(index, (self.INDENT, "\t"))
     
     def IsText(self, index):
-        return (self.template[index][0] == self.TEXT)
+        #text, EOL and indents all count as text
+        return (self.template[index][0] != self.BLOCK)
     
     def GetElementType(self, index):
         return self.template[index][0]
@@ -113,36 +131,41 @@ class TpclExpression(object):
     TEXT = 0
     EXPANSION_POINT = 1
     EXPRESSION = 2
+    EOL = 3
+    INDENT = 4
     
-    def __init__(self, block, parent=None, offset=0):
+    def __init__(self, block, parent=None, offset=0, indent=0):
         self.block = block
         self.template = block.template
         self.parent = parent
+        
         self._offset = offset
+        self.offsets = [None] * len(self.template)
+        
+        self.base_indent = indent
+        self.indent_level = [None] * len(self.template)
+        
+        self.indent_ok = False
+        self.offsets_ok = False
+        self.length_ok = False
+        self.string_ok = False
         
         #initialize our data
         self.data = []
-        self.offsets = []
         for i in range(self.template.length):
             if self.template.IsText(i):
                 self.data.append(self.template.GetElementValue(i))
             else:
                 self.data.append("*%s*" % self.template.GetElementValue(i))
-            
-            if i == 0:
-                self.offsets.append(0)
-            else:
-                self.offsets.append(self.offsets[i-1] + self.LengthOfElement(i-1))
-        
-        self.offsets_ok = True
-        self.length_ok = False
-        self.string_ok = False
-        
+                
+        self.RecalculateIndentation()
         self.RecalculateOffsets()
         
     def __str__(self):
         #format ourselves nicely here
         #make sure we add spaces between elements.
+        if not self.indent_ok:
+            self.RecalculateIndentation()
         if not self.string_ok:
             self.RecalculateString()
         return self._string
@@ -152,6 +175,8 @@ class TpclExpression(object):
         Return the total number of characters in our
         expression so that we have an idea of the length
         """
+        if not self.indent_ok:
+            self.RecalculateIndentation()
         if not self.length_ok:
             self.RecalculateLength()        
         return self._length
@@ -194,6 +219,28 @@ class TpclExpression(object):
                 self.data[i].SetOffset(offset + self._offset)
             
         self.offsets_ok = True
+    
+    def RecalculateIndentation(self):
+        #pre-process the block for indent levels
+        for i in range(self.template.length):
+            curr_indent = self.base_indent
+            if i != 0:
+                if self.template.GetElementType(i) == self.template.EOL:
+                    curr_indent = self.base_indent
+                elif self.template.GetElementType(i-1) == self.template.INDENT:
+                    curr_indent = self.indent_level[i-1] + 1
+                else:
+                    curr_indent = self.indent_level[i-1]
+                    
+            self.indent_level[i] = curr_indent
+                
+            if self.template.GetElementType(i) == TpclTemplate.EOL:
+                #we pad with tabs after a newline to achieve indentation
+                self.data[i] = self.template.GetElementValue(i) + ("\t"*self.indent_level[i])
+                
+        self.string_ok = False
+        self.length_ok = False
+        self.offsets_ok = False
         
     def LengthOfElement(self, index):
         """\
@@ -227,6 +274,7 @@ class TpclExpression(object):
         self.offsets_ok = False
         self.length_ok = False
         self.string_ok = False
+        self.indent_ok = False
         if self.parent:
             self.parent.InvalidateState()
             
@@ -235,6 +283,8 @@ class TpclExpression(object):
         Gets the offset of start of the element at that
         index in our data.
         """
+        if not self.indent_ok:
+            self.RecalculateIndentation()
         if not self.offsets_ok:
             self.RecalculateOffsets()
         return self.offsets[index]
@@ -292,9 +342,15 @@ class TpclExpression(object):
         """\
         Sets the base offset for this element.
         """
-        print "Setting offset to - %d" % offset
         self.offsets_ok = False
         self._offset = offset
+        
+    def SetIndentLevel(self, level):
+        """\
+        Sets the indentation level for this element.
+        """
+        self.indent_ok = False
+        self.base_indent = level
         
     def IsExpression(self, offset):
         """\
@@ -324,6 +380,7 @@ class TpclExpression(object):
             index = self.GetIndexOfElemAt(offset)
             self.data[index] = expression
             expression.SetOffset(self.GetAbsoluteElemOffset(index))
+            expression.SetIndentLevel(self.indent_level[index])
             #todo: need to start guarding against multiple parents
             expression.parent = self
             self.InvalidateState()
@@ -349,3 +406,115 @@ class TpclExpression(object):
                 parent.RemoveExpression(offset)            
         else:
             raise ValueError("You can't remove the top level expression!")
+
+
+import random
+class TpclBlockstore(object):
+    """\
+    Stores all TPCL Blocks and allows for searching
+    and retrieval of them.
+    """
+    CATEGORY = 0
+    BLOCK = 1
+    
+    #key generation random number bounds
+    RAN_LOWER = 0
+    RAN_UPPER = 100
+    
+    #######################
+    # block storage
+    #
+    # self.root => ([category_ids], [block_ids)
+    # self._items => {cat_id => category, block_id => block}
+    # category => (name, [category_ids], [block_ids])
+    # block => (name, block)
+    ############################## 
+    
+    def __init__(self):
+        self.root = ("Root", [], [])
+        self._rootid = self._GenerateID()
+        self._items = {}
+        self._items[self._rootid] = root
+        
+    def iterblocks(self):
+        return BlockstoreBlockIterator(self)
+        
+    def _GenerateID(self):
+        #just to avoid sequential values for our
+        #hash function which would completely defeat the purpose
+        if self.RAN_UPPER <= len(self._items.keys()):
+            self.RAN_LOWER = RAN_UPPER+1
+            self.RAN_UPPER = self.RAN_UPPER * 2
+        ran = random.randint(self.RAN_LOWER, self.RAN_UPPER)
+        while ran in self._items.keys():
+            ran = random.randint(self.RAN_LOWER, self.RAN_UPPER)
+        return ran
+        
+    def AddCategory(self, cat_name, parent_id=None):
+        """\
+        Adds a category to the block store.
+        """
+        id = self._GenerateID()
+        self._items[id] = (cat_name, [], [])
+        if parent_id:
+            parent_cat = self._items[parent_id]
+            parent_cat[0].Append(id)
+        else:
+            self.root[0].Append(id)
+        return id
+        
+    def AddBlock(self, block, category_id=None):
+        """\
+        Adds a block to the block store.
+        With no category ID given we go to the root
+        """
+        id = self._GenerateID()
+        self._items[id] = (block.name, block)
+        if category_id:
+            parent_cat = self._items[parent_id]
+            parent_cat[1].Append(id)
+        else:
+            self.root[1].Append(id)
+        return id
+        
+    def GetRootId(self):
+        return self._rootid
+        
+    def GetChildren(item_id):
+        pass
+        
+    def GetCategoryName(cat_id):
+        return self._items[cat_id][0]
+        
+    def GetBlockName(block_id):
+        return self._items[block_id][0]
+    
+    def GetBlock(block_id):
+        block = self._items[block_id]
+        return
+        
+class BlockstoreNode(object):
+    CATEGORY = TpclBlockstore.CATEGORY
+    BLOCK = TpclBlockstore.BLOCK
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
+        
+    def IsCategory(self):
+        return self.type == self.CATEGORY
+        
+    def IsBlock(self):
+        return self.type == self.BLOCK
+        
+class CategoryNode(BlockstoreNode):
+    def __init__(self, name):
+        BlockstoreNode.__init__(self, name, BlockstoreNode.CATEGORY)
+        self.categories = []
+        self.blocks = []        
+    
+class BlockstoreBlockIterator(object):
+    def __init__(self, blockstore):
+        self.bs = blockstore
+        
+    def next(self):
+        raise StopIteration()
