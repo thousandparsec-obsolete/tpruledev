@@ -23,34 +23,27 @@ class MyDialog(wx.Dialog):
         self.OnCreate()
     
     def OnCreate(self):
-        self.blocktypes = Import.LoadBlocktypes()
         self.blocks = Import.LoadBlocks()
         
         #widgets
         self.code_stc = XRCCTRL(self, "code_stc")
-        self.type_choice = XRCCTRL(self, "type_choice")
-        self.Bind(wx.EVT_CHOICE, self.OnTypeChoice, self.type_choice)
-        self.block_list = XRCCTRL(self, "block_list")
-        self.code_stc = XRCCTRL(self, "code_stc")
+        self.block_tree = XRCCTRL(self, "block_tree")
         
         #buttons
-        self.clear_butt = XRCCTRL(self, "clear_butt")
+        self.clear_butt = XRCCTRL(self, "clear_button")
         self.Bind(wx.EVT_BUTTON, self.OnClear, self.clear_butt)
-        self.remove_butt = XRCCTRL(self, "remove_butt")
-        self.Bind(wx.EVT_BUTTON, self.OnRemove, self.remove_butt)
-        self.save_butt = XRCCTRL(self, "save_butt")
-        self.insert_butt = XRCCTRL(self, "insert_butt")
+        self.remove_butt = XRCCTRL(self, "remove_button")
+        #self.Bind(wx.EVT_BUTTON, self.OnRemove, self.remove_butt)
+        self.save_butt = XRCCTRL(self, "save_button")
+        self.insert_butt = XRCCTRL(self, "insert_button")
         self.Bind(wx.EVT_BUTTON, self.OnInsert, self.insert_butt)
         
-        #fill the cat choice box with all blocktypes
-        for name in self.blocks.keys():
-            self.type_choice.Append(name)
-        self.type_choice.Select(0)
-        
-        #fill the block_list
-        curr_type = self.type_choice.GetStringSelection()
-        for name in self.blocks[curr_type].keys():
-            self.block_list.Append(name)
+        #fill the block_tree
+        root = self.block_tree.AddRoot("Root")
+        for category in self.blocks.keys():
+            cat_id = self.block_tree.AppendItem(root, category)
+            for expr in self.blocks[category].keys():
+                self.block_tree.AppendItem(cat_id, expr)
         
         #set the text of out code to a basic element
         self.root_expression = TpclExpression(self.blocks["INITIAL_BLOCK"]["Lambda Design"])
@@ -96,7 +89,8 @@ class MyDialog(wx.Dialog):
         """\
         Saves the current work.
         """
-        pass
+        wx.MessageBox("You hit the save button!", caption = "OMG Save!", style=wx.OK)
+        event.Skip()
     
     def OnInsert(self, event):
         """\
@@ -104,8 +98,11 @@ class MyDialog(wx.Dialog):
         into the currently selected code socket.
         """
         pos = self.code_stc.GetCurrentPos()
-        expression = TpclExpression(self.blocks[self.type_choice.GetStringSelection()]
-                                                [self.block_list.GetStringSelection()])
-        self.root_expression.InsertExpression(pos, expression)
-        self.code_stc.SetText(str(self.root_expression))
+        sel_id = self.block_tree.GetSelection()
+        if sel_id.IsOk():
+            block_name = self.block_tree.GetItemText(sel_id)
+            cat_name = self.block_tree.GetItemText(self.block_tree.GetItemParent(sel_id))
+            expression = TpclExpression(self.blocks[cat_name][block_name])
+            self.root_expression.InsertExpression(pos, expression)
+            self.code_stc.SetText(str(self.root_expression))
         event.Skip()
