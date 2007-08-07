@@ -1,7 +1,19 @@
 <blocks>
 	<category name="Built-In">
 		<category name="Procedure Definitions">
-			<expression2 name="TPCL Requirements Function"/>
+			<expression
+				name="TPCL Requirements Function"
+				description="This TPCL function is called (on all components which are in a design) when adding a new component is added to a design. If the component is allowed to be added to a design then the function should return a pair with True and a string to be displayed (empty strings are acceptable), otherwise it should return a pair with false and a string which describes the reason for not being able to add the component. The function is given a design object which has appears as if the component was already added. Returns - Bool"
+				display="(lambda (design)\n\t*EXPR*)">
+				<template>
+					<elem type="text" val="(lambda (design) " />
+					<elem type="eol" />
+					<elem type="indent" />
+					<elem type="block" val="EXPR" />
+					<elem type="text" val=")" />
+				</template>
+			</expression>
+			
 			<expression 
 				name="TPCL Requires Function"
 				description="A lambda function taking a design as its only argument."
@@ -14,8 +26,32 @@
 					<elem type="text" val=")" />
 				</template>
 			</expression>
-			<expression2 name="TPCL Display Function"/>
-			<expression2 name="TPCL Cost Function"/>
+			
+			<expression
+				name="TPCL Display Function"
+				description="A TPCL function which is called to work out how to display the property. Returns a pair which contains the actual value and a formatted string which will be displayed - (Real . String)"
+				display="(lambda (design bits)\n\t*EXPR*)">
+				<template>
+					<elem type="text" val="(lambda (design bits) " />
+					<elem type="eol" />
+					<elem type="indent" />
+					<elem type="block" val="EXPR" />
+					<elem type="text" val=")" />
+				</template>
+			</expression>
+			
+			<expression
+				name="TPCL Cost Function"
+				description="A TPCL function which is called to work out the amount this component contributes to a property. It should return a valid number. It is given the current design. Returns - Real"
+				display="(lambda (design)\n\t*EXPR*)">
+				<template>
+					<elem type="text" val="(lambda (design bits) " />
+					<elem type="eol" />
+					<elem type="indent" />
+					<elem type="block" val="EXPR" />
+					<elem type="text" val=")" />
+				</template>
+			</expression>
 		</category>
 		
 		<category
@@ -164,6 +200,7 @@ def OnInsert(expression):
 							</template>
 						</expression>
 					</category>
+					<!--End of case-insensitive string comparisons-->
 					
 					<expression
 						name="string=?"
@@ -399,6 +436,7 @@ def OnInsert(expression):
 					</template>
 				</expression>
 			</category>
+			<!--End of numerical functions-->
 			
 			<category name="List Operators">
 				<expression
@@ -436,6 +474,7 @@ def OnInsert(expression):
 					</template>
 				</expression>
 			</category>
+			<!--end of list operators-->
 			
 			<category name="Boolean Operators">
 				<category name="Equivalence Operators">
@@ -491,6 +530,7 @@ def OnInsert(expression):
 						</template>
 					</expression>
 				</category>
+				<!--End of equivalence operators-->
 				
 				<category name="Comparison Operators">
 					<expression
@@ -545,6 +585,7 @@ def OnInsert(expression):
 						</template>
 					</expression>
 				</category>
+				<!--End of comparison operators-->
 				
 				<expression
 					name="not"
@@ -581,9 +622,9 @@ def OnInsert(expression):
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
-				</expression>
-				
+				</expression>				
 			</category>
+			<!--end of boolean operators-->
 			
 			<category name="Flow Control">
 				<expression
@@ -603,6 +644,7 @@ def OnInsert(expression):
 					</template>
 				</expression>
 			</category>
+			<!--end of flow control-->
 			
 			<category name="Miscelaneous Operators">
 				<expression
@@ -635,8 +677,11 @@ def OnInsert(expression):
 					</template>
 				</expression>
 			</category>
+			<!--end of miscelaneous operators-->
 		</category>
+		<!--end of procedures-->
 	</category>
+	<!--end of built-in-->
 	
 	<category name="User Defined">
 	</category>		
