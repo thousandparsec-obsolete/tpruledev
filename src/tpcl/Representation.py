@@ -313,7 +313,7 @@ class TpclExpression(object):
             where b indicates if the text at offset is an
             expansion point. p is the parent of 
         """
-        type = GetBlockType(offset)
+        type = self.GetBlockType(offset)
         if type == self.TEXT:
             return (False, None)
         elif type == self.EXPANSION_POINT:

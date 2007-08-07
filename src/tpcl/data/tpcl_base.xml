@@ -14,6 +14,9 @@
 				<template>
 					<elem type="text" val=""/>
 				</template>
+				<oninsert>
+				
+				</oninsert>
 			</expression>
 			<expression
 				name="Numerical Literal"
