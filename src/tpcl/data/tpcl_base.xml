@@ -13,10 +13,7 @@
 				display="String">
 				<template>
 					<elem type="text" val=""/>
-				</template>
-				<oninsert>
-				
-				</oninsert>
+				</template>		
 			</expression>
 			<expression
 				name="Numerical Literal"
@@ -50,12 +47,12 @@
 				<expression
 					name="+"
 					description="Adder."
-					display="(+ *VAL* *VAL*)">
+					display="(+ *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(+ " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -63,12 +60,12 @@
 				<expression
 					name="-"
 					description="Subtractor."
-					display="(- *VAL* *VAL*)">
+					display="(- *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(- " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -81,9 +78,9 @@
 					display="(cons *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(cons " />
-						<elem type="block" val="EXPR" />
+						<elem type="block" val="FIRST" />
 						<elem type="text" val=" " />
-						<elem type="block" val="EXPR" />
+						<elem type="block" val="SECOND" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -91,11 +88,9 @@
 				<expression
 					name="car"
 					description="Car operation"
-					display="(car *EXPR* *EXPR*)">
+					display="(car *EXPR*)">
 					<template>
 						<elem type="text" val="(car " />
-						<elem type="block" val="EXPR" />
-						<elem type="text" val=" " />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
@@ -104,11 +99,9 @@
 				<expression
 					name="cdr"
 					description="Cdr operation"
-					display="(cdr *EXPR* *EXPR*)">
+					display="(cdr *EXPR*)">
 					<template>
 						<elem type="text" val="(cdr " />
-						<elem type="block" val="EXPR" />
-						<elem type="text" val=" " />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
@@ -119,12 +112,12 @@
 				<expression
 					name="&lt;"
 					description="The less-than comparison."
-					display="(&lt; *VAL* *VAL*)">
+					display="(&lt; *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(&lt; " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -132,12 +125,12 @@
 				<expression
 					name=">"
 					description="The greater-than comparison."
-					display="(> *VAL* *VAL*)">
+					display="(> *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(> " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -145,12 +138,12 @@
 				<expression
 					name="="
 					description="The equal-to comparison."
-					display="(= *VAL* *VAL*)">
+					display="(= *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(= " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -160,16 +153,16 @@
 				<expression
 					name="if"
 					description="The if flow-control structure"
-					display="(if *BOOL*\n\t*EXPR*\n\t*EXPR*)" >
+					display="(if *TEST*\n\t*WHEN-TRUE*\n\t*WHEN-FALSE*)" >
 					<template>
 						<elem type="text" val="(if " />
-						<elem type="block" val="BOOL" />
+						<elem type="block" val="TEST" />
 						<elem type="eol" />
 						<elem type="indent" />
-						<elem type="block" val="EXPR" />
+						<elem type="block" val="WHEN-TRUE" />
 						<elem type="eol" />
 						<elem type="indent" />
-						<elem type="block" val="EXPR" />
+						<elem type="block" val="WHEN-FALSE" />
 						<elem type="text" val=")" />
 					</template>
 				</expression>
@@ -184,10 +177,10 @@
 						<elem type="text" val="(let ((" />
 						<elem type="block" val="SYMBOL" />
 						<elem type="text" val=" " />
-						<elem type="block" val="VAL" />
+						<elem type="block" val="EXPR" />
 						<elem type="text" val="))" />
 						<elem type="eol" />
-						elem type="indent" />
+						<elem type="indent" />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>

@@ -37,13 +37,22 @@ class MyDialog(wx.Dialog):
         self.remove_button = XRCCTRL(self, "remove_button")
         self.Bind(wx.EVT_BUTTON, self.OnRemove, self.remove_button)
         self.save_button = XRCCTRL(self, "save_button")
-        
+        self.Bind(wx.EVT_BUTTON, self.OnSave, self.save_button)
+        self.info_button = XRCCTRL(self, "info_button")
+        self.Bind(wx.EVT_BUTTON, self.OnInfo, self.info_button)
+                
         #fill the block_tree
         Import.LoadBlockIntoTree(self.block_tree)
         
         #set the text of out code to a basic element
         self.root_expression = TpclExpression(self.blocks["INITIAL_BLOCK"]["Lambda Design"])
         self.code_stc.SetText(str(self.root_expression))
+        
+    def OnInfo(self, event):
+        """\
+        Opens a dialog without a parent for the moment
+        """
+        wx.MessageBox("You hit the save button!", caption = "OMG Save!", style=wx.OK)
         
     def OnClear(self, event):
         """\
