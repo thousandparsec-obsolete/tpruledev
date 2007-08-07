@@ -24,7 +24,6 @@ class MyDialog(wx.Dialog):
     
     def OnCreate(self):
         self.SetSize((600, 400))
-        self.blocks = Import.LoadBlocks()
         
         #widgets
         self.code_stc = XRCCTRL(self, "code_stc")
@@ -43,10 +42,7 @@ class MyDialog(wx.Dialog):
                 
         #fill the block_tree
         Import.LoadBlockIntoTree(self.block_tree)
-        
-        #set the text of out code to a basic element
-        self.root_expression = TpclExpression(self.blocks["INITIAL_BLOCK"]["Lambda Design"])
-        self.code_stc.SetText(str(self.root_expression))
+        self.root_expression = None
         
     def OnInfo(self, event):
         """\
@@ -62,8 +58,7 @@ class MyDialog(wx.Dialog):
         """
         self.code_stc.ClearAll()
         #for now we'll put the root expression back in place
-        self.root_expression = TpclExpression(self.blocks["INITIAL_BLOCK"]["Lambda Design"])
-        self.code_stc.SetText(str(self.root_expression))
+        self.root_expression = None
         pass
     
     def OnRemove(self, event):
@@ -82,14 +77,6 @@ class MyDialog(wx.Dialog):
         """
         event.Skip()
         pass
-        
-    def OnPosChanged(self, event):
-        """\
-        Position changed, check to see if we should enable or disable
-        the insert button
-        """
-        self.insert_button.Enable(self.root_expression.IsExpression(self.code_stc.GetCurrentPos()))
-        event.Skip()
     
     def OnInsert(self, event):
         """\
@@ -103,7 +90,12 @@ class MyDialog(wx.Dialog):
             if block:
                 try:
                     expression = TpclExpression(block)
-                    self.root_expression.InsertExpression(pos, expression)
+                    if not self.root_expression:
+                        self.root_expression = expression
+                    
+                    else:
+                        self.root_expression.InsertExpression(pos, expression)
+                        
                     self.code_stc.SetText(str(self.root_expression))
                 except ValueError:
                     print "Tried to insert in a place where there's no expansion point"
@@ -116,7 +108,8 @@ class MyDialog(wx.Dialog):
         event.Skip()
         print "Trying to show context menu at pos:", self.code_stc.GetCurrentPos()
         try:
-            if self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]:
+            if not self.root_expression or \
+                    self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]:
                 print "Trying to show popup menu..."
                 menu = wx.Menu()
                 insert_item = menu.Append(wx.ID_ANY, "Insert")
