@@ -133,7 +133,7 @@ def OnInsert(expression):
 		
 		<category name="Procedure Calls">
 			<category name="String Functions">
-				<category name="Comparison Operators>
+				<category name="Comparison Operators">
 					<category name="Case Insensitive">
 						<expression
 							name="string-ci=?"
