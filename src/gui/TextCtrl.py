@@ -36,7 +36,7 @@ keyword.kwlist = ["and", "begin", "call-with-current-continuation", "call-with-i
                   "vector", "vector->list", "vector-fill!", "vector-length", "vector-ref", "vector-set!", "with-input-from-file",
                   "with-output-to-file", "write", "write-char", "zero?"]
                   
-keyword.expr_list = ['*EXPR*', '*TEST*', '*SYMBOL*', '*WHEN-TRUE*', '*WHEN-FALSE*', '*FIRST*', '*SECOND*']
+keyword.expr_list = ['*EXPR*', '*TEST*', '*SYMBOL*', '*VAL*', '*WHEN-TRUE*', '*WHEN-FALSE*', '*FIRST*', '*SECOND*', '*STRING*']
 
 
 if wx.Platform == '__WXMSW__':

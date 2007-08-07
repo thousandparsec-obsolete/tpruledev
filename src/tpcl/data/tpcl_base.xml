@@ -1,8 +1,22 @@
 <blocks>
 	<category name="Built-In">
-		<category
-			name="Variable References"
-			description="References to all variables in the current environment."/>
+		<category name="Procedure Definitions">
+			<expression2 name="TPCL Requirements Function"/>
+			<expression 
+				name="TPCL Requires Function"
+				description="A lambda function taking a design as its only argument."
+				display="(lambda (design)\n\t*EXPR*)">
+				<template>
+					<elem type="text" val="(lambda (design) " />
+					<elem type="eol" />
+					<elem type="indent" />
+					<elem type="block" val="EXPR" />
+					<elem type="text" val=")" />
+				</template>
+			</expression>
+			<expression2 name="TPCL Display Function"/>
+			<expression2 name="TPCL Cost Function"/>
+		</category>
 		
 		<category
 			name="Literal Expression"
@@ -82,7 +96,180 @@ def OnInsert(expression):
 		</category>
 		
 		<category name="Procedure Calls">
-			<category name="String Functions"/>
+			<category name="String Functions">
+				<category name="Comparison Operators>
+					<category name="Case Insensitive">
+						<expression
+							name="string-ci=?"
+							description="Returns #t if the two strings are the same length and contain the same characters in the same positions, otherwise returns #f. Case insensitive"
+							display="(string-ci=? *STRING* *STRING*)">
+							<template>
+								<elem type="text" val="(string-ci=? " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=" " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=")" />
+							</template>
+						</expression>
+						
+						<expression
+							name="string-ci&lt;?"
+							description="&lt; comparison using lexicographic extensions on the strings based on characters"
+							display="(string-ci&lt;? *STRING* *STRING*)">
+							<template>
+								<elem type="text" val="(string-ci&lt;? " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=" " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=")" />
+							</template>
+						</expression>
+						
+						<expression
+							name="string-ci>?"
+							description="> comparison using lexicographic extensions on the strings based on characters"
+							display="(string-ci>? *STRING* *STRING*)">
+							<template>
+								<elem type="text" val="(string-ci>? " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=" " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=")" />
+							</template>
+						</expression>
+						
+						<expression
+							name="string-ci&lt;=?"
+							description="&lt;= comparison using lexicographic extensions on the strings based on characters"
+							display="(string-ci&lt;=? *STRING* *STRING*)">
+							<template>
+								<elem type="text" val="(string-ci&lt;=? " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=" " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=")" />
+							</template>
+						</expression>
+						
+						<expression
+							name="string-ci>=?"
+							description=">= comparison using lexicographic extensions on the strings based on characters"
+							display="(string-ci>=? *STRING* *STRING*)">
+							<template>
+								<elem type="text" val="(string-ci>=? " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=" " />
+								<elem type="block" val="STRING" />
+								<elem type="text" val=")" />
+							</template>
+						</expression>
+					</category>
+					
+					<expression
+						name="string=?"
+						description="Returns #t if the two strings are the same length and contain the same characters in the same positions, otherwise returns #f."
+						display="(string=? *STRING* *STRING*)">
+						<template>
+							<elem type="text" val="(string=? " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=" " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="string&lt;?"
+						description="&lt; comparison using lexicographic extensions on the strings based on characters"
+						display="(string&lt;? *STRING* *STRING*)">
+						<template>
+							<elem type="text" val="(string&lt;? " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=" " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="string>?"
+						description="> comparison using lexicographic extensions on the strings based on characters"
+						display="(string>? *STRING* *STRING*)">
+						<template>
+							<elem type="text" val="(string>? " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=" " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="string&lt;=?"
+						description="&lt;= comparison using lexicographic extensions on the strings based on characters"
+						display="(string&lt;=? *STRING* *STRING*)">
+						<template>
+							<elem type="text" val="(string&lt;=? " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=" " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="string>=?"
+						description=">= comparison using lexicographic extensions on the strings based on characters"
+						display="(string>=? *STRING* *STRING*)">
+						<template>
+							<elem type="text" val="(string>=? " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=" " />
+							<elem type="block" val="STRING" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+				</category>
+				<!--End String Comp-Ops-->
+				
+				<expression
+					name="make-string"
+					description="Initializes an empty string of length VAL"
+					display="(make-string *VAL*)">
+					<template>
+						<elem type="text" val="(make-string " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="make-string char"
+					description="Initializes an empty string of length VAL filled with characters of type VAL"
+					display="(make-string *VAL* *VAL*)">
+					<template>
+						<elem type="text" val="(make-string " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="string-length"
+					description="Returns the number of characters in string"
+					display="(string-length *STRING*)">
+					<template>
+						<elem type="text" val="(string-length " />
+						<elem type="block" val="STRING" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+			</category>
+			<!--End String Ops-->
+			
 			<category name="Numerical Functions">
 				<expression
 					name="+"
@@ -103,6 +290,108 @@ def OnInsert(expression):
 					display="(- *EXPR* *EXPR*)">
 					<template>
 						<elem type="text" val="(- " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="/"
+					description="Divider."
+					display="(/ *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(/ " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="*"
+					description="Multiplier."
+					display="(* *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(* " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="max"
+					description="Returns the maximum value of its arguments."
+					display="(max *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(max " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="min"
+					description="Returns the minimum value of its arguments."
+					display="(min *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(min " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="abs"
+					description="Returns the absolute value of its argument."
+					display="(abs *EXPR*)">
+					<template>
+						<elem type="text" val="(abs " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="quotient"
+					description="Returns the quotient of its first argument divided by the second."
+					display="(quotient *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(quotient " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="remainder"
+					description="Returns the remainder value of first argument divided by its second."
+					display="(remainder *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(remainder " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="modulo"
+					description="Returns the modulo value of its first argument divided by its second."
+					display="(modulo *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(modulo " />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
 						<elem type="block" val="EXPR" />
@@ -148,13 +437,132 @@ def OnInsert(expression):
 				</expression>
 			</category>
 			
-			<category name="Comparison Operators">
+			<category name="Boolean Operators">
+				<category name="Equivalence Operators">
+					<expression
+						name="="
+						description="The equal-to comparison."
+						display="(= *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(= " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="eqv?"
+						description="Returns #t if its arguments should normally be regarded as the same object."
+						display="(eqv? *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(eqv? " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="eq?"
+						description="eq? is similar to eqv? except that in some cases it is capable of discerning distinctions finer than those detectable by eqv?."
+						display="(eq? *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(eq? " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="equal?"
+						description="Returns #t if its arguments should normally be regarded as the same object."
+						display="(equal? *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(equal? " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+				</category>
+				
+				<category name="Comparison Operators">
+					<expression
+						name="&lt;"
+						description="The less-than comparison."
+						display="(&lt; *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(&lt; " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name="&lt;="
+						description="The less-than-or-equal comparison."
+						display="(&lt;= *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(&lt;= " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name=">"
+						description="The greater-than comparison."
+						display="(> *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(> " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+					
+					<expression
+						name=">="
+						description="The greater-than-or-equal comparison."
+						display="(>= *EXPR* *EXPR*)">
+						<template>
+							<elem type="text" val="(>= " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=" " />
+							<elem type="block" val="EXPR" />
+							<elem type="text" val=")" />
+						</template>
+					</expression>
+				</category>
+				
 				<expression
-					name="&lt;"
-					description="The less-than comparison."
-					display="(&lt; *EXPR* *EXPR*)">
+					name="not"
+					description="The boolean inverse operator - turns True => False and False => True."
+					display="(not *EXPR*)">
 					<template>
-						<elem type="text" val="(&lt; " />
+						<elem type="text" val="(not " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
+				
+				<expression
+					name="and"
+					description="The boolean and operator - returns True only when all expressions are True."
+					display="(and *EXPR* *EXPR*)">
+					<template>
+						<elem type="text" val="(and " />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
 						<elem type="block" val="EXPR" />
@@ -163,11 +571,11 @@ def OnInsert(expression):
 				</expression>
 				
 				<expression
-					name=">"
-					description="The greater-than comparison."
-					display="(> *EXPR* *EXPR*)">
+					name="or"
+					description="The boolean or operator - returns True is any of the expressions in it are True."
+					display="(or *EXPR*)">
 					<template>
-						<elem type="text" val="(> " />
+						<elem type="text" val="(or " />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
 						<elem type="block" val="EXPR" />
@@ -175,18 +583,6 @@ def OnInsert(expression):
 					</template>
 				</expression>
 				
-				<expression
-					name="="
-					description="The equal-to comparison."
-					display="(= *EXPR* *EXPR*)">
-					<template>
-						<elem type="text" val="(= " />
-						<elem type="block" val="EXPR" />
-						<elem type="text" val=" " />
-						<elem type="block" val="EXPR" />
-						<elem type="text" val=")" />
-					</template>
-				</expression>
 			</category>
 			
 			<category name="Flow Control">
@@ -225,25 +621,20 @@ def OnInsert(expression):
 						<elem type="text" val=")" />
 					</template>
 				</expression>
+				
+				<expression
+					name="apply"
+					description="The function apply returns the result of applying its first argument to its second argument."
+					display="(apply *SYMBOL* *VAL*)">
+					<template>
+						<elem type="text" val="(apply " />
+						<elem type="block" val="SYMBOL" />
+						<elem type="text" val=" " />
+						<elem type="block" val="VAL" />
+						<elem type="text" val=")" />
+					</template>
+				</expression>
 			</category>
-		</category>
-		
-		<category name="Procedure Definitions">
-			<expression2 name="TPCL Requirements Function"/>
-			<expression 
-				name="TPCL Requires Function"
-				description="A lambda function taking a design as its only argument."
-				display="(lambda (design)\n\t*EXPR*)">
-				<template>
-					<elem type="text" val="(lambda (design) " />
-					<elem type="eol" />
-					<elem type="indent" />
-					<elem type="block" val="EXPR" />
-					<elem type="text" val=")" />
-				</template>
-			</expression>
-			<expression2 name="TPCL Display Function"/>
-			<expression2 name="TPCL Cost Function"/>
 		</category>
 	</category>
 	
