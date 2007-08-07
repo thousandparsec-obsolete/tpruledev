@@ -67,8 +67,13 @@ class MyDialog(wx.Dialog):
         selected.
         """
         pos = self.code_stc.GetCurrentPos()
-        self.root_expression.RemoveExpression(pos)
-        self.code_stc.SetText(str(self.root_expression))
+        try:
+            self.root_expression.RemoveExpression(pos)
+            self.code_stc.SetText(str(self.root_expression))
+        except ValueError:
+            #text in top level expression, get rid of it
+            self.root_expression = None
+            self.code_stc.ClearAll()
         event.Skip()
     
     def OnSave(self, event):
@@ -88,15 +93,23 @@ class MyDialog(wx.Dialog):
         if sel_id.IsOk():
             block = self.block_tree.GetPyData(sel_id)
             if block:
+                print "Trying to insert block..."
                 try:
                     expression = TpclExpression(block)
-                    if not self.root_expression:
-                        self.root_expression = expression
+                    insert_ok = True
+                    if block.on_insert:
+                        print "Trying to use OnInsert function of block"
+                        exec(block.on_insert)
+                        insert_ok = OnInsert(expression)
+                        print "Result of OnInsert function:", insert_ok
                     
-                    else:
-                        self.root_expression.InsertExpression(pos, expression)
+                    if insert_ok:    
+                        if not self.root_expression:
+                            self.root_expression = expression                        
+                        else:
+                            self.root_expression.InsertExpression(pos, expression)                        
+                        self.code_stc.SetText(str(self.root_expression))
                         
-                    self.code_stc.SetText(str(self.root_expression))
                 except ValueError:
                     print "Tried to insert in a place where there's no expansion point"
         event.Skip()
@@ -108,17 +121,27 @@ class MyDialog(wx.Dialog):
         event.Skip()
         print "Trying to show context menu at pos:", self.code_stc.GetCurrentPos()
         try:
-            if not self.root_expression or \
-                    self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]:
-                print "Trying to show popup menu..."
-                menu = wx.Menu()
-                insert_item = menu.Append(wx.ID_ANY, "Insert")
-                self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
-                sel_id = self.block_tree.GetSelection()
-                if sel_id.IsOk():
-                    block = self.block_tree.GetPyData(sel_id)
-                    insert_item.Enable((block != None))
+            print "Trying to show popup menu..."
+            menu = wx.Menu()
+            
+            if not self.root_expression:
+                is_expansion_point = True
+            else:
+                is_expansion_point = self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]
+            
+            #insert item
+            insert_item = menu.Append(wx.ID_ANY, "Insert")
+            self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
+            sel_id = self.block_tree.GetSelection()
+            #only enable if we're on an expansion point
+            insert_item.Enable((sel_id.IsOk() and self.block_tree.GetPyData(sel_id) != None and \
+                is_expansion_point))
                 
-                self.code_stc.PopupMenu(menu, event.GetPosition())
+            #remove item
+            remove_item = menu.Append(wx.ID_ANY, "Remove")
+            self.Bind(wx.EVT_MENU, self.OnRemove, remove_item)
+            remove_item.Enable(not is_expansion_point)
+            
+            self.code_stc.PopupMenu(menu, event.GetPosition())
         except ValueError:
             print "Index out of range..."

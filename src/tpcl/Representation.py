@@ -367,6 +367,15 @@ class TpclExpression(object):
             return self.EXPRESSION
         else:
             return self.EXPANSION_POINT
+            
+    def SetElementData(self, index, data):
+        """\
+        Manually set element data. This could be incredibly messy if we do it
+        the wrong way. But we should provide some sort of
+        access from outside.
+        """
+        self.data[index] = data
+        self.InvalidateState()
         
     def InsertExpression(self, offset, expression):
         """\
@@ -405,7 +414,7 @@ class TpclExpression(object):
             else:
                 parent.RemoveExpression(offset)            
         else:
-            raise ValueError("You can't remove the top level expression!")
+            raise ValueError("We are the root expression, can't remove ourself!")
 
 
 import random

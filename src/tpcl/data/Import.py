@@ -117,4 +117,6 @@ def ReadExpression(expr_elem, tree, cat_id):
             template.AppendIndentElement()
         else:
             template.AppendBlockElement(elem.get('val'))
+    tpcl_block.on_insert = expr_elem.findtext('oninsert')
+    
     tree.SetPyData(expr_id, tpcl_block)

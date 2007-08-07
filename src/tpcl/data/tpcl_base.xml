@@ -13,8 +13,18 @@
 				display="String">
 				<template>
 					<elem type="text" val=""/>
-				</template>		
+				</template>
+				<oninsert>
+def OnInsert(expression):
+	dialog = wx.TextEntryDialog(None, "Text:", "String Literal", style = wx.OK | wx.CANCEL)
+	if dialog.ShowModal() == wx.OK:
+		text = dialog.GetValue()
+		expression.SetElementData(0, '"%s"' % text)
+		return True
+	else:
+		return False</oninsert>
 			</expression>
+			
 			<expression
 				name="Numerical Literal"
 				description="A number."
@@ -22,7 +32,17 @@
 				<template>
 					<elem type="text" val=""/>
 				</template>
+				<oninsert>
+def OnInsert(expression):
+	dialog = wx.TextEntryDialog(None, "Number:", "Numerical Value", style = wx.OK | wx.CANCEL)
+	if dialog.ShowModal() == wx.OK:
+		num = dialog.GetValue()
+		expression.SetElementData(0, '%s' % num)
+		return True
+	else:
+		return False</oninsert>
 			</expression>
+			
 			<expression
 				name="Boolean"
 				description="True or false."
@@ -30,7 +50,18 @@
 				<template>
 					<elem type="text" val=""/>
 				</template>
+				<oninsert>
+def OnInsert(expression):
+	choice = wx.GetSingleChoiceIndex("Boolean Value:", "Boolean Value", ["False", "True"])
+	if choice == 1:
+		expression.SetElementData(0, "#t")
+	elif choice == 0:
+		expression.SetElementData(0, "#f")
+	else:
+		return False
+	return True</oninsert>
 			</expression>
+			
 			<expression
 				name="Quote Escaped Expression"
 				description="A quote escaped TPCL Expression. For advanced coders only."
@@ -38,6 +69,15 @@
 				<template>
 					<elem type="text" val=""/>
 				</template>
+				<oninsert>
+def OnInsert(expression):
+	dialog = wx.TextEntryDialog(None, "Escaped Value:", "Quote Escaped Expression", style = wx.OK | wx.CANCEL)
+	if dialog.ShowModal() == wx.OK:
+		text = dialog.GetValue()
+		expression.SetElementData(0, "'%s" % text)
+		return True
+	else:
+		return False</oninsert>
 			</expression>
 		</category>
 		
