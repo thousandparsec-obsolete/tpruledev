@@ -52,7 +52,8 @@ class MyDialog(wx.Dialog):
         """\
         Opens a dialog without a parent for the moment
         """
-        wx.MessageBox("You hit the save button!", caption = "OMG Save!", style=wx.OK)
+        event.Skip()
+        pass
         
     def OnClear(self, event):
         """\
@@ -79,8 +80,8 @@ class MyDialog(wx.Dialog):
         """\
         Saves the current work.
         """
-        wx.MessageBox("You hit the save button!", caption = "OMG Save!", style=wx.OK)
         event.Skip()
+        pass
         
     def OnPosChanged(self, event):
         """\
