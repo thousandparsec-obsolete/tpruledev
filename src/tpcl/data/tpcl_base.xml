@@ -1,3 +1,52 @@
+<!--
+Quick doc on the format of the xml file here:
+
+Categories:
+	<category name="CatName">
+	</category>
+	
+	A category is simply a node in a tree which contains other categories and expressions.
+	The name attribute is required.
+	
+Expressions:
+	<expression
+		name=""
+		description=""
+		display="">
+		<template>
+			<elem type="" val="" />
+		</template>
+		<oninsert>TEXT</oninsert>
+		<expansion_menu>TEXT</expansion_menu>
+	</expression>
+	
+	Expressions define TPCL Expression Blocks. They must have a name, description and display.
+	The name is used to display it to the user, the description is used as documentation and the
+	display string is used to give a preview of what the code will look like when inserted.
+	
+	The template element defines the template for the TPCL Code. This is composed of elements of the
+	following types:
+		text - Plain text, unchangeable, val required
+		block - A place where another expression can be inserted, val required
+		eol - an end of line marker
+		indent - an indent marker
+		
+	The oninsert element is a snippet of python code that is called when an expression of this type
+	is inserted into the expression editor. Typically this will be a dialog window prompting the
+	user for input when necessary, but it can be anything that you want. The python code must define,
+	however, a function called OnInsert(expression) that takes one parameter, expression, which is
+	the TpclExpression that results from using the template of this block.
+	
+	The expansion_menu element contains a snippet of python code. Its purpose is to initialize the variable
+	exp_menu as a wx.Menu to be displayed when the user clicks on an expansion point. It should give the user
+	the option to close off the expansion points or extend them.
+	
+File processing:
+	When the file is processed the categories are processed recursively such that categories are
+	evaluated first and added as children before any expressions. So the ordering of elements
+	only matters within elements of the same type. Categories will always come before Expressions
+-->
+
 <blocks>
 	<category name="Built-In">
 		<category name="Procedure Definitions">
