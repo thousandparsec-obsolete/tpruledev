@@ -67,7 +67,7 @@
 				<oninsert>
 def OnInsert(expression):
 	dialog = wx.TextEntryDialog(None, "Text:", "String Literal", style = wx.OK | wx.CANCEL)
-	if dialog.ShowModal() == wx.OK:
+	if dialog.ShowModal() == wx.ID_OK:
 		text = dialog.GetValue()
 		expression.SetElementData(0, '"%s"' % text)
 		return True
@@ -85,7 +85,7 @@ def OnInsert(expression):
 				<oninsert>
 def OnInsert(expression):
 	dialog = wx.TextEntryDialog(None, "Number:", "Numerical Value", style = wx.OK | wx.CANCEL)
-	if dialog.ShowModal() == wx.OK:
+	if dialog.ShowModal() == wx.ID_OK:
 		num = dialog.GetValue()
 		expression.SetElementData(0, '%s' % num)
 		return True
