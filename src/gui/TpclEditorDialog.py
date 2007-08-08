@@ -29,6 +29,8 @@ class MyDialog(wx.Dialog):
         self.code_stc = XRCCTRL(self, "code_stc")
         self.code_stc.Bind(wx.EVT_LEFT_UP, self.ContextMenuHandler)
         self.block_tree = XRCCTRL(self, "block_tree")
+        self.preview_ctrl = XRCCTRL(self, "preview_ctrl")
+        self.block_tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnSelectionChanged)
         
         #buttons
         self.clear_button = XRCCTRL(self, "clear_button")
@@ -49,7 +51,6 @@ class MyDialog(wx.Dialog):
         Opens a dialog without a parent for the moment
         """
         event.Skip()
-        pass
         
     def OnClear(self, event):
         """\
@@ -59,7 +60,7 @@ class MyDialog(wx.Dialog):
         self.code_stc.ClearAll()
         #for now we'll put the root expression back in place
         self.root_expression = None
-        pass
+        event.Skip()
     
     def OnRemove(self, event):
         """\
@@ -81,7 +82,23 @@ class MyDialog(wx.Dialog):
         Saves the current work.
         """
         event.Skip()
-        pass
+        
+    def OnSelectionChanged(self, event):
+        """\
+        Selection change in the block tree
+        We need to fill the preview control here
+        """
+        print "Handling selection changed event."
+        sel_id = self.block_tree.GetSelection()
+        if sel_id.IsOk():
+            block = self.block_tree.GetPyData(sel_id)
+            if block:
+                self.preview_ctrl.SetValue(block.display)
+            else:
+                self.preview_ctrl.SetValue("")
+        else:
+            self.preview_ctrl.SetValue("")
+        event.Skip()
     
     def OnInsert(self, event):
         """\
