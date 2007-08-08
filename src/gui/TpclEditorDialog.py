@@ -127,7 +127,7 @@ class MyDialog(wx.Dialog):
             if not self.root_expression:
                 is_expansion_point = True
             else:
-                is_expansion_point = self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]
+                is_expansion_point = self.root_expression.IsInsertionPoint(self.code_stc.GetCurrentPos())[0]
             
             #insert item
             insert_item = menu.Append(wx.ID_ANY, "Insert")
