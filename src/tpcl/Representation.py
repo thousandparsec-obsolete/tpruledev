@@ -106,8 +106,11 @@ class TpclTemplate(object):
     def AppendExpansionElement(self):
         self.template.append((self.EXPANSION, "..."))
         
-    def AppendExpansionElement(self, index):
+    def InsertExpansionElement(self, index):
         self.template.insert(index, (self.EXPANSION, "..."))
+        
+    def RemoveElement(self, index):
+        del self.template.[index]
         
     #####################################
     # Type test methods
