@@ -8,7 +8,7 @@ from wx.xrc import XRCCTRL
 from tpcl.data import Import
 from tpcl.Representation import *
 
-class MyDialog(wx.Dialog):
+class MyDialog(wx.Frame):
     """
     A wx.Panel for displaying and editing Categories
     """
@@ -28,8 +28,7 @@ class MyDialog(wx.Dialog):
         #widgets
         self.code_stc = XRCCTRL(self, "code_stc")
         self.code_stc.Bind(wx.EVT_LEFT_UP, self.ContextMenuHandler)
-        self.block_tree = XRCCTRL(self, "block_tree")
-        
+
         #buttons
         self.clear_button = XRCCTRL(self, "clear_button")
         self.Bind(wx.EVT_BUTTON, self.OnClear, self.clear_button)
@@ -40,8 +39,6 @@ class MyDialog(wx.Dialog):
         self.info_button = XRCCTRL(self, "info_button")
         self.Bind(wx.EVT_BUTTON, self.OnInfo, self.info_button)
                 
-        #fill the block_tree
-        Import.LoadBlockIntoTree(self.block_tree)
         self.root_expression = None
         
     def OnInfo(self, event):
@@ -49,7 +46,6 @@ class MyDialog(wx.Dialog):
         Opens a dialog without a parent for the moment
         """
         event.Skip()
-        pass
         
     def OnClear(self, event):
         """\
@@ -59,7 +55,7 @@ class MyDialog(wx.Dialog):
         self.code_stc.ClearAll()
         #for now we'll put the root expression back in place
         self.root_expression = None
-        pass
+        event.Skip()
     
     def OnRemove(self, event):
         """\
@@ -81,7 +77,6 @@ class MyDialog(wx.Dialog):
         Saves the current work.
         """
         event.Skip()
-        pass
     
     def OnInsert(self, event):
         """\
@@ -89,29 +84,17 @@ class MyDialog(wx.Dialog):
         into the currently selected code socket.
         """
         pos = self.code_stc.GetCurrentPos()
-        sel_id = self.block_tree.GetSelection()
-        if sel_id.IsOk():
-            block = self.block_tree.GetPyData(sel_id)
-            if block:
-                print "Trying to insert block..."
-                try:
-                    expression = TpclExpression(block)
-                    insert_ok = True
-                    if block.on_insert:
-                        print "Trying to use OnInsert function of block"
-                        exec(block.on_insert)
-                        insert_ok = OnInsert(expression)
-                        print "Result of OnInsert function:", insert_ok
-                    
-                    if insert_ok:    
-                        if not self.root_expression:
-                            self.root_expression = expression                        
-                        else:
-                            self.root_expression.InsertExpression(pos, expression)                        
-                        self.code_stc.SetText(str(self.root_expression))
-                        
-                except ValueError:
-                    print "Tried to insert in a place where there's no expansion point"
+
+        block = MyPopup(self).ShowModal()
+
+        if block:
+            expression = TpclExpression(block)
+            if not self.root_expression:
+                self.root_expression = expression                        
+            else:
+                self.root_expression.InsertExpression(pos, expression)                        
+            self.code_stc.SetText(str(self.root_expression))
+
         event.Skip()
 
     def ContextMenuHandler(self, event):
@@ -132,10 +115,9 @@ class MyDialog(wx.Dialog):
             #insert item
             insert_item = menu.Append(wx.ID_ANY, "Insert")
             self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
-            sel_id = self.block_tree.GetSelection()
+
             #only enable if we're on an expansion point
-            insert_item.Enable((sel_id.IsOk() and self.block_tree.GetPyData(sel_id) != None and \
-                is_expansion_point))
+            insert_item.Enable(is_expansion_point)
                 
             #remove item
             remove_item = menu.Append(wx.ID_ANY, "Remove")
@@ -145,3 +127,72 @@ class MyDialog(wx.Dialog):
             self.code_stc.PopupMenu(menu, event.GetPosition())
         except ValueError:
             print "Index out of range..."
+
+class MyPopup(wx.Dialog):
+    """
+    A wx.Panel for displaying and editing Categories
+    """
+    
+    def __init__(self, parent, id=wx.ID_ANY, style=wx.EXPAND):
+        #load from XRC, need to use two-stage create
+        res = gui.XrcUtilities.XmlResource('./gui/xrc/EditorPopup.xrc')
+        pre = wx.PreDialog()
+        res.LoadOnDialog(pre, parent, "editor")
+        self.PostCreate(pre) 
+
+        self.OnCreate()
+    
+    def OnCreate(self):
+        print "OnCreate..."
+        self.SetSize((600, 400))
+        
+        #widgets
+        self.code_stc = XRCCTRL(self, "code_stc")
+
+        self.block_tree = XRCCTRL(self, "block_tree")
+        self.block_tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelect)
+        
+        #buttons
+        self.insert_button = XRCCTRL(self, "insert_button")
+        self.Bind(wx.EVT_BUTTON, self.OnInsert, self.insert_button)
+        self.cancel_button = XRCCTRL(self, "cancel_button")
+        self.Bind(wx.EVT_BUTTON, self.OnCancel, self.cancel_button)
+
+        #fill the block_tree
+        Import.LoadBlockIntoTree(self.block_tree)
+
+        print "End OnCreate..."
+        
+    def OnCancel(self, event):
+        """\
+        """
+        self.block_tree.Unselect()
+        self.Close()
+ 
+    def OnInsert(self, event):
+        """\
+        Inserts the currently selected code block
+        into the currently selected code socket.
+        """
+        self.Close()
+
+    def Selected(self):
+        sel_id = self.block_tree.GetSelection()
+        if sel_id.IsOk():
+            block = self.block_tree.GetPyData(sel_id)
+            return block
+
+    def OnTreeSelect(self, event):
+        selected = self.Selected()
+        if selected:
+            # Update the scheme box
+            self.code_stc.SetText(str(TpclExpression(selected)))
+
+            # Update the info box
+
+        event.Skip()
+
+    def ShowModal(self):
+        wx.Dialog.ShowModal(self)
+        return self.Selected()
+

@@ -22,7 +22,7 @@ class App(wx.App):
         
     def OnShowEditor(self, event):
         dialog = gui.TpclEditorDialog.MyDialog(self.frame)
-        dialog.ShowModal()
+        dialog.Show()
         
 def main():
     app = App(redirect=False)
