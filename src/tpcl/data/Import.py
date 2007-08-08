@@ -102,7 +102,7 @@ def ReadExpression(expr_elem, tree, cat_id):
     name = expr_elem.get('name')
     expr_id = tree.AppendItem(cat_id, name)
     description = expr_elem.get('description')
-    display = expr_elem.get('display')
+    display = expr_elem.get('display').replace("\\n", "\n").replace("\\t", "\t")
     tpcl_block = TpclBlock(name, type, description, display)
     template = tpcl_block.template
     temp = expr_elem.find('template')
