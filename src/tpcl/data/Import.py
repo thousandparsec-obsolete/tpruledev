@@ -115,8 +115,11 @@ def ReadExpression(expr_elem, tree, cat_id):
             template.AppendEolElement()
         elif elem.get('type') == "indent":
             template.AppendIndentElement()
+        elif elem.get('type') == "exp_point":
+            template.AppendExpansionElement()
         else:
             template.AppendBlockElement(elem.get('val'))
     tpcl_block.on_insert = expr_elem.findtext('oninsert')
+    tpcl_block.expansion_menu = expr_elem.findtext('expansion_menu')
     
     tree.SetPyData(expr_id, tpcl_block)

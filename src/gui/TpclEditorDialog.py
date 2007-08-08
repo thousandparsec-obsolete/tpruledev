@@ -125,22 +125,33 @@ class MyDialog(wx.Dialog):
             menu = wx.Menu()
             
             if not self.root_expression:
-                is_expansion_point = True
+                is_insertion_point = True
+                is_expansion_point = False
             else:
-                is_expansion_point = self.root_expression.IsInsertionPoint(self.code_stc.GetCurrentPos())[0]
+                is_insertion_point = self.root_expression.IsInsertionPoint(self.code_stc.GetCurrentPos())[0]
+                is_expansion_point = self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]
+                
+            sel_id = self.block_tree.GetSelection()
+            if sel_id.IsOk():
+                block = self.block_tree.GetPyData(sel_id)
+            else:
+                block = None
             
             #insert item
             insert_item = menu.Append(wx.ID_ANY, "Insert")
             self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
-            sel_id = self.block_tree.GetSelection()
             #only enable if we're on an expansion point
-            insert_item.Enable((sel_id.IsOk() and self.block_tree.GetPyData(sel_id) != None and \
-                is_expansion_point))
+            insert_item.Enable(block != None and is_insertion_point)
                 
             #remove item
             remove_item = menu.Append(wx.ID_ANY, "Remove")
             self.Bind(wx.EVT_MENU, self.OnRemove, remove_item)
-            remove_item.Enable(not is_expansion_point)
+            remove_item.Enable(not is_insertion_point)
+            
+            #check for expansion menu
+            if is_expansion_point and block.expansion_menu:
+                exec(block.expansion_menu)
+                menu.AppendMenu(wx.ID_ANY, "Expansion Point...", exp_menu)
             
             self.code_stc.PopupMenu(menu, event.GetPosition())
         except ValueError:

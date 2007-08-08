@@ -110,7 +110,7 @@ class TpclTemplate(object):
         self.template.insert(index, (self.EXPANSION, "..."))
         
     def RemoveElement(self, index):
-        del self.template.[index]
+        del self.template[index]
         
     #####################################
     # Type test methods

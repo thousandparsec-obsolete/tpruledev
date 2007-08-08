@@ -28,6 +28,7 @@ Expressions:
 	following types:
 		text - Plain text, unchangeable, val required
 		block - A place where another expression can be inserted, val required
+		exp_point - An expansion point where the user can choose to extend or close off the expression
 		eol - an end of line marker
 		indent - an indent marker
 		
@@ -368,6 +369,23 @@ def OnInsert(expression):
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=")" />
 					</template>
+				</expression>
+				
+				<expression
+					name="+ ..."
+					description="Expandable Adder."
+					display="(+ *EXPR* *...*)">
+					<template>
+						<elem type="text" val="(+ " />
+						<elem type="block" val="EXPR" />
+						<elem type="text" val=" " />
+						<elem type="exp_point" />
+						<elem type="text" val=")" />
+					</template>
+					<expansion_menu>
+exp_menu = wx.Menu()
+add_item = exp_menu.Append(wx.ID_ANY, "Add Argument")
+finish_item = exp_menu.Append(wx.ID_ANY, "No More Arguments")</expansion_menu>
 				</expression>
 				
 				<expression
