@@ -717,6 +717,49 @@ def OnInsert(expression):
 						<elem type="text" val=")" />
 					</template>
 				</expression>
+				
+				<expression
+					name="cond"
+					description="The cond flow-control structure"
+					display="(cond (*TEST* *WHEN-TRUE*) *...*)" >
+					<template>
+						<elem type="text" val="(cond (" />
+						<elem type="block" val="TEST" />
+						<elem type="text" val = " " />
+						<elem type="block" val="WHEN-TRUE" />
+						<elem type="text" val = ")" />
+						<elem type="eol" />
+						<elem type="indent" />
+						<elem type="exp_point">
+							<menu_option
+								name="Additional Condition">
+								<template>
+									<elem type="text" val = "(" />
+									<elem type="block" val="TEST" />
+									<elem type="text" val=" " />
+									<elem type="block" val="WHEN-TRUE" />
+									<elem type="text" val = ")" />
+									<elem type="eol" />
+									<elem type="indent" />
+								</template>
+							</menu_option>
+							<menu_option
+								name="Else Clause"
+								close_expansion="True">
+								<template>
+									<elem type="text" val = "(else" />
+									<elem type="text" val=" " />
+									<elem type="block" val="EXPR" />
+									<elem type="text" val = ")" />
+								</template>
+							</menu_option>
+							<menu_option
+								name="No More Conditions"
+								close_expansion="True" />
+						</elem>
+						<elem type="text" val=")" />
+					</template>
+				</expression>
 			</category>
 			<!--end of flow control-->
 			

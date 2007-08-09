@@ -410,7 +410,8 @@ class TpclExpression(object):
         else:
             exp_opts = self.expansion_options[index]
             if exp_opts:
-                exp_template = self.expansion_options[index][option][1]
+                exp_template = self.expansion_options[index][option][2]
+                continue_expansion = self.expansion_options[index][option][1]
                 if exp_template:
                     #we are expanding
                     expr = TpclExpression(TpclBlock("exp_point", "disp",
@@ -420,6 +421,9 @@ class TpclExpression(object):
                     self.expansion_options.insert(index, None)
                     self.data.insert(index, expr)
                     self.template.FillExpansionElement(index, "EXPR")
+                    
+                    if not continue_expansion:
+                        self.DeleteElement(index+1)
                 else:
                     self.DeleteElement(index)
                     

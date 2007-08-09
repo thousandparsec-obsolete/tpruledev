@@ -117,6 +117,9 @@ def ReadExpression(expr_elem, tree, cat_id):
     
 
 def ReadTemplate(template_elem):
+    if not template_elem:
+        return None
+        
     template = TpclTemplate()
     for elem in template_elem.findall('elem'):
         if elem.get('type') == "text":
@@ -130,11 +133,11 @@ def ReadTemplate(template_elem):
             for item in elem.findall('menu_option'):
                 name = item.get('name')
                 if item.get('close_expansion'):
-                    option_list.append((name, None))
+                    option_list.append((name, False, ReadTemplate(item.find('template'))))
                 else:
                     t_elem = item.find('template')
                     if t_elem:
-                        option_list.append((name, ReadTemplate(t_elem)))
+                        option_list.append((name, True, ReadTemplate(t_elem)))
                     else:
                         raise ValueError("ExpPoint item %s doesn't have template" % name)
             template.AppendExpansionElement(option_list)
