@@ -740,7 +740,6 @@ def OnInsert(expression):
 									<elem type="block" val="WHEN-TRUE" />
 									<elem type="text" val = ")" />
 									<elem type="eol" />
-									<elem type="indent" />
 								</template>
 							</menu_option>
 							<menu_option

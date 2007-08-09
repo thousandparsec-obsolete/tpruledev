@@ -259,6 +259,8 @@ class TpclExpression(object):
         Recalculates the offsets of all elements so
         that they are up to date.
         """
+        if not self.indent_ok:
+            self.RecalculateIndentation()
         for i in range(len(self.data)):
             offset = 0
             if i != 0:
@@ -291,6 +293,7 @@ class TpclExpression(object):
                 #we pad with tabs after a newline to achieve indentation
                 self.data[i] = self.template.GetElementValue(i) + ("\t"*self.indent_level[i])
                 
+        self.indent_ok = True
         self.string_ok = False
         self.length_ok = False
         self.offsets_ok = False
@@ -360,12 +363,14 @@ class TpclExpression(object):
             expansion point. p is the parent of 
         """
         index = self.GetIndexOfElemAt(offset)
-        if self.ElemIsText(index) or self.ElemIsExpansionPoint(index):
+        if self.ElemIsText(index):
             return (False, None)
         elif self.ElemIsInsertionPoint(index):
             return (True, self)
-        else:
+        elif self.ElemIsExpression(index):
             return self.data[index].IsInsertionPoint(offset)
+        else:
+            return (False, None)
             
     def IsExpansionPoint(self, offset):
         """\
@@ -404,23 +409,35 @@ class TpclExpression(object):
         print "In TpclExpression <%s> trying to expand at %d with option %d" % (self.block.name, offset, option)
         index = self.GetIndexOfElemAt(offset)
         if self.ElemIsText(index) or self.ElemIsInsertionPoint(index):
+            print "\tNot an expansion point!"
             return None
         elif self.ElemIsExpression(index):
+            print "\tAn expression, delving in!"
             return self.data[index].Expand(offset, option)
         else:
+            print "\tIt's an expansion point"
             exp_opts = self.expansion_options[index]
             if exp_opts:
                 exp_template = self.expansion_options[index][option][2]
                 continue_expansion = self.expansion_options[index][option][1]
                 if exp_template:
                     #we are expanding
+                    print "\tFound template"
                     expr = TpclExpression(TpclBlock("exp_point", "disp",
                                                     "desc", exp_template))
                     self.offsets.insert(index, 0)
-                    self.indent_level.insert(index, 0)
+                    self.indent_level.insert(index, self.base_indent)
                     self.expansion_options.insert(index, None)
                     self.data.insert(index, expr)
                     self.template.FillExpansionElement(index, "EXPR")
+                    self.InvalidateState()
+                    
+                    self.RecalculateOffsets()
+                    print "\tSetting offset as %d and indent level as %d" % (self.offsets[index], self.indent_level[index])
+                    print "\tindent_level =", self.indent_level
+                    print "\tbase_indent =", self.base_indent
+                    expr.SetOffset(self.offsets[index])
+                    expr.SetIndentLevel(self.indent_level[index])
                     
                     if not continue_expansion:
                         self.DeleteElement(index+1)
