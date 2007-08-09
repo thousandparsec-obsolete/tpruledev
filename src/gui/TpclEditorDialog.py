@@ -150,6 +150,9 @@ class MyDialog(wx.Dialog):
                 is_insertion_point = self.root_expression.IsInsertionPoint(offset)[0]
                 is_expansion_point = self.root_expression.IsExpansionPoint(offset)[0]
                 
+            print "is_insertion_point", is_insertion_point
+            print "is_expansion_point", is_expansion_point
+                
             sel_id = self.block_tree.GetSelection()
             if sel_id.IsOk():
                 block = self.block_tree.GetPyData(sel_id)
@@ -165,7 +168,7 @@ class MyDialog(wx.Dialog):
             #remove item
             remove_item = menu.Append(wx.ID_ANY, "Remove")
             self.Bind(wx.EVT_MENU, self.OnRemove, remove_item)
-            remove_item.Enable(not is_insertion_point)
+            remove_item.Enable((not is_insertion_point and not is_expansion_point) or (is_insertion_point and is_expansion_point))
             
             #check for expansion menu
             if is_expansion_point:

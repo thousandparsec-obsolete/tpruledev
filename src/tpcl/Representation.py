@@ -66,11 +66,11 @@ class TpclTemplate(object):
     
     We keep a list of textual elements and tpcl insertion points.
     """
-    TEXT = 0
-    BLOCK = 1
-    INDENT = 2
-    EOL = 3
-    EXPANSION = 4
+    TEXT = 1
+    BLOCK = 2
+    INDENT = 4
+    EOL = 8
+    EXPANSION = 16
     
     def __init__(self):
         self.template = []
@@ -113,6 +113,9 @@ class TpclTemplate(object):
     def InsertExpansionElement(self, index, expansion_options):
         self.template.insert(index, (self.EXPANSION, "...", expansion_options))
         
+    def FillExpansionElement(self, index, block):
+        self.template.insert(index, ((self.BLOCK | self.EXPANSION), block))
+        
     def RemoveElement(self, index):
         del self.template[index]
         
@@ -122,24 +125,26 @@ class TpclTemplate(object):
     
     def IsText(self, index):
         #Simple text, EOL and indents all count as text.
-        return self.template[index][0] == self.TEXT or \
-               self.template[index][0] == self.EOL or \
-               self.template[index][0] == self.INDENT
+        return (self.template[index][0] & (self.TEXT | self.EOL | self.INDENT) > 0)
                
     def IsSimpletext(self, index):
-        return self.template[index][0] == self.TEXT
+        return (self.template[index][0] & self.TEXT > 0)
     
     def IsEol(self, index):
-        return self.template[index][0] == self.EOL
+        return (self.template[index][0] & self.EOL > 0)
         
     def IsIndent(self, index):
-        return self.template[index][0] == self.INDENT
+        return (self.template[index][0] & self.INDENT > 0)
         
     def IsBlock(self, index):
-        return self.template[index][0] == self.BLOCK
+        return (self.template[index][0] & self.BLOCK > 0)
     
     def IsExpansionPoint(self, index):
-        return self.template[index][0] == self.EXPANSION
+        return (self.template[index][0] & self.EXPANSION > 0)
+        
+    def IsFilledExpansion(self, index):
+        return ((self.template[index][0] & self.EXPANSION > 0) and \
+                (self.template[index][0] & self.BLOCK > 0))
     
     #####################################
     # Getters
@@ -168,12 +173,12 @@ class TpclExpression(object):
     """\
     An actual TPCL Expression composed of text and other expressions
     """
-    TEXT = 0
-    INSERTION_POINT = 1
-    EXPRESSION = 2
-    EOL = 3
-    INDENT = 4
-    EXPANSION_POINT = 5
+    TEXT = 1
+    INSERTION_POINT = 2
+    EXPRESSION = 4
+    EOL = 8
+    INDENT = 16
+    EXPANSION_POINT = 32
     
     
     def __init__(self, block, parent=None, offset=0, indent=0):
@@ -368,8 +373,13 @@ class TpclExpression(object):
         on an expansion point and if so, returns the parent as well.
         """
         index = self.GetIndexOfElemAt(offset)
-        if self.ElemIsText(index) or self.ElemIsInsertionPoint(index):
+        if self.ElemIsText(index):
             return (False, None)
+        elif self.ElemIsInsertionPoint(index):
+            if self.ElemIsExpansionPoint(index):
+                return (True, self)
+            else:
+                return (False, None)
         elif self.ElemIsExpression(index):
             return self.data[index].IsExpansionPoint(offset)
         else:
@@ -409,16 +419,25 @@ class TpclExpression(object):
                     self.indent_level.insert(index, 0)
                     self.expansion_options.insert(index, None)
                     self.data.insert(index, expr)
-                    self.template.InsertBlockElement(index, "EXPR")
+                    self.template.FillExpansionElement(index, "EXPR")
                 else:
-                    #we are closing off expansion
-                    del self.offsets[index]
-                    del self.indent_level[index]
-                    del self.expansion_options[index]
-                    del self.data[index]
-                    self.template.RemoveElement(index)
+                    self.DeleteElement(index)
                     
                 self.InvalidateState()
+                
+    def DeleteElement(self, index):
+        """\
+        Deletes an element completely from our internal represenation
+        and the template.
+        """
+        print "<%s> is deleting element at index %d" % (self.block.name, index)
+        print "\telement: %s" % self.data[index]
+        del self.offsets[index]
+        del self.indent_level[index]
+        del self.expansion_options[index]
+        del self.data[index]
+        self.template.RemoveElement(index)
+        self.InvalidateState()
             
     def GetParentOfElemAt(self, offset):
         """\
@@ -484,6 +503,12 @@ class TpclExpression(object):
         
     def OffsetIsExpansionPoint(self, offset):
         return self.ElemIsExpansionPoint(self.GetIndexOfElemAt(offset))
+        
+    def ElemIsFilledExpansion(self, index):
+        return self.template.IsFilledExpansion(index)
+        
+    def OffsetIsFilledExpansion(self, offset):
+        return self.ElemIsFilledExpansion(self.GetIndexOfElemAt(offset))
     
     #############################################
     # The public interface that we use to
@@ -552,16 +577,25 @@ class TpclExpression(object):
         if not self.offsets_ok:
             self.RecalculateOffsets()
             
-        parent = self.GetParentOfElemAt(offset)
-        if  parent != None:
-            if parent == self:
-                index = self.GetIndexOfElemAt(offset)
-                self.data[index] = "*%s*" % self.template.GetElementValue(index)
-                self.InvalidateState()    
-            else:
-                parent.RemoveExpression(offset)            
+        index = self.GetIndexOfElemAt(offset);
+        
+        print "<%s> removing expression at offset %d" % (self.block.name, offset)
+        if self.ElemIsFilledExpansion(index):    
+            print "\texpression is an additional insertion point, deleting it"
+            self.DeleteElement(index)
+            self.InvalidateState()
         else:
-            raise ValueError("We are the root expression, can't remove ourself!")
+            print "\texpression is text or insertion or expression"
+            parent = self.GetParentOfElemAt(offset)
+            if  parent != None:
+                if parent == self:
+                    index = self.GetIndexOfElemAt(offset)
+                    self.data[index] = "*%s*" % self.template.GetElementValue(index)
+                    self.InvalidateState()
+                else:
+                    parent.RemoveExpression(offset)            
+            else:
+                raise ValueError("We are the root expression, can't remove ourself!")
 
 
 import random
