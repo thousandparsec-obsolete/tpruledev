@@ -2,6 +2,8 @@
 TPCL Python Representation
 """
 
+import copy
+
 class TpclBlocktype(object):
     """\
     A category for tpcl expressions
@@ -47,12 +49,13 @@ class TpclBlock(object):
     """\
     The python representation of a block of TPCL code.
     """
-    def __init__(self, name, type, description, display=""):
+    def __init__(self, name, description, display="", template=None):
         self.name = name
-        self.type = type
         self.description = description
         self.display = display
-        self.template = TpclTemplate()
+        self.template = template
+        if not template:
+            self.template = TpclTemplate()
         
     
 class TpclTemplate(object):
@@ -103,11 +106,12 @@ class TpclTemplate(object):
     def InsertIndentElement(self, index):
         self.template.insert(index, (self.INDENT, "\t"))
         
-    def AppendExpansionElement(self):
-        self.template.append((self.EXPANSION, "..."))
+    #expansion options are tuples of the form (name, TpclTemplate)
+    def AppendExpansionElement(self, expansion_options):
+        self.template.append((self.EXPANSION, "...", expansion_options))
         
-    def InsertExpansionElement(self, index):
-        self.template.insert(index, (self.EXPANSION, "..."))
+    def InsertExpansionElement(self, index, expansion_options):
+        self.template.insert(index, (self.EXPANSION, "...", expansion_options))
         
     def RemoveElement(self, index):
         del self.template[index]
@@ -145,17 +149,14 @@ class TpclTemplate(object):
         return self.template[index][0]
         
     def GetElement(self, index):
-        return self.template[index][1]
+        return self.template[index]
         
     def GetElementValue(self, index):
         """\
         Returns the text of the element if it's text
         or the name of the block if it's a block
         """
-        if self.IsText(index):
-            return self.template[index][1]
-        else:
-            return self.template[index][1]
+        return self.template[index][1]
         
     def GetLength(self):
         return len(self.template)
@@ -177,7 +178,7 @@ class TpclExpression(object):
     
     def __init__(self, block, parent=None, offset=0, indent=0):
         self.block = block
-        self.template = block.template
+        self.template = copy.deepcopy(block.template)
         self.parent = parent
         
         self._offset = offset
@@ -185,6 +186,8 @@ class TpclExpression(object):
         
         self.base_indent = indent
         self.indent_level = [None] * len(self.template)
+        
+        self.expansion_options = [None] * len(self.template)
         
         self.indent_ok = False
         self.offsets_ok = False
@@ -200,6 +203,8 @@ class TpclExpression(object):
             else:
                 #we markup insertion and expansion points
                 self.data.append("*%s*" % self.template.GetElementValue(i))
+                if self.template.IsExpansionPoint(i):
+                    self.expansion_options[i] = self.template.GetElement(i)[2]
                 
         self.RecalculateIndentation()
         self.RecalculateOffsets()
@@ -369,6 +374,51 @@ class TpclExpression(object):
             return self.data[index].IsExpansionPoint(offset)
         else:
             return (True, self)
+            
+    def GetExpansionOptions(self, offset):
+        """\
+        Returns the options for expansion at a given offset as
+        a list of names.
+        
+        Returns None if this is not an expansion point
+        """
+        index = self.GetIndexOfElemAt(offset)
+        if self.ElemIsText(index) or self.ElemIsInsertionPoint(index):
+            return None
+        elif self.ElemIsExpression(index):
+            return self.data[index].GetExpansionOptions(offset)
+        else:
+            return [o[0] for o in self.expansion_options[index]]
+            
+    def Expand(self, offset, option):
+        print "In TpclExpression <%s> trying to expand at %d with option %d" % (self.block.name, offset, option)
+        index = self.GetIndexOfElemAt(offset)
+        if self.ElemIsText(index) or self.ElemIsInsertionPoint(index):
+            return None
+        elif self.ElemIsExpression(index):
+            return self.data[index].Expand(offset, option)
+        else:
+            exp_opts = self.expansion_options[index]
+            if exp_opts:
+                exp_template = self.expansion_options[index][option][1]
+                if exp_template:
+                    #we are expanding
+                    expr = TpclExpression(TpclBlock("exp_point", "disp",
+                                                    "desc", exp_template))
+                    self.offsets.insert(index, 0)
+                    self.indent_level.insert(index, 0)
+                    self.expansion_options.insert(index, None)
+                    self.data.insert(index, expr)
+                    self.template.InsertBlockElement(index, "EXPR")
+                else:
+                    #we are closing off expansion
+                    del self.offsets[index]
+                    del self.indent_level[index]
+                    del self.expansion_options[index]
+                    del self.data[index]
+                    self.template.RemoveElement(index)
+                    
+                self.InvalidateState()
             
     def GetParentOfElemAt(self, offset):
         """\

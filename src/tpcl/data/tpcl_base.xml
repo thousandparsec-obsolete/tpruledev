@@ -379,13 +379,20 @@ def OnInsert(expression):
 						<elem type="text" val="(+ " />
 						<elem type="block" val="EXPR" />
 						<elem type="text" val=" " />
-						<elem type="exp_point" />
+						<elem type="exp_point">
+							<menu_option
+								name="Additional Argument">
+								<template>
+									<elem type="block" val="EXPR" />
+									<elem type="text" val=" " />
+								</template>
+							</menu_option>
+							<menu_option
+								name="No More Arguments"
+								close_expansion="True" />
+						</elem>
 						<elem type="text" val=")" />
 					</template>
-					<expansion_menu>
-exp_menu = wx.Menu()
-add_item = exp_menu.Append(wx.ID_ANY, "Add Argument")
-finish_item = exp_menu.Append(wx.ID_ANY, "No More Arguments")</expansion_menu>
 				</expression>
 				
 				<expression

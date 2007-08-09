@@ -1,6 +1,6 @@
 import os
 from elementtree.ElementTree import ElementTree
-from tpcl.Representation import TpclBlocktype, TpclBlock
+from tpcl.Representation import TpclBlocktype, TpclBlock, TpclTemplate
 
 def LoadBlocktypes(filename=None):
     """\
@@ -102,13 +102,23 @@ def ReadExpression(expr_elem, tree, cat_id):
     name = expr_elem.get('name')
     expr_id = tree.AppendItem(cat_id, name)
     description = expr_elem.get('description')
+    #todo - format the display text in a better fashion than this
     display = expr_elem.get('display').replace("\\n", "\n").replace("\\t", "\t")
-    tpcl_block = TpclBlock(name, type, description, display)
-    template = tpcl_block.template
-    temp = expr_elem.find('template')
-    if not temp:
-        raise ValueError("Expression %s has no template!" % name)
-    for elem in temp.findall('elem'):
+    tpcl_block = TpclBlock(name, description, display)
+    template_elem = expr_elem.find('template')
+    if template_elem:
+        tpcl_block.template = ReadTemplate(template_elem)
+    else:
+        raise ValueError("No template for expression: %s" % name)
+    tpcl_block.on_insert = expr_elem.findtext('oninsert')
+    tpcl_block.expansion_menu = expr_elem.findtext('expansion_menu')
+    
+    tree.SetPyData(expr_id, tpcl_block)
+    
+
+def ReadTemplate(template_elem):
+    template = TpclTemplate()
+    for elem in template_elem.findall('elem'):
         if elem.get('type') == "text":
             template.AppendTextElement(elem.get('val'))
         elif elem.get('type') == "eol":
@@ -116,10 +126,18 @@ def ReadExpression(expr_elem, tree, cat_id):
         elif elem.get('type') == "indent":
             template.AppendIndentElement()
         elif elem.get('type') == "exp_point":
-            template.AppendExpansionElement()
+            option_list = []
+            for item in elem.findall('menu_option'):
+                name = item.get('name')
+                if item.get('close_expansion'):
+                    option_list.append((name, None))
+                else:
+                    t_elem = item.find('template')
+                    if t_elem:
+                        option_list.append((name, ReadTemplate(t_elem)))
+                    else:
+                        raise ValueError("ExpPoint item %s doesn't have template" % name)
+            template.AppendExpansionElement(option_list)
         else:
             template.AppendBlockElement(elem.get('val'))
-    tpcl_block.on_insert = expr_elem.findtext('oninsert')
-    tpcl_block.expansion_menu = expr_elem.findtext('expansion_menu')
-    
-    tree.SetPyData(expr_id, tpcl_block)
+    return template

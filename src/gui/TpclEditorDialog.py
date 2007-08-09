@@ -141,12 +141,14 @@ class MyDialog(wx.Dialog):
             print "Trying to show popup menu..."
             menu = wx.Menu()
             
+            offset = self.code_stc.GetCurrentPos()
+                        
             if not self.root_expression:
                 is_insertion_point = True
                 is_expansion_point = False
             else:
-                is_insertion_point = self.root_expression.IsInsertionPoint(self.code_stc.GetCurrentPos())[0]
-                is_expansion_point = self.root_expression.IsExpansionPoint(self.code_stc.GetCurrentPos())[0]
+                is_insertion_point = self.root_expression.IsInsertionPoint(offset)[0]
+                is_expansion_point = self.root_expression.IsExpansionPoint(offset)[0]
                 
             sel_id = self.block_tree.GetSelection()
             if sel_id.IsOk():
@@ -166,10 +168,22 @@ class MyDialog(wx.Dialog):
             remove_item.Enable(not is_insertion_point)
             
             #check for expansion menu
-            if is_expansion_point and block.expansion_menu:
-                exec(block.expansion_menu)
+            if is_expansion_point:
+                exp_menu = wx.Menu()
+                i = 0
+                for option in self.root_expression.GetExpansionOptions(offset):
+                    opt_item = exp_menu.Append(wx.ID_ANY, option)
+                    self.Bind(wx.EVT_MENU, MakeExpander(self, offset, i), opt_item)
+                    i += 1
                 menu.AppendMenu(wx.ID_ANY, "Expansion Point...", exp_menu)
             
             self.code_stc.PopupMenu(menu, event.GetPosition())
         except ValueError:
             print "Index out of range..."
+            
+
+def MakeExpander(tpcl_editor, offset, option):
+    def f(event):
+        tpcl_editor.root_expression.Expand(offset, option)
+        tpcl_editor.code_stc.SetText(str(tpcl_editor.root_expression))
+    return f
