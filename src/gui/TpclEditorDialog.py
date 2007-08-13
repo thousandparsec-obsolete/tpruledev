@@ -44,7 +44,22 @@ class MyDialog(wx.Dialog):
                 
         #fill the block_tree
         Import.LoadBlockIntoTree(self.block_tree)
+        self.block_store = Import.InitializeBlockstore()
         self.root_expression = None
+        
+        self.CreateQuickInsertMenu()
+        
+    def CreateQuickInsertMenu(self):
+        self.quick_insert_menu = wx.Menu()
+        submenus = ["Procedure Definitions", "Literal Expression", "Numerical Functions", "Flow Control"]
+        for sm in submenus:
+            cat_id = self.block_store.FindCategory(sm)
+            smenu = wx.Menu()
+            for child_id in self.block_store.GetChildBlocks(cat_id):
+                node = self.block_store.GetNode(child_id)
+                mitem = smenu.Append(wx.ID_ANY, node.name)
+                self.Bind(wx.EVT_MENU, MakeInserter(self, node.block), mitem)
+            self.quick_insert_menu.AppendMenu(wx.ID_ANY, sm, smenu)
         
     def OnInfo(self, event):
         """\
@@ -100,34 +115,37 @@ class MyDialog(wx.Dialog):
             self.preview_ctrl.SetValue("")
         event.Skip()
     
-    def OnInsert(self, event):
+    def OnInsert(self, event, block=None):
         """\
         Inserts the currently selected code block
         into the currently selected code socket.
         """
         pos = self.code_stc.GetCurrentPos()
-        sel_id = self.block_tree.GetSelection()
-        if sel_id.IsOk():
-            block = self.block_tree.GetPyData(sel_id)
-            if block:
-                print "Trying to insert block..."
-                try:
-                    expression = TpclExpression(block)
-                    insert_ok = True
-                    if block.on_insert:
-                        print "Trying to use OnInsert function of block"
-                        exec(block.on_insert)
-                        insert_ok = OnInsert(expression)
+
+        if not block:
+            sel_id = self.block_tree.GetSelection()
+            if sel_id.IsOk():
+                block = self.block_tree.GetPyData(sel_id)
                     
-                    if insert_ok:    
-                        if not self.root_expression:
-                            self.root_expression = expression                        
-                        else:
-                            self.root_expression.InsertExpression(pos, expression)                        
-                        self.code_stc.SetText(str(self.root_expression))
-                        
-                except ValueError:
-                    print "Tried to insert in a place where there's no expansion point"
+        if block:
+            print "Trying to insert block..."
+            try:
+                expression = TpclExpression(block)
+                insert_ok = True
+                if block.on_insert:
+                    print "Trying to use OnInsert function of block"
+                    exec(block.on_insert)
+                    insert_ok = OnInsert(expression)
+                
+                if insert_ok:    
+                    if not self.root_expression:
+                        self.root_expression = expression                        
+                    else:
+                        self.root_expression.InsertExpression(pos, expression)                        
+                    self.code_stc.SetText(str(self.root_expression))
+                    
+            except ValueError:
+                print "Tried to insert in a place where there's no expansion point"
         event.Skip()
 
     def ContextMenuHandler(self, event):
@@ -166,6 +184,10 @@ class MyDialog(wx.Dialog):
                 self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
                 #only enable if we're on an expansion point
                 insert_item.Enable(block != None and is_insertion_point)
+                
+                #quick insert
+                quick_insert = menu.AppendMenu(wx.ID_ANY, "Quick Insert...", self.quick_insert_menu)
+                quick_insert.Enable(is_insertion_point)
                     
                 #remove item
                 remove_item = menu.Append(wx.ID_ANY, "Remove")
@@ -187,6 +209,10 @@ class MyDialog(wx.Dialog):
         except ValueError:
             print "Index out of range..."
             
+def MakeInserter(tpcl_editor, block):
+    def f(event):
+        tpcl_editor.OnInsert(event, block)
+    return f
 
 def MakeExpander(tpcl_editor, offset, option):
     def f(event):

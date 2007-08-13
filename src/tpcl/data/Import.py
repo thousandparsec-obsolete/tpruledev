@@ -66,7 +66,7 @@ def LoadBlocks(filename=None):
             blocks[type][name] = (tpcl_block)
     return blocks
 
-def LoadBlocksIntoStore(filename=None):
+def InitializeBlockstore(filename=None):
     if not filename:
         from rde import ConfigManager
         filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
