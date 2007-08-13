@@ -593,7 +593,7 @@ class TpclExpression(object):
         the wrong way. But we should provide some sort of
         access from outside.
         """
-        self.template.SetText(i, new_val)
+        self.template.SetText(index, new_val)
         self.InvalidateState()
         
     def InsertExpression(self, offset, expression):

@@ -126,6 +126,8 @@ class MyDialog(wx.Dialog):
                         else:
                             self.root_expression.InsertExpression(pos, expression)                        
                         self.code_stc.SetText(str(self.root_expression))
+                        self.code_stc.SetSelection(-1, -1)
+                        self.code_stc.SetCurrentPos(pos)
                         
                 except ValueError:
                     print "Tried to insert in a place where there's no expansion point"
@@ -133,7 +135,7 @@ class MyDialog(wx.Dialog):
 
     def ContextMenuHandler(self, event):
         """\
-        Processes a right click on the STC
+        Processes a left click on the STC
         """
         event.Skip()
         print "Trying to show context menu at pos:", self.code_stc.GetCurrentPos()
