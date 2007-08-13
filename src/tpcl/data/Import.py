@@ -145,10 +145,10 @@ def TreeReadCategory(element, tree, parent_id=None):
         cid = tree.AppendItem(tree.GetRootItem(), element.get('name'))
         
     for cat_elem in element.findall('category'):
-        ReadCategory(cat_elem, tree, cid)
+        TreeReadCategory(cat_elem, tree, cid)
         
     for expr_elem in element.findall('expression'):
-        ReadExpression(expr_elem, tree, cid)
+        TreeReadExpression(expr_elem, tree, cid)
 
 def TreeReadExpression(expr_elem, tree, cat_id):
     name = expr_elem.get('name')
