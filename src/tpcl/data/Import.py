@@ -1,6 +1,6 @@
 import os
 from elementtree.ElementTree import ElementTree
-from tpcl.Representation import TpclBlocktype, TpclBlock, TpclTemplate
+from tpcl.Representation import TpclBlocktype, TpclBlock, TpclTemplate, TpclBlockstore
 
 def LoadBlocktypes(filename=None):
     """\
@@ -65,6 +65,58 @@ def LoadBlocks(filename=None):
                     template.AppendBlockElement(elem.get('val'))
             blocks[type][name] = (tpcl_block)
     return blocks
+
+def LoadBlocksIntoStore(filename=None):
+    if not filename:
+        from rde import ConfigManager
+        filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
+                            'tpcl', 'data', 'tpcl_base.xml')
+                            
+    et = ElementTree(file=filename)
+    bs = TpclBlockstore()
+    category_stack = []
+    for cat_elem in et.findall('category'):
+        BsReadCategory(cat_elem, bs, category_stack)
+    return bs
+        
+def BsReadCategory(element, bs, category_stack):
+    cid = 0
+    if len(category_stack):
+        parent_id = category_stack[-1]
+    else:
+        parent_id = 0
+        
+    cid = bs.AddCategory(element.get('name'), parent_id)
+                
+    category_stack.append(cid)
+        
+    for cat_elem in element.findall('category'):
+        BsReadCategory(cat_elem, bs, category_stack)
+        
+    for expr_elem in element.findall('expression'):
+        BsReadExpression(expr_elem, bs, category_stack)
+        
+    category_stack.pop()
+    
+def BsReadExpression(expr_elem, bs, category_stack):
+    name = expr_elem.get('name')
+    description = expr_elem.get('description')
+    #todo - format the display text in a better fashion than this
+    display = expr_elem.get('display').replace("\\n", "\n").replace("\\t", "\t")
+    tpcl_block = TpclBlock(name, description, display)
+    template_elem = expr_elem.find('template')
+    if template_elem:
+        tpcl_block.template = ReadTemplate(template_elem)
+    else:
+        raise ValueError("No template for expression: %s" % name)
+    tpcl_block.on_insert = expr_elem.findtext('oninsert')
+    tpcl_block.expansion_menu = expr_elem.findtext('expansion_menu')
+    
+    if len(category_stack):
+        parent_id = category_stack[-1]
+    else:
+        parent_id = 0
+    bs.AddBlock(tpcl_block, parent_id)
     
 def LoadBlockIntoTree(tree, filename=None):
     """\
@@ -83,9 +135,9 @@ def LoadBlockIntoTree(tree, filename=None):
     blocks = {}
     root = tree.AddRoot("Root")
     for cat_elem in et.findall('category'):
-        ReadCategory(cat_elem, tree)
+        TreeReadCategory(cat_elem, tree)
 
-def ReadCategory(element, tree, parent_id=None):
+def TreeReadCategory(element, tree, parent_id=None):
     cid = 0
     if parent_id:
         cid = tree.AppendItem(parent_id, element.get('name'))
@@ -98,7 +150,7 @@ def ReadCategory(element, tree, parent_id=None):
     for expr_elem in element.findall('expression'):
         ReadExpression(expr_elem, tree, cid)
 
-def ReadExpression(expr_elem, tree, cat_id):
+def TreeReadExpression(expr_elem, tree, cat_id):
     name = expr_elem.get('name')
     expr_id = tree.AppendItem(cat_id, name)
     description = expr_elem.get('description')
