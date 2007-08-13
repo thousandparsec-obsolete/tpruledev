@@ -329,3 +329,12 @@ class SchemeSTC(stc.StyledTextCtrl):
                 line = line + 1
 
         return line
+       
+        
+    def SetSelection(self, start, end):
+        print "STC setting slection to (%d, %d)" % (start, end)
+        stc.StyledTextCtrl.SetSelection(self, start, end)
+
+    def SetCurrentPos(self, i):
+        print "STC Setting current pos to: %d" % i
+        stc.StyledTextCtrl.SetCurrentPos(self, i)

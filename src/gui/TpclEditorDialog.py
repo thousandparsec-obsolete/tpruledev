@@ -118,7 +118,6 @@ class MyDialog(wx.Dialog):
                         print "Trying to use OnInsert function of block"
                         exec(block.on_insert)
                         insert_ok = OnInsert(expression)
-                        print "Result of OnInsert function:", insert_ok
                     
                     if insert_ok:    
                         if not self.root_expression:
@@ -126,8 +125,6 @@ class MyDialog(wx.Dialog):
                         else:
                             self.root_expression.InsertExpression(pos, expression)                        
                         self.code_stc.SetText(str(self.root_expression))
-                        self.code_stc.SetSelection(-1, -1)
-                        self.code_stc.SetCurrentPos(pos)
                         
                 except ValueError:
                     print "Tried to insert in a place where there's no expansion point"
@@ -140,51 +137,53 @@ class MyDialog(wx.Dialog):
         event.Skip()
         print "Trying to show context menu at pos:", self.code_stc.GetCurrentPos()
         try:
-            print "Trying to show popup menu..."
-            menu = wx.Menu()
-            
-            offset = self.code_stc.GetCurrentPos()
-                        
-            if not self.root_expression:
-                is_insertion_point = True
-                is_added_insertion_point = False
-                is_expansion_point = False
-            else:
-                is_insertion_point = self.root_expression.IsInsertionPoint(offset)[0]
-                is_added_insertion_point = self.root_expression.IsAddedInsertionPoint(offset)[0]
-                is_expansion_point = self.root_expression.IsExpansionPoint(offset)[0]
+            if wx.GetMouseState().ControlDown():
+                print "Trying to show popup menu..."
+                menu = wx.Menu()
                 
-            print "is_insertion_point", is_insertion_point
-            print "is_expansion_point", is_expansion_point
+                offset = self.code_stc.GetCurrentPos()
+                            
+                if not self.root_expression:
+                    is_insertion_point = True
+                    is_added_insertion_point = False
+                    is_expansion_point = False
+                else:
+                    is_insertion_point = self.root_expression.IsInsertionPoint(offset)[0]
+                    is_added_insertion_point = self.root_expression.IsAddedInsertionPoint(offset)[0]
+                    is_expansion_point = self.root_expression.IsExpansionPoint(offset)[0]
+                    
+                print "is_insertion_point", is_insertion_point
+                print "is_expansion_point", is_expansion_point
+                    
+                sel_id = self.block_tree.GetSelection()
+                if sel_id.IsOk():
+                    block = self.block_tree.GetPyData(sel_id)
+                else:
+                    block = None
                 
-            sel_id = self.block_tree.GetSelection()
-            if sel_id.IsOk():
-                block = self.block_tree.GetPyData(sel_id)
-            else:
-                block = None
-            
-            #insert item
-            insert_item = menu.Append(wx.ID_ANY, "Insert")
-            self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
-            #only enable if we're on an expansion point
-            insert_item.Enable(block != None and is_insertion_point)
+                #insert item
+                insert_item = menu.Append(wx.ID_ANY, "Insert")
+                self.Bind(wx.EVT_MENU, self.OnInsert, insert_item)
+                #only enable if we're on an expansion point
+                insert_item.Enable(block != None and is_insertion_point)
+                    
+                #remove item
+                remove_item = menu.Append(wx.ID_ANY, "Remove")
+                self.Bind(wx.EVT_MENU, self.OnRemove, remove_item)
+                remove_item.Enable((not is_insertion_point and not is_expansion_point) or is_added_insertion_point)
                 
-            #remove item
-            remove_item = menu.Append(wx.ID_ANY, "Remove")
-            self.Bind(wx.EVT_MENU, self.OnRemove, remove_item)
-            remove_item.Enable((not is_insertion_point and not is_expansion_point) or is_added_insertion_point)
-            
-            #check for expansion menu
-            if is_expansion_point:
-                exp_menu = wx.Menu()
-                i = 0
-                for option in self.root_expression.GetExpansionOptions(offset):
-                    opt_item = exp_menu.Append(wx.ID_ANY, option)
-                    self.Bind(wx.EVT_MENU, MakeExpander(self, offset, i), opt_item)
-                    i += 1
-                menu.AppendMenu(wx.ID_ANY, "Expansion Point...", exp_menu)
-            
-            self.code_stc.PopupMenu(menu, event.GetPosition())
+                #check for expansion menu
+                if is_expansion_point:
+                    exp_menu = wx.Menu()
+                    i = 0
+                    for option in self.root_expression.GetExpansionOptions(offset):
+                        opt_item = exp_menu.Append(wx.ID_ANY, option)
+                        self.Bind(wx.EVT_MENU, MakeExpander(self, offset, i), opt_item)
+                        i += 1
+                    menu.AppendMenu(wx.ID_ANY, "Expansion Point...", exp_menu)
+                
+                self.code_stc.PopupMenu(menu, event.GetPosition())
+                
         except ValueError:
             print "Index out of range..."
             
