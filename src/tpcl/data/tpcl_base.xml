@@ -119,7 +119,7 @@ def OnInsert(expression):
 	dialog = wx.TextEntryDialog(None, "Text:", "String Literal", style = wx.OK | wx.CANCEL)
 	if dialog.ShowModal() == wx.ID_OK:
 		text = dialog.GetValue()
-		expression.SetElementData(0, '"%s"' % text)
+		expression.SetText(0, '"%s"' % text)
 		return True
 	else:
 		return False</oninsert>
@@ -137,7 +137,7 @@ def OnInsert(expression):
 	dialog = wx.TextEntryDialog(None, "Number:", "Numerical Value", style = wx.OK | wx.CANCEL)
 	if dialog.ShowModal() == wx.ID_OK:
 		num = dialog.GetValue()
-		expression.SetElementData(0, '%s' % num)
+		expression.SetText(0, '%s' % num)
 		return True
 	else:
 		return False</oninsert>
@@ -154,9 +154,9 @@ def OnInsert(expression):
 def OnInsert(expression):
 	choice = wx.GetSingleChoiceIndex("Boolean Value:", "Boolean Value", ["False", "True"])
 	if choice == 1:
-		expression.SetElementData(0, "#t")
+		expression.SetText(0, "#t")
 	elif choice == 0:
-		expression.SetElementData(0, "#f")
+		expression.SetText(0, "#f")
 	else:
 		return False
 	return True</oninsert>
@@ -174,7 +174,7 @@ def OnInsert(expression):
 	dialog = wx.TextEntryDialog(None, "Escaped Value:", "Quote Escaped Expression", style = wx.OK | wx.CANCEL)
 	if dialog.ShowModal() == wx.OK:
 		text = dialog.GetValue()
-		expression.SetElementData(0, "'%s" % text)
+		expression.SetText(0, "'%s" % text)
 		return True
 	else:
 		return False</oninsert>

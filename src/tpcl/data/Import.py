@@ -123,11 +123,11 @@ def ReadTemplate(template_elem):
     template = TpclTemplate()
     for elem in template_elem.findall('elem'):
         if elem.get('type') == "text":
-            template.AppendTextElement(elem.get('val'))
+            template.AppendText(elem.get('val'))
         elif elem.get('type') == "eol":
-            template.AppendEolElement()
+            template.AppendEol()
         elif elem.get('type') == "indent":
-            template.AppendIndentElement()
+            template.AppendIndent()
         elif elem.get('type') == "exp_point":
             option_list = []
             for item in elem.findall('menu_option'):
@@ -140,7 +140,7 @@ def ReadTemplate(template_elem):
                         option_list.append((name, True, ReadTemplate(t_elem)))
                     else:
                         raise ValueError("ExpPoint item %s doesn't have template" % name)
-            template.AppendExpansionElement(option_list)
+            template.AppendExpansionPoint(option_list)
         else:
-            template.AppendBlockElement(elem.get('val'))
+            template.AppendInsertionPoint(elem.get('val'))
     return template
