@@ -213,7 +213,7 @@ class TpclTemplate(object):
     def ExpandExpansionPoint(self, index, expr, continue_expansion):
         if self.IsExpansionPoint(index):
             if not continue_expansion:
-                del self.template[index]
+                del self.data[index]
             self.data.insert(index, TpclTemplateNode((self.EXPRESSION | self.ADDED), expr))
         else:
             raise ValueError("No expansion point at index %d" % index)
@@ -679,10 +679,6 @@ class TpclBlockstore(object):
     """
     CATEGORY = 0
     BLOCK = 1
-    
-    #key generation random number bounds
-    RAN_LOWER = 0
-    RAN_UPPER = 100
     
     #######################
     # block storage
