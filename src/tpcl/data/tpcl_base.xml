@@ -52,9 +52,11 @@ File processing:
 	<category name="Built-In">
 		<category name="Procedure Definitions">
 			<expression
-				name="TPCL Requirements Function"
-				description="This TPCL function is called (on all components which are in a design) when adding a new component is added to a design. If the component is allowed to be added to a design then the function should return a pair with True and a string to be displayed (empty strings are acceptable), otherwise it should return a pair with false and a string which describes the reason for not being able to add the component. The function is given a design object which has appears as if the component was already added. Returns - Bool"
-				display="(lambda (design)\n\t*EXPR*)">
+				name="TPCL Requirements Function">
+				<multiline_desc>This TPCL function is called (on all components which are in a design) when a new component is added to a design.
+
+If the component is allowed to be added to a design then the function should return a pair with True and a string to be displayed (empty strings are acceptable), otherwise it should return a pair with false and a string which describes the reason for not being able to add the component. The function is given a design object which has appears as if the component was already added. Returns - Bool
+				</multiline_desc>
 				<template>
 					<elem type="text" val="(lambda (design) " />
 					<elem type="eol" />
@@ -65,9 +67,9 @@ File processing:
 			</expression>
 			
 			<expression 
-				name="TPCL Requires Function"
-				description="A lambda function taking a design as its only argument."
-				display="(lambda (design)\n\t*EXPR*)">
+				name="TPCL Requires Function">
+				<multiline_desc>A lambda function taking a design as its only argument.
+				</multiline_desc>
 				<template>
 					<elem type="text" val="(lambda (design) " />
 					<elem type="eol" />
@@ -78,9 +80,11 @@ File processing:
 			</expression>
 			
 			<expression
-				name="TPCL Display Function"
-				description="A TPCL function which is called to work out how to display the property. Returns a pair which contains the actual value and a formatted string which will be displayed - (Real . String)"
-				display="(lambda (design bits)\n\t*EXPR*)">
+				name="TPCL Display Function">
+				<multiline_desc>A TPCL function which is called to work out how to display the property.
+				
+Returns a pair which contains the actual value and a formatted string which will be displayed - (Real . String)
+				</multiline_desc>
 				<template>
 					<elem type="text" val="(lambda (design bits) " />
 					<elem type="eol" />
@@ -91,9 +95,11 @@ File processing:
 			</expression>
 			
 			<expression
-				name="TPCL Cost Function"
-				description="A TPCL function which is called to work out the amount this component contributes to a property. It should return a valid number. It is given the current design. Returns - Real"
-				display="(lambda (design)\n\t*EXPR*)">
+				name="TPCL Cost Function">
+				<multiline_desc>A TPCL function which is called to work out the amount this component contributes to a property.
+
+It should return a valid number. It is given the current design. Returns - Real
+				</multiline_desc>
 				<template>
 					<elem type="text" val="(lambda (design bits) " />
 					<elem type="eol" />
@@ -109,10 +115,9 @@ File processing:
 			description="Values that are interpreted literally such as strings, numbers, boolean values and quote escaped expressions.">
 			<expression
 				name="String Literal"
-				description="A string with some definite value."
-				display="String">
+				description="A string with some definite value.">
 				<template>
-					<elem type="text" val=""/>
+					<elem type="text" val='"text"'/>
 				</template>
 				<oninsert>
 def OnInsert(expression):
@@ -127,10 +132,9 @@ def OnInsert(expression):
 			
 			<expression
 				name="Numerical Literal"
-				description="A number."
-				display="#">
+				description="A number.">
 				<template>
-					<elem type="text" val=""/>
+					<elem type="text" val="#"/>
 				</template>
 				<oninsert>
 def OnInsert(expression):
@@ -145,10 +149,9 @@ def OnInsert(expression):
 			
 			<expression
 				name="Boolean"
-				description="True or false."
-				display="#f/#t">
+				description="True or false.">
 				<template>
-					<elem type="text" val=""/>
+					<elem type="text" val="#f/#t"/>
 				</template>
 				<oninsert>
 def OnInsert(expression):
@@ -164,10 +167,9 @@ def OnInsert(expression):
 			
 			<expression
 				name="Quote Escaped Expression"
-				description="A quote escaped TPCL Expression. For advanced coders only."
-				display="'*TEXT*">
+				description="A quote escaped TPCL Expression. For advanced coders only.">
 				<template>
-					<elem type="text" val=""/>
+					<elem type="text" val="'text"/>
 				</template>
 				<oninsert>
 def OnInsert(expression):
@@ -187,8 +189,7 @@ def OnInsert(expression):
 					<category name="Case Insensitive">
 						<expression
 							name="string-ci=?"
-							description="Returns #t if the two strings are the same length and contain the same characters in the same positions, otherwise returns #f. Case insensitive"
-							display="(string-ci=? *STRING* *STRING*)">
+							description="Returns #t if the two strings are the same length and contain the same characters in the same positions, otherwise returns #f. Case insensitive">
 							<template>
 								<elem type="text" val="(string-ci=? " />
 								<elem type="block" val="STRING" />
@@ -200,8 +201,7 @@ def OnInsert(expression):
 						
 						<expression
 							name="string-ci&lt;?"
-							description="&lt; comparison using lexicographic extensions on the strings based on characters"
-							display="(string-ci&lt;? *STRING* *STRING*)">
+							description="&lt; comparison using lexicographic extensions on the strings based on characters">
 							<template>
 								<elem type="text" val="(string-ci&lt;? " />
 								<elem type="block" val="STRING" />
@@ -213,8 +213,7 @@ def OnInsert(expression):
 						
 						<expression
 							name="string-ci>?"
-							description="> comparison using lexicographic extensions on the strings based on characters"
-							display="(string-ci>? *STRING* *STRING*)">
+							description="> comparison using lexicographic extensions on the strings based on characters">
 							<template>
 								<elem type="text" val="(string-ci>? " />
 								<elem type="block" val="STRING" />
@@ -226,8 +225,7 @@ def OnInsert(expression):
 						
 						<expression
 							name="string-ci&lt;=?"
-							description="&lt;= comparison using lexicographic extensions on the strings based on characters"
-							display="(string-ci&lt;=? *STRING* *STRING*)">
+							description="&lt;= comparison using lexicographic extensions on the strings based on characters">
 							<template>
 								<elem type="text" val="(string-ci&lt;=? " />
 								<elem type="block" val="STRING" />
@@ -239,8 +237,7 @@ def OnInsert(expression):
 						
 						<expression
 							name="string-ci>=?"
-							description=">= comparison using lexicographic extensions on the strings based on characters"
-							display="(string-ci>=? *STRING* *STRING*)">
+							description=">= comparison using lexicographic extensions on the strings based on characters">
 							<template>
 								<elem type="text" val="(string-ci>=? " />
 								<elem type="block" val="STRING" />
@@ -254,8 +251,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="string=?"
-						description="Returns #t if the two strings are the same length and contain the same characters in the same positions, otherwise returns #f."
-						display="(string=? *STRING* *STRING*)">
+						description="Returns #t if the two strings are the same length and contain the same characters in the same positions, otherwise returns #f.">
 						<template>
 							<elem type="text" val="(string=? " />
 							<elem type="block" val="STRING" />
@@ -267,8 +263,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="string&lt;?"
-						description="&lt; comparison using lexicographic extensions on the strings based on characters"
-						display="(string&lt;? *STRING* *STRING*)">
+						description="&lt; comparison using lexicographic extensions on the strings based on characters">
 						<template>
 							<elem type="text" val="(string&lt;? " />
 							<elem type="block" val="STRING" />
@@ -280,8 +275,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="string>?"
-						description="> comparison using lexicographic extensions on the strings based on characters"
-						display="(string>? *STRING* *STRING*)">
+						description="> comparison using lexicographic extensions on the strings based on characters">
 						<template>
 							<elem type="text" val="(string>? " />
 							<elem type="block" val="STRING" />
@@ -293,8 +287,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="string&lt;=?"
-						description="&lt;= comparison using lexicographic extensions on the strings based on characters"
-						display="(string&lt;=? *STRING* *STRING*)">
+						description="&lt;= comparison using lexicographic extensions on the strings based on characters">
 						<template>
 							<elem type="text" val="(string&lt;=? " />
 							<elem type="block" val="STRING" />
@@ -306,8 +299,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="string>=?"
-						description=">= comparison using lexicographic extensions on the strings based on characters"
-						display="(string>=? *STRING* *STRING*)">
+						description=">= comparison using lexicographic extensions on the strings based on characters">
 						<template>
 							<elem type="text" val="(string>=? " />
 							<elem type="block" val="STRING" />
@@ -321,8 +313,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="make-string"
-					description="Initializes an empty string of length VAL"
-					display="(make-string *VAL*)">
+					description="Initializes an empty string of length VAL">
 					<template>
 						<elem type="text" val="(make-string " />
 						<elem type="block" val="VAL" />
@@ -332,8 +323,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="make-string char"
-					description="Initializes an empty string of length VAL filled with characters of type VAL"
-					display="(make-string *VAL* *VAL*)">
+					description="Initializes an empty string of length VAL filled with characters of type VAL">
 					<template>
 						<elem type="text" val="(make-string " />
 						<elem type="block" val="VAL" />
@@ -345,8 +335,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="string-length"
-					description="Returns the number of characters in string"
-					display="(string-length *STRING*)">
+					description="Returns the number of characters in string">
 					<template>
 						<elem type="text" val="(string-length " />
 						<elem type="block" val="STRING" />
@@ -360,8 +349,7 @@ def OnInsert(expression):
 			<category name="Numerical Functions">
 				<expression
 					name="+"
-					description="Adder."
-					display="(+ *EXPR* *EXPR*)">
+					description="Adder.">
 					<template>
 						<elem type="text" val="(+ " />
 						<elem type="block" val="EXPR" />
@@ -373,8 +361,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="+ ..."
-					description="Expandable Adder."
-					display="(+ *EXPR* *...*)">
+					description="Expandable Adder.">
 					<template>
 						<elem type="text" val="(+ " />
 						<elem type="block" val="EXPR" />
@@ -397,8 +384,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="-"
-					description="Subtractor."
-					display="(- *EXPR* *EXPR*)">
+					description="Subtractor.">
 					<template>
 						<elem type="text" val="(- " />
 						<elem type="block" val="EXPR" />
@@ -410,8 +396,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="/"
-					description="Divider."
-					display="(/ *EXPR* *EXPR*)">
+					description="Divider.">
 					<template>
 						<elem type="text" val="(/ " />
 						<elem type="block" val="EXPR" />
@@ -423,8 +408,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="*"
-					description="Multiplier."
-					display="(* *EXPR* *EXPR*)">
+					description="Multiplier.">
 					<template>
 						<elem type="text" val="(* " />
 						<elem type="block" val="EXPR" />
@@ -436,8 +420,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="max"
-					description="Returns the maximum value of its arguments."
-					display="(max *EXPR* *EXPR*)">
+					description="Returns the maximum value of its arguments.">
 					<template>
 						<elem type="text" val="(max " />
 						<elem type="block" val="EXPR" />
@@ -449,8 +432,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="min"
-					description="Returns the minimum value of its arguments."
-					display="(min *EXPR* *EXPR*)">
+					description="Returns the minimum value of its arguments.">
 					<template>
 						<elem type="text" val="(min " />
 						<elem type="block" val="EXPR" />
@@ -462,8 +444,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="abs"
-					description="Returns the absolute value of its argument."
-					display="(abs *EXPR*)">
+					description="Returns the absolute value of its argument.">
 					<template>
 						<elem type="text" val="(abs " />
 						<elem type="block" val="EXPR" />
@@ -473,8 +454,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="quotient"
-					description="Returns the quotient of its first argument divided by the second."
-					display="(quotient *EXPR* *EXPR*)">
+					description="Returns the quotient of its first argument divided by the second.">
 					<template>
 						<elem type="text" val="(quotient " />
 						<elem type="block" val="EXPR" />
@@ -486,8 +466,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="remainder"
-					description="Returns the remainder value of first argument divided by its second."
-					display="(remainder *EXPR* *EXPR*)">
+					description="Returns the remainder value of first argument divided by its second.">
 					<template>
 						<elem type="text" val="(remainder " />
 						<elem type="block" val="EXPR" />
@@ -499,8 +478,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="modulo"
-					description="Returns the modulo value of its first argument divided by its second."
-					display="(modulo *EXPR* *EXPR*)">
+					description="Returns the modulo value of its first argument divided by its second.">
 					<template>
 						<elem type="text" val="(modulo " />
 						<elem type="block" val="EXPR" />
@@ -515,8 +493,7 @@ def OnInsert(expression):
 			<category name="List Operators">
 				<expression
 					name="cons"
-					description="Cons operation"
-					display="(cons *EXPR* *EXPR*)">
+					description="Cons operation">
 					<template>
 						<elem type="text" val="(cons " />
 						<elem type="block" val="FIRST" />
@@ -528,8 +505,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="car"
-					description="Car operation"
-					display="(car *EXPR*)">
+					description="Car operation">
 					<template>
 						<elem type="text" val="(car " />
 						<elem type="block" val="EXPR" />
@@ -539,8 +515,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="cdr"
-					description="Cdr operation"
-					display="(cdr *EXPR*)">
+					description="Cdr operation">
 					<template>
 						<elem type="text" val="(cdr " />
 						<elem type="block" val="EXPR" />
@@ -554,8 +529,7 @@ def OnInsert(expression):
 				<category name="Equivalence Operators">
 					<expression
 						name="="
-						description="The equal-to comparison."
-						display="(= *EXPR* *EXPR*)">
+						description="The equal-to comparison.">
 						<template>
 							<elem type="text" val="(= " />
 							<elem type="block" val="EXPR" />
@@ -567,8 +541,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="eqv?"
-						description="Returns #t if its arguments should normally be regarded as the same object."
-						display="(eqv? *EXPR* *EXPR*)">
+						description="Returns #t if its arguments should normally be regarded as the same object.">
 						<template>
 							<elem type="text" val="(eqv? " />
 							<elem type="block" val="EXPR" />
@@ -580,8 +553,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="eq?"
-						description="eq? is similar to eqv? except that in some cases it is capable of discerning distinctions finer than those detectable by eqv?."
-						display="(eq? *EXPR* *EXPR*)">
+						description="eq? is similar to eqv? except that in some cases it is capable of discerning distinctions finer than those detectable by eqv?.">
 						<template>
 							<elem type="text" val="(eq? " />
 							<elem type="block" val="EXPR" />
@@ -593,8 +565,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="equal?"
-						description="Returns #t if its arguments should normally be regarded as the same object."
-						display="(equal? *EXPR* *EXPR*)">
+						description="Returns #t if its arguments should normally be regarded as the same object.">
 						<template>
 							<elem type="text" val="(equal? " />
 							<elem type="block" val="EXPR" />
@@ -609,8 +580,7 @@ def OnInsert(expression):
 				<category name="Comparison Operators">
 					<expression
 						name="&lt;"
-						description="The less-than comparison."
-						display="(&lt; *EXPR* *EXPR*)">
+						description="The less-than comparison.">
 						<template>
 							<elem type="text" val="(&lt; " />
 							<elem type="block" val="EXPR" />
@@ -622,8 +592,7 @@ def OnInsert(expression):
 					
 					<expression
 						name="&lt;="
-						description="The less-than-or-equal comparison."
-						display="(&lt;= *EXPR* *EXPR*)">
+						description="The less-than-or-equal comparison.">
 						<template>
 							<elem type="text" val="(&lt;= " />
 							<elem type="block" val="EXPR" />
@@ -635,8 +604,7 @@ def OnInsert(expression):
 					
 					<expression
 						name=">"
-						description="The greater-than comparison."
-						display="(> *EXPR* *EXPR*)">
+						description="The greater-than comparison.">
 						<template>
 							<elem type="text" val="(> " />
 							<elem type="block" val="EXPR" />
@@ -648,8 +616,7 @@ def OnInsert(expression):
 					
 					<expression
 						name=">="
-						description="The greater-than-or-equal comparison."
-						display="(>= *EXPR* *EXPR*)">
+						description="The greater-than-or-equal comparison.">
 						<template>
 							<elem type="text" val="(>= " />
 							<elem type="block" val="EXPR" />
@@ -663,8 +630,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="not"
-					description="The boolean inverse operator - turns True => False and False => True."
-					display="(not *EXPR*)">
+					description="The boolean inverse operator - turns True => False and False => True.">
 					<template>
 						<elem type="text" val="(not " />
 						<elem type="block" val="EXPR" />
@@ -674,8 +640,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="and"
-					description="The boolean and operator - returns True only when all expressions are True."
-					display="(and *EXPR* *EXPR*)">
+					description="The boolean and operator - returns True only when all expressions are True.">
 					<template>
 						<elem type="text" val="(and " />
 						<elem type="block" val="EXPR" />
@@ -687,8 +652,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="or"
-					description="The boolean or operator - returns True is any of the expressions in it are True."
-					display="(or *EXPR*)">
+					description="The boolean or operator - returns True is any of the expressions in it are True.">
 					<template>
 						<elem type="text" val="(or " />
 						<elem type="block" val="EXPR" />
@@ -703,8 +667,7 @@ def OnInsert(expression):
 			<category name="Flow Control">
 				<expression
 					name="if"
-					description="The if flow-control structure"
-					display="(if *TEST*\n\t*WHEN-TRUE*\n\t*WHEN-FALSE*)" >
+					description="The if flow-control structure">
 					<template>
 						<elem type="text" val="(if " />
 						<elem type="block" val="TEST" />
@@ -720,8 +683,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="cond"
-					description="The cond flow-control structure"
-					display="(cond (*TEST* *WHEN-TRUE*) *...*)" >
+					description="The cond flow-control structure">
 					<template>
 						<elem type="text" val="(cond (" />
 						<elem type="block" val="TEST" />
@@ -765,8 +727,7 @@ def OnInsert(expression):
 			<category name="Miscelaneous Operators">
 				<expression
 					name="let"
-					description="The let block - allows creating temporary variables."
-					display="(let ((*SYMBOL* *VAL*))\n\t*EXPR*)">
+					description="The let block - allows creating temporary variables.">
 					<template>
 						<elem type="text" val="(let ((" />
 						<elem type="block" val="SYMBOL" />
@@ -782,8 +743,7 @@ def OnInsert(expression):
 				
 				<expression
 					name="apply"
-					description="The function apply returns the result of applying its first argument to its second argument."
-					display="(apply *SYMBOL* *VAL*)">
+					description="The function apply returns the result of applying its first argument to its second argument.">
 					<template>
 						<elem type="text" val="(apply " />
 						<elem type="block" val="SYMBOL" />

@@ -101,9 +101,9 @@ def BsReadCategory(element, bs, category_stack):
 def BsReadExpression(expr_elem, bs, category_stack):
     name = expr_elem.get('name')
     description = expr_elem.get('description')
-    #todo - format the display text in a better fashion than this
-    display = expr_elem.get('display').replace("\\n", "\n").replace("\\t", "\t")
-    tpcl_block = TpclBlock(name, description, display)
+    if not description:
+        description = expr_elem.findtext('multiline_desc')
+    tpcl_block = TpclBlock(name, description)
     template_elem = expr_elem.find('template')
     if template_elem:
         tpcl_block.template = ReadTemplate(template_elem)
@@ -154,9 +154,9 @@ def TreeReadExpression(expr_elem, tree, cat_id):
     name = expr_elem.get('name')
     expr_id = tree.AppendItem(cat_id, name)
     description = expr_elem.get('description')
-    #todo - format the display text in a better fashion than this
-    display = expr_elem.get('display').replace("\\n", "\n").replace("\\t", "\t")
-    tpcl_block = TpclBlock(name, description, display)
+    if not description:
+        description = expr_elem.findtext('multiline_desc')
+    tpcl_block = TpclBlock(name, description)
     template_elem = expr_elem.find('template')
     if template_elem:
         tpcl_block.template = ReadTemplate(template_elem)

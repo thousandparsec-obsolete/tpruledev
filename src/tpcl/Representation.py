@@ -49,13 +49,17 @@ class TpclBlock(object):
     """\
     The python representation of a block of TPCL code.
     """
-    def __init__(self, name, description, display="", template=None):
+    def __init__(self, name, description, template=None):
         self.name = name
         self.description = description
-        self.display = display
         self.template = template
         if not template:
             self.template = TpclTemplate()
+            
+    def GetDisplay(self):
+        return str(self.template)
+        
+    display = property(GetDisplay)
         
 
 class TpclTemplateNode(object):
@@ -133,9 +137,20 @@ class TpclTemplate(object):
     
     def __init__(self):
         self.data = []
+        self._string = None
         
     def __len__(self):
         return len(self.data)
+        
+    def __str__(self):
+        if not self._string:
+            self.CalculateString()
+        return self._string
+        
+    def CalculateString(self):
+        self._string=""
+        for elem in self.data:
+            self._string += str(elem.value)
         
     def GetElemString(self, index):
         return str(self.data[index].value)

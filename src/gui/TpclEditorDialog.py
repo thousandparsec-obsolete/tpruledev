@@ -7,6 +7,7 @@ import gui.XrcUtilities
 from wx.xrc import XRCCTRL
 from tpcl.data import Import
 from tpcl.Representation import *
+from gui.BlockInfoDialog import BlockInfoDialog
 
 class MyDialog(wx.Dialog):
     """
@@ -65,6 +66,12 @@ class MyDialog(wx.Dialog):
         """\
         Opens a dialog without a parent for the moment
         """
+        sel_id = self.block_tree.GetSelection()
+        if sel_id.IsOk():
+            block = self.block_tree.GetPyData(sel_id)
+            if block:
+                info_dialog = BlockInfoDialog(self, block.name, block.display, block.description)
+                info_dialog.ShowModal()
         event.Skip()
         
     def OnClear(self, event):
