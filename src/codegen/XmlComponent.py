@@ -3,41 +3,41 @@ The XML I/O module for Component objects.
 """
 
 from game_objects import Component
-from elementtree.ElementTree import ElementTree, Comment, SubElement, Element
 from rde.Exceptions import MalformedXmlError
 import XmlUtils
+ElementTree = XmlUtils.ImportElementTree()
 
 def GenerateCode(comp, save_location):
     """\
     Writes a component out to an XML file
     """
     #make base tag and supply attributes as necessary
-    root = Element(Component.GetName().lower(),
+    root = ElementTree.Element(Component.GetName().lower(),
                     {"name": comp.name,
                      "description": comp.description,
                      "version": XmlUtils.VERSION})
     #add the tpcl_requirements tag and its text
-    tpcl_req_elem = SubElement(root, "tpcl_requirements")
+    tpcl_req_elem = ElementTree.SubElement(root, "tpcl_requirements")
     tpcl_req_elem.text = comp.tpcl_requirements
     #add the categories
-    root.append(Comment("categories"))
+    root.append(ElementTree.Comment("categories"))
     for cat in comp.categories:
-        cat_elem = SubElement(root, "category", {'name': cat})
+        cat_elem = ElementTree.SubElement(root, "category", {'name': cat})
     #add the properties
-    root.append(Comment("properties"))
+    root.append(ElementTree.Comment("properties"))
     for name, tpcl_cost in comp.properties.iteritems():
-        propelem = SubElement(root, "property",
+        propelem = ElementTree.SubElement(root, "property",
                                 {"name": name})
-        tpcl_cost_elem = SubElement(propelem, "tpcl_cost")
+        tpcl_cost_elem = ElementTree.SubElement(propelem, "tpcl_cost")
         tpcl_cost_elem.text = tpcl_cost
-    et = ElementTree(root)
-    et.write(save_location, indent=True)
+    et = ElementTree.ElementTree(root)
+    XmlUtils.WriteElementTree(et, save_location, indent=True)
     
 def ParseCode(comp, save_location):
     """\
     Returns the component serialized to the given XML file
     """
-    et = ElementTree(file=save_location)
+    et = ElementTree.ElementTree(file=save_location)
     root = et.getroot()
     XmlUtils.VerifyVersion(root)
     try:

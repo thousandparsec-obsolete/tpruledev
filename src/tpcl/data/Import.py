@@ -1,5 +1,8 @@
 import os
-from elementtree.ElementTree import ElementTree
+#from elementtree.ElementTree import ElementTree
+
+import codegen.XmlUtils
+ET = codegen.XmlUtils.ImportElementTree()
 from tpcl.Representation import TpclBlocktype, TpclBlock, TpclTemplate, TpclBlockstore
 
 def LoadBlocktypes(filename=None):
@@ -14,7 +17,7 @@ def LoadBlocktypes(filename=None):
         from rde import ConfigManager
         filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
                             'tpcl', 'data', 'blocktypes.xml')
-    et = ElementTree(file=filename)
+    et = ET.ElementTree(file=filename)
     blocktypes = {}
     for blocktype in et.findall('tpcl_blocktype'):
         name = blocktype.get('name')
@@ -42,7 +45,7 @@ def LoadBlocks(filename=None):
         from rde import ConfigManager
         filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
                             'tpcl', 'data', 'base_blocks.xml')
-    et = ElementTree(file=filename)
+    et = ET.ElementTree(file=filename)
     blocks = {}
     for blocktype in et.findall('type'):
         type = blocktype.get('name')
@@ -72,7 +75,7 @@ def InitializeBlockstore(filename=None):
         filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
                             'tpcl', 'data', 'tpcl_base.xml')
                             
-    et = ElementTree(file=filename)
+    et = ET.ElementTree(file=filename)
     bs = TpclBlockstore()
     category_stack = []
     for cat_elem in et.findall('category'):
@@ -131,7 +134,7 @@ def LoadBlockIntoTree(tree, filename=None):
         from rde import ConfigManager
         filename = os.path.join(ConfigManager.config.get('Global', 'tprde_dir'),
                             'tpcl', 'data', 'tpcl_base.xml')
-    et = ElementTree(file=filename)
+    et = ET.ElementTree(file=filename)
     blocks = {}
     root = tree.AddRoot("Root")
     for cat_elem in et.findall('category'):
