@@ -11,8 +11,8 @@ Categories:
 Expressions:
 	<expression
 		name=""
-		description=""
-		display="">
+		description="">
+		<multiline_desc>TEXT</multiline_desc>
 		<template>
 			<elem type="" val="" />
 		</template>
@@ -21,8 +21,7 @@ Expressions:
 	</expression>
 	
 	Expressions define TPCL Expression Blocks. They must have a name, description and display.
-	The name is used to display it to the user, the description is used as documentation and the
-	display string is used to give a preview of what the code will look like when inserted.
+	The name is used to display it to the user, the description is used as documentation.
 	
 	The template element defines the template for the TPCL Code. This is composed of elements of the
 	following types:
@@ -31,6 +30,10 @@ Expressions:
 		exp_point - An expansion point where the user can choose to extend or close off the expression
 		eol - an end of line marker
 		indent - an indent marker
+		
+	The multiline_desc element is a multiline text block that serves as a description. Either this or
+	the description attribute must be present.  Eventually I hope to transfer all description
+	attributes into multiline_desc elements for consistency.
 		
 	The oninsert element is a snippet of python code that is called when an expression of this type
 	is inserted into the expression editor. Typically this will be a dialog window prompting the
