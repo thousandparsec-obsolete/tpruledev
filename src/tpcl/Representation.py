@@ -156,7 +156,7 @@ class TpclTemplate(object):
         self.data[index].indent_level = indent
         
     def SetText(self, index, value):
-        if self.IsPlaintext(index):
+        if self.IsSimpletext(index):
             self.data[index].value = value
         else:
             raise ValueError("Element at %d is not plaintext" % index)
