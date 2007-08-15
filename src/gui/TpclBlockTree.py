@@ -18,10 +18,12 @@ class TpclBlockTree(wx.TreeCtrl):
         self.root_id = self.AddRoot('TPCL Blocks')
         
     def SetBlockstore(self, bs):
-        if not self.bs:
-            self.bs = bs
-            bs.addBsListener(self)
-            self.InitializeTree()
+        if self.bs:
+            self.CollapseAndReset(root_id)
+            self.bs.RemoveBsListener(self)
+        self.bs = bs
+        bs.AddBsListener(self)
+        self.InitializeTree()
              
     def SelectObject(self, name):
         try:
@@ -74,18 +76,20 @@ class TpclBlockTree(wx.TreeCtrl):
         obj_id = self.object_ids[event.node_id]
         self.Delete(obj_id)
         
+    def HandleModify(self, event):
+        pass
+        
     def InitializeTree(self):
-        self.catid_stack = [self.root_id]
-        for bs_node in self.bs.iternodes():
-            parent_id = self.catid_stack[-1]
-            if bs_node.IsCategory():
-                item_id = self.AppendItem(parent_id, bs_node.name)
-                self.catid_stack.append(item_id)
+        self.InitCategory(self.root_id, self.bs.GetRootId())
+        
+    def InitCategory(self, cat_tree_id, cat_node_id):
+        for child_node in self.bs.GetChildNodes(cat_node_id):
+            item_id = self.AppendItem(cat_tree_id, self.bs.GetItemName(child_node))
+            self.id_map[child_node] = item_id
+            if self.bs.IsBlock(child_node):
+                self.SetPyData(item_id, self.bs.GetNode(child_node).block)            
             else:
-                #it's a block
-                item_id = self.AppendItem(parent_id, bs_node.name)
-                self.SetPyData(item_id, node.block)
-            self.id_map[bs_node.id] = item_id
+                self.InitCategory(item_id, child_node)
         
         #we want to have everything expanded at default
         #self.ExpandAll()        
@@ -106,4 +110,4 @@ class TpclBlockTree(wx.TreeCtrl):
                  BSEvent.ADD: HandleAdd,
                  BSEvent.INSERT: HandleInsert,
                  BSEvent.REMOVE: HandleRemove,
-                 BSEvent.MODIFY: HandleModify,
+                 BSEvent.MODIFY: HandleModify}

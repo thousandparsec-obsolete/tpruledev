@@ -31,6 +31,7 @@ class MyDialog(wx.Dialog):
         self.code_stc = XRCCTRL(self, "code_stc")
         self.code_stc.Bind(wx.EVT_LEFT_UP, self.ContextMenuHandler)
         self.block_tree = XRCCTRL(self, "block_tree")
+        self.block_tree.SetBlockstore(self.block_store)
         self.preview_ctrl = XRCCTRL(self, "preview_ctrl")
         self.block_tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnSelectionChanged)
         
@@ -45,7 +46,7 @@ class MyDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnInfo, self.info_button)
                 
         #fill the block_tree
-        Import.LoadBlockIntoTree(self.block_tree)
+        #Import.LoadBlockIntoTree(self.block_tree)
         self.root_expression = None
         
         self.CreateQuickInsertMenu()

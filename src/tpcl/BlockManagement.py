@@ -75,14 +75,23 @@ class TpclBlockstore(object):
         if item.IsCategory():
             return item.categories
         else:
-            return None
+            return []
             
     def GetChildBlocks(self, item_id):
         item = self._items[item_id]
         if item.IsCategory():
             return item.blocks
         else:
-            return None
+            return []
+            
+    def GetChildNodes(self, item_id):
+        item = self._items[item_id]
+        if item.IsCategory():
+            items = item.categories
+            items.extend(item.blocks)
+            return items
+        else:
+            return []
         
     def GetItemName(self, item_id):
         return self._items[item_id].name
@@ -100,6 +109,9 @@ class TpclBlockstore(object):
 
     def GetParent(self, item_id):
         return self._items[item_id].parent_id
+        
+    def IsBlock(self, item_id):
+        return self._items[item_id].IsBlock()
         
     def FindBlock(self, name, parent_id=0):
         """\
@@ -167,31 +179,31 @@ class BSEvent(object):
     REMOVE = 4
     MODIFY = 5
 
-class BSInitialize(ODBEvent):
-    type = ODBEvent.INIT
+class BSInitialize(BSEvent):
+    type = BSEvent.INIT
 
-class BSAdd(ODBEvent):
-    type = ODBEvent.ADD
+class BSAdd(BSEvent):
+    type = BSEvent.ADD
     
     def __init__(self, node_id, parent_id):
         self.node_id = node_id
         self.parent_id = parent_id
         
-class BSInsert(ODBEvent):
-    type = ODBEvent.INSERT
+class BSInsert(BSEvent):
+    type = BSEvent.INSERT
     
     def __init__(self, node_id, preceding_id):
         self.node_id = node_id
         self.preceding_id = preceding_id
 
-class BSRemove(ODBEvent):
-    type = ODBEvent.REMOVE
+class BSRemove(BSEvent):
+    type = BSEvent.REMOVE
     
     def __init__(self, node_id):
         self.node_id = node_id
     
-class BSModify(ODBEvent):
-    type = ODBEvent.MODIFY
+class BSModify(BSEvent):
+    type = BSEvent.MODIFY
     
     def __init__(self, node_ids):
         self.node_ids = node_ids
