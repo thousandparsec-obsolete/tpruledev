@@ -6,7 +6,7 @@ testing purposes.
 """
 
 import wx
-import gui.TpclEditorDialog
+import gui.TpclEditorFrame
 from rde import ConfigManager
 from tpcl.data import Import
 
@@ -23,8 +23,8 @@ class App(wx.App):
         return True
         
     def OnShowEditor(self, event):
-        dialog = gui.TpclEditorDialog.MyDialog(self.frame, self.block_store)
-        dialog.ShowModal()
+        tpclee = gui.TpclEditorFrame.EditorFrame(self.frame, self.block_store)
+        tpclee.ShowModal()
         
 def main():
     app = App(redirect=False)

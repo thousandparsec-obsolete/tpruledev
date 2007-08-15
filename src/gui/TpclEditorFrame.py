@@ -9,16 +9,16 @@ from tpcl.data import Import
 from tpcl.Representation import *
 from gui.BlockInfoDialog import BlockInfoDialog
 
-class MyDialog(wx.Dialog):
+class EditorFrame(wx.Frame):
     """
     A wx.Panel for displaying and editing Categories
     """
     
     def __init__(self, parent, block_store, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
-        res = gui.XrcUtilities.XmlResource('./gui/xrc/EditorDialog.xrc')
-        pre = wx.PreDialog()
-        res.LoadOnDialog(pre, parent, "editor")
+        res = gui.XrcUtilities.XmlResource('./gui/xrc/TpclEditorFrame.xrc')
+        pre = wx.PreFrame()
+        res.LoadOnFrame(pre, parent, "editor")
         self.PostCreate(pre)        
 
         self.block_store = block_store
@@ -138,6 +138,11 @@ class MyDialog(wx.Dialog):
         if block:
             print "Trying to insert block..."
             try:
+                #provide the OnInsert function of the block
+                # access to us as a parent frame for when they
+                # need to show a dialog
+                parent_frame = self
+                
                 expression = TpclExpression(block)
                 insert_ok = True
                 if block.on_insert:
@@ -216,6 +221,20 @@ class MyDialog(wx.Dialog):
                 
         except ValueError:
             print "Index out of range..."
+            
+    def ShowModal(self):
+        print "TPCLEE Showing itself Modally"
+        self.MakeModal(True)
+        self.old_top_window = wx.GetApp().GetTopWindow()
+        wx.GetApp().SetTopWindow(self)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Show(True)        
+    
+    def OnClose(self, event):
+        self.MakeModal(False)
+        self.Unbind(wx.EVT_CLOSE)
+        wx.GetApp().SetTopWindow(self.old_top_window)
+        event.Skip()
             
 def MakeInserter(tpcl_editor, block):
     def f(event):
