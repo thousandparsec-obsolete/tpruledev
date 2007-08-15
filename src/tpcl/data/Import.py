@@ -3,7 +3,8 @@ import os
 
 import codegen.XmlUtils
 ET = codegen.XmlUtils.ImportElementTree()
-from tpcl.Representation import TpclBlocktype, TpclBlock, TpclTemplate, TpclBlockstore
+from tpcl.Representation import TpclBlocktype, TpclBlock, TpclTemplate
+from tpcl.BlockManagement import TpclBlockstore
 
 def LoadBlocktypes(filename=None):
     """\
