@@ -19,6 +19,7 @@ class TpclBlockstore(object):
         self.root = CategoryNode(0, None, "Root")
         self._items = [self.root]
         self._rootid = 0
+        self.listeners = []
         
     def iterblocks(self):
         return BlockstoreBlockIterator(self)
@@ -30,6 +31,18 @@ class TpclBlockstore(object):
         id = len(self._items)
         self._items[parent_id].AddCategory(id)
         self._items.append(CategoryNode(id, parent_id, cat_name))
+        self.SendBsEvent(BSAdd(id, parent_id))
+        return id
+        
+    def InsertCategory(self, cat_name, preceding_id):
+        """\
+        Adds a category to the block store.
+        """
+        id = len(self._items)
+        parent_id = self.GetNode(preceding_id).parent_id
+        self._items[parent_id].InsertCategory(preceding_id, id)
+        self._items.append(CategoryNode(id, parent_id, cat_name))
+        self.SendBsEvent(BSInsert(id, preceding_id))
         return id
         
     def AddBlock(self, block, parent_id=0):
@@ -39,8 +52,19 @@ class TpclBlockstore(object):
         """
         id = len(self._items)
         self._items[parent_id].AddBlock(id)
-        
         self._items.append(BlockNode(id, parent_id, block))
+        self.SendBsEvent(BSAdd(id, parent_id))
+        return id
+        
+    def InsertBlock(self, block, preceding_id):
+        """\
+        Adds a category to the block store.
+        """
+        id = len(self._items)
+        parent_id = self.GetNode(preceding_id).parent_id
+        self._items[parent_id].InsertBlock(preceding_id, id)
+        self._items.append(BlockNode(id, parent_id, block))
+        self.SendBsEvent(BSInsert(id, preceding_id))
         return id
         
     def GetRootId(self):
@@ -110,6 +134,69 @@ class TpclBlockstore(object):
         
         return False
         
+    ############################
+    # Event passing interface
+    ############################
+    
+    def AddListener(self, listener):
+        if self.listeners.count(listener) < 1:
+            self.listeners.append(listener)
+    
+    def RemoveListener(self, listener):
+        try:
+            self.listeners.remove(listener)
+        except ValueError:
+            #listener wasn't there
+            # we don't really care
+            pass
+    
+    def SendBsEvent(self, event):
+        for listener in self.listeners:
+            listener.HandleBsEvent(event)
+        
+#Blockstore even objects
+class BSEvent(object):
+    """
+    Base Blockstore Event object.
+    All of the event types are included here.
+    """
+    #I WANT ENUMS!
+    INIT = 1
+    ADD = 2
+    INSERT = 3
+    REMOVE = 4
+    MODIFY = 5
+
+class BSInitialize(ODBEvent):
+    type = ODBEvent.INIT
+
+class BSAdd(ODBEvent):
+    type = ODBEvent.ADD
+    
+    def __init__(self, id, parent_id):
+        self.id = id
+        self.parent_id = parent_id
+        
+class BSInsert(ODBEvent):
+    type = ODBEvent.INSERT
+    
+    def __init__(self, id, sibling_id):
+        self.id = id
+        self.preceding = sibling_id
+
+class BSRemove(ODBEvent):
+    type = ODBEvent.REMOVE
+    
+    def __init__(self, id):
+        self.id = id
+    
+class BSModify(ODBEvent):
+    type = ODBEvent.MODIFY
+    
+    def __init__(self, ids):
+        self.ids = ids
+
+        
 class BlockstoreNode(object):
     CATEGORY = TpclBlockstore.CATEGORY
     BLOCK = TpclBlockstore.BLOCK
@@ -134,9 +221,23 @@ class CategoryNode(BlockstoreNode):
         
     def AddCategory(self, cat_id):
         self.categories.append(cat_id)
+        
+    def InsertCategory(self, preceding_id, cat_id):
+        try:
+            idx = self.categories.index(preceding_id)
+            self.categories.insert(idx+1, cat_id)
+        except ValueError:
+            raise ValueError("Category %s doesn't have a child category with id %d" % (self.name, preceding_id))
     
     def AddBlock(self, block_id):
         self.blocks.append(block_id)
+        
+    def InsertBlock(self, preceding_id, block_id):
+        try:
+            idx = self.blocks.index(preceding_id)
+            self.blocks.insert(idx+1, block_id)
+        except ValueError:
+            raise ValueError("Category %s doesn't have a child category with id %d" % (self.name, preceding_id))
         
 class BlockNode(BlockstoreNode):
     def __init__(self, id, parent_id, block):
