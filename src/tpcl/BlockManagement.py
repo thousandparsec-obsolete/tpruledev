@@ -21,7 +21,7 @@ class TpclBlockstore(object):
         self._rootid = 0
         self.listeners = []
         
-    def iterblocks(self):
+    def iternodes(self):
         return BlockstoreBlockIterator(self)
         
     def AddCategory(self, cat_name, parent_id=0):
@@ -138,11 +138,11 @@ class TpclBlockstore(object):
     # Event passing interface
     ############################
     
-    def AddListener(self, listener):
+    def AddBsListener(self, listener):
         if self.listeners.count(listener) < 1:
             self.listeners.append(listener)
     
-    def RemoveListener(self, listener):
+    def RemoveBsListener(self, listener):
         try:
             self.listeners.remove(listener)
         except ValueError:
@@ -173,28 +173,28 @@ class BSInitialize(ODBEvent):
 class BSAdd(ODBEvent):
     type = ODBEvent.ADD
     
-    def __init__(self, id, parent_id):
-        self.id = id
+    def __init__(self, node_id, parent_id):
+        self.node_id = node_id
         self.parent_id = parent_id
         
 class BSInsert(ODBEvent):
     type = ODBEvent.INSERT
     
-    def __init__(self, id, sibling_id):
-        self.id = id
-        self.preceding = sibling_id
+    def __init__(self, node_id, preceding_id):
+        self.node_id = node_id
+        self.preceding_id = preceding_id
 
 class BSRemove(ODBEvent):
     type = ODBEvent.REMOVE
     
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, node_id):
+        self.node_id = node_id
     
 class BSModify(ODBEvent):
     type = ODBEvent.MODIFY
     
-    def __init__(self, ids):
-        self.ids = ids
+    def __init__(self, node_ids):
+        self.node_ids = node_ids
 
         
 class BlockstoreNode(object):
