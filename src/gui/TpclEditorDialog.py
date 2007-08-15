@@ -14,13 +14,14 @@ class MyDialog(wx.Dialog):
     A wx.Panel for displaying and editing Categories
     """
     
-    def __init__(self, parent, id=wx.ID_ANY, style=wx.EXPAND):
+    def __init__(self, parent, block_store, id=wx.ID_ANY, style=wx.EXPAND):
         #load from XRC, need to use two-stage create
         res = gui.XrcUtilities.XmlResource('./gui/xrc/EditorDialog.xrc')
         pre = wx.PreDialog()
         res.LoadOnDialog(pre, parent, "editor")
         self.PostCreate(pre)        
 
+        self.block_store = block_store
         self.OnCreate()
     
     def OnCreate(self):
@@ -45,7 +46,6 @@ class MyDialog(wx.Dialog):
                 
         #fill the block_tree
         Import.LoadBlockIntoTree(self.block_tree)
-        self.block_store = Import.InitializeBlockstore()
         self.root_expression = None
         
         self.CreateQuickInsertMenu()
