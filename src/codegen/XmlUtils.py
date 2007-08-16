@@ -34,11 +34,11 @@ def ImportElementTree():
             errors.append(e)
         try:
             import lxml.etree as elemtree
-        except ImportError:
+        except ImportError, e:
             errors.append(e)
         try:
             import xml.etree.ElementTree as elemtree
-        except ImportError:
+        except ImportError, e:
             errors.append(e)
             
         if elemtree is None:
