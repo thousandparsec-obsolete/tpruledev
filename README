@@ -10,6 +10,12 @@ Requirements:
 		It can either be installed using the setup.py file or the contents of
 			the src/ directory can be put into the directory:
 			.../tpruledev/src/pyscheme
+	elementtree 1.2.6 or compatible
+		Python 2.5 comes with elementtree and so no other packages are required
+		In the case of Python 2.4 then you should download and install one
+		of the following packages:
+		   elementtree - http://effbot.org/zone/element-index.htm
+		   lxml - http://codespeak.net/lxml/
 
 Running the app:
 	In Windows:
