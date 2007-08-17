@@ -5,7 +5,7 @@ The dialog class for the TPCL Expression Editor.
 import wx
 import gui.XrcUtilities
 from wx.xrc import XRCCTRL
-from tpcl.data import Import
+import tpcl.IO
 from tpcl.Representation import *
 from gui.BlockInfoDialog import BlockInfoDialog
 
@@ -46,7 +46,7 @@ class EditorFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnInfo, self.info_button)
                 
         #fill the block_tree
-        #Import.LoadBlockIntoTree(self.block_tree)
+        #tpcl.IO.LoadBlockIntoTree(self.block_tree)
         self.root_expression = None
         
         self.CreateQuickInsertMenu()

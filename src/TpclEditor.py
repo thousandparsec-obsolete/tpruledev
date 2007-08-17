@@ -8,7 +8,7 @@ testing purposes.
 import wx
 import gui.TpclEditorFrame
 from rde import ConfigManager
-from tpcl.data import Import
+import tpcl.IO
 
 class App(wx.App):
     def OnInit(self):
@@ -16,7 +16,7 @@ class App(wx.App):
         self.frame.Show()
         self.SetTopWindow(self.frame)
         ConfigManager.LoadRDEConfig('tpconf')
-        self.block_store = Import.InitializeBlockstore()
+        self.block_store = tpcl.IO.InitializeBlockstore()
         butt = wx.Button(self.frame, label="Show Editor")
         self.Bind(wx.EVT_BUTTON, self.OnShowEditor, butt)
         

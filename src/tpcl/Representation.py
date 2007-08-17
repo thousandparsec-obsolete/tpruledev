@@ -4,6 +4,23 @@ TPCL Python Representation
 
 import copy
 
+def ConstructExpression(xml_expr_elem=None, expr_str=""):
+    """\
+    Constructs a TPCL Expression from a persistence definition
+    that has been written to XML
+    """
+    
+    if expr_str and xml_expr_elem:
+        raise ValueError("Must pass either a string or an XML element, not both")
+    elif expr_str:
+        #process string
+        pass
+    elif xml_expr_elem:
+        #process xml element
+        pass
+    else:
+        return None
+
 class TpclBlocktype(object):
     """\
     A category for tpcl expressions
