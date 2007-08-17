@@ -4,23 +4,6 @@ TPCL Python Representation
 
 import copy
 
-def ConstructExpression(xml_expr_elem=None, expr_str=""):
-    """\
-    Constructs a TPCL Expression from a persistence definition
-    that has been written to XML
-    """
-    
-    if expr_str and xml_expr_elem:
-        raise ValueError("Must pass either a string or an XML element, not both")
-    elif expr_str:
-        #process string
-        pass
-    elif xml_expr_elem:
-        #process xml element
-        pass
-    else:
-        return None
-
 class TpclBlocktype(object):
     """\
     A category for tpcl expressions
@@ -77,6 +60,11 @@ class TpclBlock(object):
         return str(self.template)
         
     display = property(GetDisplay)
+    
+class EmptyBlock(TpclBlock):
+    def __init__(self):
+        TpclBlock.__init__(self, "EmptyBlock", "Filler block with no text.")
+        self.template.AppendText("")
         
 
 class TpclTemplateNode(object):
@@ -307,7 +295,6 @@ class TpclTemplate(object):
         
     def GetElementData(self, index):
         return self.data[index].data
-        
     
 class TpclExpression(object):
     """\
@@ -348,6 +335,15 @@ class TpclExpression(object):
         if not self.length_ok:
             self.RecalculateLength()        
         return self._length
+        
+    def GetXmlRepresentation(self, parent=None, index=0):
+        pass
+        #xml_rep = ""
+        #if not parent:
+        #    xml_rep = "<expression block_id='%d'>"
+        #for i in len(self.template):
+        #    if self.template.IsExpression(i)
+            
         
     #######################################
     # Utility functions for maintaining
@@ -541,6 +537,42 @@ class TpclExpression(object):
         else:
             return None
             
+    def _FillExpansionPoint(self, index, option):
+        """\
+        Expands the expansion point at the given index
+        with the option with the given index
+        """
+        exp_opts = self.template.GetElementData(index)[option]
+        if exp_opts:
+            exp_template = exp_opts[2]
+            cont_exp = exp_opts[1]
+            if exp_template:
+                #we are expanding
+                print "\tFound template"
+                expr = ExpansionExpression(TpclBlock("exp_point", "desc", exp_template), parent=self)
+            else:
+                print "\tNo template - adding empty expression"
+                expr = ExpansionExpression(EmptyBlock(), parent=self)
+            print "\tExpansion expression: %s" % expr
+                                            
+            self.template.ExpandExpansionPoint(index, expr, cont_exp)
+            self.InvalidateState()
+            
+            self.RecalculateOffsets()
+            print "\tSetting offset as %d and indent level as %d" % (self.GetElemOffset(index), self.GetElemIndent(index))
+            print "\tbase_indent =", self.base_indent
+            expr.SetOffset(self.GetElemOffset(index))
+            expr.SetIndentLevel(self.GetElemIndent(index))
+                
+            self.InvalidateState()
+    
+    def _ExpandElement(self, index, option):
+        if not self.template.IsExpansionPoint(index):
+            raise ValueError("Index %d is not an expansion point" % index)
+        else:
+            print "\tIt's an expansion point"
+            self._FillExpansionPoint(index, option)
+       
     def Expand(self, offset, option):
         print "In TpclExpression <%s> trying to expand at %d with option %d" % (self.block.name, offset, option)
         index = self.GetIndexOfElemAt(offset)
@@ -552,30 +584,7 @@ class TpclExpression(object):
             return self.template.GetElementValue(index).Expand(offset, option)
         else:
             print "\tIt's an expansion point"
-            exp_opts = self.template.GetElementData(index)[option]
-            if exp_opts:
-                exp_template = exp_opts[2]
-                cont_exp = exp_opts[1]
-                if exp_template:
-                    #we are expanding
-                    print "\tFound template"
-                    expr = ExpansionExpression(TpclBlock("exp_point", "disp",
-                                                    "desc", exp_template), parent=self)
-                    print "\tExpansion expression: %s" % expr
-                                                    
-                    self.template.ExpandExpansionPoint(index, expr, cont_exp)
-                    self.InvalidateState()
-                    
-                    self.RecalculateOffsets()
-                    print "\tSetting offset as %d and indent level as %d" % (self.GetElemOffset(index), self.GetElemIndent(index))
-                    print "\tbase_indent =", self.base_indent
-                    expr.SetOffset(self.GetElemOffset(index))
-                    expr.SetIndentLevel(self.GetElemIndent(index))               
-
-                else:
-                    self.DeleteElement(index)
-                    
-                self.InvalidateState()
+            self._FillExpansionPoint(index, option)
                 
     def DeleteElement(self, index):
         """\
@@ -586,15 +595,17 @@ class TpclExpression(object):
         print "\telement: %s" % self.template.GetNode(index)
         self.template.RemoveElement(index)
         self.InvalidateState()
+        
+    def _GetElement(self, index):
+        return self.template.GetElementValue(index)
             
     def GetParentOfElemAt(self, offset):
         """\
         Returns the parent of the element at the offset.
         """
         index = self.GetIndexOfElemAt(offset)
-        if self.template.IsText(index):
-            return self.parent
-        elif self.template.IsInsertionPoint(index) or self.template.IsExpansionPoint(index):
+        if self.template.IsText(index) or self.template.IsInsertionPoint(index) or \
+                self.template.IsExpansionPoint(index):
             return self
         else:
             return self.template.GetElementValue(index).GetParentOfElemAt(offset)
@@ -627,7 +638,23 @@ class TpclExpression(object):
         """
         self.template.SetText(index, new_val)
         self.InvalidateState()
-        
+    
+    def _InsertExpressionAt(self, index, expression):
+        if not self.offsets_ok:
+            self.RecalculateOffsets()
+    
+        if  self.template.IsInsertionPoint(index):
+            self.template.FillInsertionPoint(index, expression)
+            expression.SetOffset(self.GetAbsoluteElemOffset(index))
+            expression.SetIndentLevel(self.GetElemIndent(index))
+            #todo: need to start guarding against multiple parents
+            expression.parent = self
+            self.InvalidateState()
+        elif self.template.IsExpression(index):
+            raise ValueError('There is already an expression at index %d' % index)
+        else:
+            raise ValueError('There is no expression at index %d' % index)
+     
     def InsertExpression(self, offset, expression):
         """\
         Inserts an expression at the given offset
@@ -658,6 +685,7 @@ class TpclExpression(object):
         index = self.GetIndexOfElemAt(offset);
         
         print "<%s> removing expression at offset %d" % (self.block.name, offset)
+        print "\texpression is: %s" % self.template.GetElementValue(index)
         if self.template.IsAddedInsertionPoint(index):
             print "\texpression is an additional insertion point, deleting it"
             self.DeleteElement(index)
@@ -667,6 +695,7 @@ class TpclExpression(object):
             parent = self.GetParentOfElemAt(offset)
             if  parent != None:
                 if parent == self:
+                    print "\tclass: %s" % self.template.GetElementValue(index).__class__
                     self.template.ResetInsertionPoint(index)
                     self.InvalidateState()
                 else:
@@ -675,8 +704,9 @@ class TpclExpression(object):
                 raise ValueError("We are the root expression, can't remove ourself!")
 
 class ExpansionExpression(TpclExpression):
-    def __init__(self, block, parent=None, offset=0, indent=0):
+    def __init__(self, block, parent=None, offset=0, indent=0, expansion_option=0):
         TpclExpression.__init__(self, block, parent, offset, indent)
+        self.expansion_option = expansion_option
         
     def RemoveExpression(self, offset):
         """\
@@ -688,13 +718,15 @@ class ExpansionExpression(TpclExpression):
         index = self.GetIndexOfElemAt(offset);
         
         print "<%s> (EE) removing expression at offset %d" % (self.block.name, offset)
-        if self.template.IsAddedInsertionPoint(index) or self.template.IsText(index):
+        if not self.template.IsExpression(index):
             print "\texpression is an additional insertion point, deleting ourselves and it"
             myidx = self.parent.GetIndexOfElemAt(offset)
             self.parent.DeleteElement(myidx)
             self.parent.InvalidateState()
         else:
+            "\texpression is contained inside of us..."
             parent = self.GetParentOfElemAt(offset)
+            print "\tit's parent is %s" % parent.name
             if  parent != None:
                 if parent == self:
                     self.template.ResetInsertionPoint(index)
@@ -703,3 +735,4 @@ class ExpansionExpression(TpclExpression):
                     parent.RemoveExpression(offset)            
             else:
                 raise ValueError("We are the root expression, can't remove ourself!")
+                
