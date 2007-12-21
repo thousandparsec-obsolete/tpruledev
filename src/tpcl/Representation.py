@@ -230,14 +230,6 @@ class TpclTemplate(object):
     def InsertExpansionPoint(self, index, expansion_options):
         self.data.insert(index, TpclTemplateNode(self.EXPANSION, "*...*", expansion_options))
         
-    def ExpandExpansionPoint(self, index, expr, continue_expansion):
-        if self.IsExpansionPoint(index):
-            if not continue_expansion:
-                del self.data[index]
-            self.data.insert(index, TpclTemplateNode((self.EXPRESSION | self.ADDED), expr))
-        else:
-            raise ValueError("No expansion point at index %d" % index)
-        
     def RemoveElement(self, index):
         del self.data[index]
         
@@ -266,15 +258,6 @@ class TpclTemplate(object):
     
     def IsExpansionPoint(self, index):
         return self.data[index].type & self.EXPANSION
-        
-    def IsAddedInsertionPoint(self, index):
-        return (self.data[index].type & self.ADDED) and \
-                (self.data[index].type & self.INSERTION_POINT)
-        
-    #was IsFilledExpansion
-    def WasAddedByExpansion(self, index):
-        return (self.data[index].type & self.ADDED and \
-                self.data[index].type & self.EXPRESSION)
     
     #####################################
     # Getters
@@ -295,6 +278,27 @@ class TpclTemplate(object):
         
     def GetElementData(self, index):
         return self.data[index].data
+        
+class ExpansionTemplate(TpclTemplate):
+    def __init__(self):
+        TpclTemplate.__init__(self)
+        
+    def ExpandExpansionPoint(self, index, expr, continue_expansion):
+        if self.IsExpansionPoint(index):
+            if not continue_expansion:
+                del self.data[index]
+            self.data.insert(index, TpclTemplateNode((self.EXPRESSION | self.ADDED), expr))
+        else:
+            raise ValueError("No expansion point at index %d" % index)
+
+    def IsAddedInsertionPoint(self, index):
+        return (self.data[index].type & self.ADDED) and \
+                (self.data[index].type & self.INSERTION_POINT)
+        
+    #was IsFilledExpansion
+    def WasAddedByExpansion(self, index):
+        return (self.data[index].type & self.ADDED and \
+                self.data[index].type & self.EXPRESSION)
     
 class TpclExpression(object):
     """\
@@ -335,15 +339,6 @@ class TpclExpression(object):
         if not self.length_ok:
             self.RecalculateLength()        
         return self._length
-        
-    def GetXmlRepresentation(self, parent=None, index=0):
-        pass
-        #xml_rep = ""
-        #if not parent:
-        #    xml_rep = "<expression block_id='%d'>"
-        #for i in len(self.template):
-        #    if self.template.IsExpression(i)
-            
         
     #######################################
     # Utility functions for maintaining
